@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
-import TopComponent from "../components/topComponent";
+import TopComponent from "../components/TopComponent";
 import HashLoader from "react-spinners/HashLoader";
 import FadeIn from "react-fade-in";
 

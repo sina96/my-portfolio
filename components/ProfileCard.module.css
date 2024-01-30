@@ -48,17 +48,18 @@
 /* SOCIAL STATS */
 .smallerText {
 	font-weight: normal;
-	font-size: 0.7rem;
+	font-size: 0.5rem;
 	color: hsl(0, 0%, 50%);
 	text-align: center;
 	letter-spacing: 1px;
 	padding-bottom: 20px;
-	line-height: 5px;
+	line-height: 10px;
 }
 
 .socialContainer {
 	display: flex;
 	text-align: center;
+	justify-content: center;
 }
 
 .followers {

@@ -1,54 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./ProfileCard.module.css";
-import { FaGithub } from "react-icons/fa";
-import { MdMail } from "react-icons/md";
-import { IoLogoWhatsapp, IoLogoLinkedin } from "react-icons/io";
+import { FcPlus,  FcMinus  } from "react-icons/fc";
 
 function ProfileCard(props) {
+  const [response, setResponse] = useState("");
+  
   return (
     <div className={styles.cardContainer}>
-      <header>
-        <img src="/assets/avatar-bw.jpg" alt={props.name} />
-      </header>
+      
       <h1 className={styles.boldText}>
-        {props.name} <span className={styles.normalText}>{props.age}</span>
+        {props.header}<br></br> <span className={styles.normalText}>{props.underHeaderTxt}</span>
       </h1>
-      <h2 className={styles.normalText}>{props.occupation}</h2>
-      <h2 className={styles.normalText}>{props.city}</h2>
+      <h2 className={styles.normalText}>{props.text1}</h2>
+      <h2 className={styles.normalText}>{props.text2}</h2>
       <div className={styles.socialContainer}>
         <div className={styles.followers}>
           <h1 className={styles.boldText}>
-            <a href="https://www.linkedin.com/in/sina-bastani" target="_blank" rel="noopener noreferrer">
-              <IoLogoLinkedin />
-            </a>
+              <FcPlus />
           </h1>
-          <h2 className={styles.smallerText}>Linkedin</h2>
+          <h2 className={styles.smallerText}>i loooove you</h2>
         </div>
         <div className={styles.followers}>
           <h1 className={styles.boldText}>
-            <a href="mailto:sina.bastani@zingtongroup.com?cc=s.bastani96@gmail.com" target="_blank" rel="noopener noreferrer">
-              <MdMail />
-            </a>
+              <FcPlus />
           </h1>
-          <h2 className={styles.smallerText}>Mail</h2>
+          <h2 className={styles.smallerText}>I do anything for you</h2>
         </div>
         <div className={styles.followers}>
           <h1 className={styles.boldText}>
-            <a href="https://wa.me/46700128299" target="_blank" rel="noopener noreferrer">
-              <IoLogoWhatsapp />
-            </a>
+              <FcMinus />
           </h1>
-          <h2 className={styles.smallerText}>Whatsapp</h2>
+          <h2 className={styles.smallerText}>i love u a little too much</h2>
         </div>
-        <div className={styles.likes}>
+        <div className={styles.followers}>
           <h1 className={styles.boldText}>
-            <a href="https://github.com/sina96" target="_blank" rel="noopener noreferrer">
-              <FaGithub />
-            </a>
+              <FcMinus />
           </h1>
-          <h2 className={styles.smallerText}>Github</h2>
+          <h2 className={styles.smallerText}>obsessed w you</h2>
         </div>
       </div>
+      <h2 className={styles.normalText}>{props.city}</h2>
+      <h2 className={styles.normalText}>{props.city}</h2>
+      <h2 className={styles.normalText}>{props.city}</h2>
     </div>
   );
 }

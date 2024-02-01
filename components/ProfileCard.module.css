@@ -21,11 +21,13 @@
 
 .cardContainer img {
 	margin: auto;
-	width: 120px;
+	width: 200px;
 	border: solid whitesmoke 2px;
-	border-radius: 50%;
+	border-radius: 5%;
 	margin-top: 25px;
 	margin-bottom: 10px;
+	max-height: 300px;
+	overflow: auto;
 }
 
 .boldText {
@@ -48,17 +50,18 @@
 /* SOCIAL STATS */
 .smallerText {
 	font-weight: normal;
-	font-size: 0.7rem;
+	font-size: 0.5rem;
 	color: hsl(0, 0%, 50%);
 	text-align: center;
 	letter-spacing: 1px;
 	padding-bottom: 20px;
-	line-height: 5px;
+	line-height: 10px;
 }
 
 .socialContainer {
 	display: flex;
 	text-align: center;
+	justify-content: center;
 }
 
 .followers {

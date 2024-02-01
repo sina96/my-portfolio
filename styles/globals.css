@@ -6,8 +6,10 @@ body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
   height: 100%;
-  background-color: #130f40;
-  background-image: linear-gradient(315deg, #130f40 0%, #000000 74%);
+  background: #cc2b5e;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #753a88, #cc2b5e);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #753a88, #cc2b5e); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
 }
 
 a {
@@ -43,8 +45,7 @@ p {
 .header {
   position:relative;
   text-align:center;
-  background-color: #ffffff;
-  background-image: linear-gradient(315deg, #ffffff 0%, #335c81 74%);
+  
   color:white;
 }
 .logo {

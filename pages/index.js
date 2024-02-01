@@ -3,6 +3,7 @@ import Head from "next/head";
 import TopComponent from "../components/TopComponent";
 import FadeIn from "react-fade-in";
 import { Hearts } from "react-loader-spinner";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function Home() {
   let [loading, setLoading] = useState(true);

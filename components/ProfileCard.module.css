@@ -21,11 +21,13 @@
 
 .cardContainer img {
 	margin: auto;
-	width: 120px;
+	width: 200px;
 	border: solid whitesmoke 2px;
-	border-radius: 50%;
+	border-radius: 5%;
 	margin-top: 25px;
 	margin-bottom: 10px;
+	max-height: 300px;
+	overflow: auto;
 }
 
 .boldText {

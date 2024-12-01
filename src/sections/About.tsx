@@ -1,7 +1,7 @@
 "use client";
 import { Card } from "@/components/Card";
 import { SectionHeader } from "@/components/SectionHeader";
-import BookImage from "@/assets/images/hobbitt.jpg";
+import AdventOfCodeImg from "@/assets/images/aoc-24.png";
 import Image from "next/image";
 import SpringIcon from "@/assets/icons/spring-boot.svg";
 import SQLIcon from "@/assets/icons/sql-db.svg";
@@ -124,10 +124,10 @@ export const AboutSection = () => {
             <Card className="h-[320px] md:col-span-2 lg:col-span-1">
               <CardHeader
                 title="Next in todo list"
-                description="I really need to read the lord of the rings saga!"
+                description="Solving this year's advent of code!"
               />
-              <div className="w-40 mx-auto mt-2 md:mt-0">
-                <Image src={BookImage} alt="book cover" />
+              <div className="w-60 mx-auto mt-2 md:mt-0 ">
+                <Image src={AdventOfCodeImg} alt="Aoc2024" />
               </div>
             </Card>
             <Card className="h-[320px] md:col-span-3 lg:col-span-2">

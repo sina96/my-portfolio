@@ -114,10 +114,10 @@ export const HeroSection = () => {
             alt="laptop emoji"
           />
           <div className="bg-gray-950 border border-gray-800 px-4 py-1.5 inline-flex items-center gap-4 rounded-lg">
-            <div className="bg-red-500 size-2.5 rounded-full relative">
-              <div className="bg-red-500 absolute inset-0 rounded-full animate-ping-large"></div>
+            <div className="bg-green-500 size-2.5 rounded-full relative">
+              <div className="bg-green-500 absolute inset-0 rounded-full animate-ping-large"></div>
             </div>
-            <div className="text-sm font-medium">Busy in a project</div>
+            <div className="text-sm font-medium">Available for projects!</div>
           </div>
         </div>
         <div className="max-w-lg mx-auto">

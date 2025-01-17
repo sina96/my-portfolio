@@ -1,7 +1,7 @@
 "use client";
 import { Card } from "@/components/Card";
 import { SectionHeader } from "@/components/SectionHeader";
-import AdventOfCodeImg from "@/assets/images/aoc-24.png";
+import AWSBadge from "@/assets/images/AWS-SA-badge.png";
 import Image from "next/image";
 import SpringIcon from "@/assets/icons/spring-boot.svg";
 import SQLIcon from "@/assets/icons/sql-db.svg";
@@ -123,11 +123,11 @@ export const AboutSection = () => {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-5 lg:grid-cols-3">
             <Card className="h-[320px] md:col-span-2 lg:col-span-1">
               <CardHeader
-                title="Next in todo list"
-                description="Solving this year's advent of code!"
+                title="In progress now:"
+                description="Studying for AWS Solution Architect Associate Exam!"
               />
-              <div className="w-60 mx-auto mt-2 md:mt-0 ">
-                <Image src={AdventOfCodeImg} alt="Aoc2024" />
+              <div className="w-40 mx-auto mt-2 md:mb-2 md:mt-0 md:w-24 lg:w-38">
+                <Image src={AWSBadge} alt="Aoc2024"/>
               </div>
             </Card>
             <Card className="h-[320px] md:col-span-3 lg:col-span-2">

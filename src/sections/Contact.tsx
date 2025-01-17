@@ -4,7 +4,7 @@ import grainImage from "@/assets/images/grain.jpg";
 export const ContactSection = () => {
   const handleMailtoClick = () => {
     window.location.href =
-      "mailto:sina.bastani@zingtongroup.com??cc=s.bastani96@gmail.com&subject=Contact%20Request&body=Hello!";
+      "mailto:contact@sinabastani.dev??subject=Contact%20Request&body=Hello!";
   };
 
   return (

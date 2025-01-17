@@ -1,7 +1,7 @@
 "use client";
 import { Card } from "@/components/Card";
 import { SectionHeader } from "@/components/SectionHeader";
-import AWSBadge from "@/assets/images/AWS-SA-badge.png";
+import AWSBadge from "@/assets/images/AWS-sa-badge.png";
 import Image from "next/image";
 import SpringIcon from "@/assets/icons/spring-boot.svg";
 import SQLIcon from "@/assets/icons/sql-db.svg";

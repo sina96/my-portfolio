@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Calistoga } from "next/font/google";
+import { Inter, Calistoga, Patrick_Hand_SC } from "next/font/google";
 import "./globals.css";
 import { twMerge } from "tailwind-merge";
 
@@ -8,10 +8,18 @@ const inter = Inter({
   variable: "--font-sans",
   display: "swap",
 });
+
 const calistoga = Calistoga({
   subsets: ["latin"],
   variable: "--font-serif",
-  weight: ["400"],
+  weight: "400",
+  display: "swap",
+});
+
+const patrickHand = Patrick_Hand_SC({
+  subsets: ["latin"],
+  variable: "--font-hand",
+  weight: "400",
   display: "swap",
 });
 
@@ -22,22 +30,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <head>
-        <title>Sina Bastani</title>
-        <link
-          rel="icon"
-          href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍💻</text></svg>"
-        />
-      </head>
       <body
         className={twMerge(
           inter.variable,
           calistoga.variable,
+          patrickHand.variable,
           "bg-gray-900 text-white antialiased font-sans"
         )}
       >

@@ -26,6 +26,10 @@ const patrickHand = Patrick_Hand_SC({
 export const metadata: Metadata = {
   title: "Sina Bastani",
   description: "This is a website with a cool favicon emoji.",
+  icons: {
+    icon: "/icon.svg",
+  },
+
 };
 
 export default function RootLayout({

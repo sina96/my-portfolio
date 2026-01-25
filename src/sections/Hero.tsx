@@ -12,7 +12,7 @@ export const HeroSection = () => {
   return (
     <div
       id="home"
-      className="py-32 lg:py-80 relative z-0 overflow-x-clip"
+      className="py-32 lg:py-48 relative z-0 overflow-x-clip"
     >
       <div className="absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_70%,transparent)]">
         <div

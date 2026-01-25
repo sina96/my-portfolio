@@ -1,74 +1,47 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // This tells Next “yes, Turbopack is intentionally configured”
-  // and prevents the Next 16 dev error when a webpack() config exists.
-  turbopack: {},
-
   webpack(config) {
-    // Find the rule that currently handles SVGs (often via next-image / asset modules)
-    const fileLoaderRule = config.module.rules.find((rule) =>
-      rule?.test?.test?.(".svg")
-    );
-
-    // If we can't find it (rules structure changed), just add SVGR and exit safely.
-    if (!fileLoaderRule) {
-      config.module.rules.push({
-        test: /\.svg$/i,
-        issuer: /\.[jt]sx?$/,
-        use: {
-          loader: "@svgr/webpack",
-          options: {
-            svgoConfig: {
-              plugins: [
-                {
-                  name: "preset-default",
-                  params: {
-                    overrides: { removeViewBox: false },
-                  },
-                },
-              ],
-            },
-          },
-        },
-      });
-      return config;
-    }
-
-    // Ensure resourceQuery objects exist before referencing them
-    const existingNot = fileLoaderRule?.resourceQuery?.not ?? [];
-
-    config.module.rules.push(
-      // Keep *.svg?url behaving like a file (string URL)
-      {
-        ...fileLoaderRule,
-        test: /\.svg$/i,
-        resourceQuery: /url/, // *.svg?url
-      },
-      // All other *.svg imports become React components via SVGR
-      {
-        test: /\.svg$/i,
-        issuer: fileLoaderRule.issuer ?? /\.[jt]sx?$/,
-        resourceQuery: { not: [...existingNot, /url/] },
-        use: {
-          loader: "@svgr/webpack",
-          options: {
-            svgoConfig: {
-              plugins: [
-                {
-                  name: "preset-default",
-                  params: {
-                    overrides: { removeViewBox: false },
-                  },
-                },
-              ],
-            },
-          },
-        },
+    // Find and exclude svg from any existing asset rules
+    // Next often has one or more rules that include svg in a regex for images/assets.
+    config.module.rules.forEach((rule) => {
+      if (rule?.test && rule.test instanceof RegExp && rule.test.test(".svg")) {
+        rule.exclude = rule.exclude
+          ? Array.isArray(rule.exclude)
+            ? [...rule.exclude, /\.svg$/i]
+            : [rule.exclude, /\.svg$/i]
+          : [/\.svg$/i];
       }
-    );
+    });
 
-    // Exclude SVGs from the original loader so our rules apply
-    fileLoaderRule.exclude = /\.svg$/i;
+    // 1) `import url from "./icon.svg?url"` -> string URL
+    config.module.rules.push({
+      test: /\.svg$/i,
+      resourceQuery: /url/,
+      type: "asset/resource",
+    });
+
+    // 2) `import Icon from "./icon.svg"` -> React component (SVGR)
+    config.module.rules.push({
+      test: /\.svg$/i,
+      resourceQuery: { not: [/url/] },
+      type: "javascript/auto",
+      use: [
+        {
+          loader: "@svgr/webpack",
+          options: {
+            svgo: true,
+            svgoConfig: {
+              plugins: [
+                {
+                  name: "preset-default",
+                  params: { overrides: { removeViewBox: false } },
+                },
+              ],
+            },
+          },
+        },
+      ],
+    });
 
     return config;
   },

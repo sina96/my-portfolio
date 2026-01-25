@@ -1,23 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // This tells Next “yes, Turbopack is intentionally configured”
+  // and prevents the Next 16 dev error when a webpack() config exists.
+  turbopack: {},
+
   webpack(config) {
-    // Grab the existing rule that handles SVG imports
+    // Find the rule that currently handles SVGs (often via next-image / asset modules)
     const fileLoaderRule = config.module.rules.find((rule) =>
-      rule.test?.test?.(".svg")
+      rule?.test?.test?.(".svg")
     );
 
-    config.module.rules.push(
-      // Reapply the existing rule, but only for svg imports ending in ?url
-      {
-        ...fileLoaderRule,
+    // If we can't find it (rules structure changed), just add SVGR and exit safely.
+    if (!fileLoaderRule) {
+      config.module.rules.push({
         test: /\.svg$/i,
-        resourceQuery: /url/, // *.svg?url
-      },
-      // Convert all other *.svg imports to React components
-      {
-        test: /\.svg$/i,
-        issuer: fileLoaderRule.issuer,
-        resourceQuery: { not: [...fileLoaderRule.resourceQuery.not, /url/] }, // exclude if *.svg?url
+        issuer: /\.[jt]sx?$/,
         use: {
           loader: "@svgr/webpack",
           options: {
@@ -26,9 +23,41 @@ const nextConfig = {
                 {
                   name: "preset-default",
                   params: {
-                    overrides: {
-                      removeViewBox: false,
-                    },
+                    overrides: { removeViewBox: false },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      });
+      return config;
+    }
+
+    // Ensure resourceQuery objects exist before referencing them
+    const existingNot = fileLoaderRule?.resourceQuery?.not ?? [];
+
+    config.module.rules.push(
+      // Keep *.svg?url behaving like a file (string URL)
+      {
+        ...fileLoaderRule,
+        test: /\.svg$/i,
+        resourceQuery: /url/, // *.svg?url
+      },
+      // All other *.svg imports become React components via SVGR
+      {
+        test: /\.svg$/i,
+        issuer: fileLoaderRule.issuer ?? /\.[jt]sx?$/,
+        resourceQuery: { not: [...existingNot, /url/] },
+        use: {
+          loader: "@svgr/webpack",
+          options: {
+            svgoConfig: {
+              plugins: [
+                {
+                  name: "preset-default",
+                  params: {
+                    overrides: { removeViewBox: false },
                   },
                 },
               ],
@@ -38,7 +67,7 @@ const nextConfig = {
       }
     );
 
-    // Modify the file loader rule to ignore *.svg, since we have it handled now.
+    // Exclude SVGs from the original loader so our rules apply
     fileLoaderRule.exclude = /\.svg$/i;
 
     return config;

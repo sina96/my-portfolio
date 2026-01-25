@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css?family=Patrick+Hand+SC");
-
 @layer base {
   html {
     @apply scroll-smooth;

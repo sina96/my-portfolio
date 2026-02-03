@@ -13,6 +13,8 @@ type Props = {
   // Optional
   title?: string;
   showCount?: boolean;
+  /** When provided, heading shows "Will she be my valentine?" when petals.length equals this. */
+  initialPetalCount?: number;
 };
 
 function FlowerDefs({ idPrefix }: { idPrefix: string }) {
@@ -119,11 +121,23 @@ function LovesMeFlower({
   onReset,
   title,
   showCount = true,
+  initialPetalCount,
 }: Props) {
   const uid = useId().replace(/:/g, "");
 
   const heading =
-    title ?? (petals.length === 0 ? "Loves me!" : love ? "Loves me not..." : "Loves me...");
+    title ??
+    (initialPetalCount != null
+      ? petals.length === initialPetalCount
+        ? "Will she be my valentine?"
+        : love
+          ? "yes she will!"
+          : "lol nej"
+      : petals.length === 0
+        ? "Loves me!"
+        : love
+          ? "Loves me not..."
+          : "Loves me...");
 
   const stem = `#${uid}-stem`;
   const stemFilter = `url(#${uid}-stemFilter)`;

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { use } from "react";
+import { use, useState, useEffect } from "react";
 import { useTheme } from "../../hooks/useTheme";
 import { getBlogPost } from "../../data/blogPosts";
 import { sanitizeHtml } from "../../utils/sanitizeHtml";
@@ -16,6 +16,14 @@ export default function BlogPost({
 
   // Initialize theme to ensure it's set up correctly
   useTheme();
+
+  // Track if component has mounted (client-side) to avoid hydration mismatch.
+  // sanitizeHtml returns '' on server but actual content on client - we must
+  // defer rendering until after hydration so both SSR and initial client render match.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   if (!post) {
     return (
@@ -71,15 +79,27 @@ export default function BlogPost({
             </h1>
           </div>
 
-          <div
-            className="blog-post-content"
-            style={{
-              fontSize: "12px",
-              lineHeight: "1.6",
-              color: "var(--win98-text, black)",
-            }}
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
-          />
+          {mounted ? (
+            <div
+              className="blog-post-content"
+              style={{
+                fontSize: "12px",
+                lineHeight: "1.6",
+                color: "var(--win98-text, black)",
+              }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
+            />
+          ) : (
+            <div
+              style={{
+                fontSize: "12px",
+                lineHeight: "1.6",
+                color: "var(--win98-text-secondary, #808080)",
+              }}
+            >
+              Loading content...
+            </div>
+          )}
 
           <div className="field-row" style={{ marginTop: "24px", display: "flex", gap: "8px" }}>
             <Link

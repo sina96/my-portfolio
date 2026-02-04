@@ -19,11 +19,16 @@ This guide explains how to add new blog posts to the portfolio website using the
 
 Create a new file in the `src/content/blog/` directory. The filename becomes the URL slug.
 
-**Naming convention:** Use lowercase letters, numbers, and hyphens only.
+**Naming rules:**
+- Use only **letters, numbers, hyphens, and underscores**
+- No spaces or special characters
+- Lowercase recommended for consistency
 
-```
-src/content/blog/my-new-post.md  →  /blog/my-new-post
-src/content/blog/2026-02-04-announcement.md  →  /blog/2026-02-04-announcement
+```text
+src/content/blog/my-new-post.md        →  /blog/my-new-post       ✓
+src/content/blog/post_2026.md          →  /blog/post_2026         ✓
+src/content/blog/my post.md            →  (invalid filename)      ✗
+src/content/blog/post@home.md          →  (invalid filename)      ✗
 ```
 
 ### 2. Add Frontmatter
@@ -38,13 +43,15 @@ excerpt: "A brief summary of your post (1-2 sentences). Shown in blog lists."
 ---
 ```
 
-**Required fields:**
+**Required fields (all are validated):**
 
 | Field | Description | Example |
 |-------|-------------|---------|
-| `title` | Post title (shown in header and lists) | `"My New Blog Post"` |
-| `date` | Publication date in ISO format | `"2026-02-04"` |
-| `excerpt` | Short summary for previews | `"A quick update on..."` |
+| `title` | Post title (non-empty string) | `"My New Blog Post"` |
+| `date` | Publication date (must be valid date format) | `"2026-02-04"` |
+| `excerpt` | Short summary (non-empty string) | `"A quick update on..."` |
+
+**Note:** Posts with missing or invalid frontmatter are automatically skipped and won't appear on the site. Check the console for validation warnings.
 
 ### 3. Write Your Content
 
@@ -87,12 +94,14 @@ The blog supports standard Markdown syntax:
 - **Headings:** `#`, `##`, `###`, etc.
 - **Bold:** `**text**` or `__text__`
 - **Italic:** `*text*` or `_text_`
-- **Links:** `[text](url)`
+- **Links:** `[text](url)` — external links automatically open in new tab with `rel="noopener noreferrer"`
 - **Images:** `![alt](url)`
 - **Lists:** `-` or `1.` for bullets/numbers
 - **Code:** `` `inline` `` or fenced blocks with ` ``` `
 - **Blockquotes:** `> quoted text`
 - **Horizontal rules:** `---`
+
+**Security note:** All HTML content is sanitized before rendering. Only safe tags (paragraphs, headings, lists, links, code blocks, etc.) are allowed.
 
 ---
 
@@ -140,8 +149,16 @@ Stay tuned!
 
 The blog system reads Markdown files at build/request time:
 
-1. **`getAllBlogPosts()`** - Scans `src/content/blog/`, parses frontmatter, returns metadata sorted by date (newest first)
-2. **`getBlogPost(slug)`** - Reads a specific file, parses frontmatter + content, converts Markdown to HTML
+1. **`getAllBlogPosts()`** - Scans `src/content/blog/`, validates frontmatter, returns metadata sorted by date (newest first)
+2. **`getBlogPost(slug)`** - Validates slug, reads file, validates frontmatter, converts Markdown to sanitized HTML
+
+**Processing pipeline:**
+1. Validate filename (alphanumeric, hyphens, underscores only)
+2. Parse YAML frontmatter with `gray-matter`
+3. Validate required fields (title, date, excerpt)
+4. Convert Markdown to HTML with `marked`
+5. Sanitize HTML output (strips unsafe tags/attributes)
+6. Add security attributes to external links
 
 Posts automatically appear in:
 - **Home page** → "Latest Blogs" sidebar (first 3 posts)
@@ -164,7 +181,8 @@ Posts automatically appear in:
 **Post not showing up?**
 - Ensure the file has `.md` extension
 - Check frontmatter syntax (YAML is whitespace-sensitive)
-- Verify all required fields are present
+- Verify all required fields are present and non-empty
+- Check the console for `[Blog] Invalid frontmatter` warnings
 - Restart the dev server if needed
 
 **Formatting looks wrong?**
@@ -172,8 +190,10 @@ Posts automatically appear in:
 - Ensure blank lines between different elements (paragraphs, lists, code blocks)
 
 **404 on post page?**
-- Verify the filename matches the URL slug
-- Check for typos in the filename
+- Verify the filename uses only allowed characters (letters, numbers, hyphens, underscores)
+- Check for spaces or special characters in the filename
+- Verify the filename matches the URL slug exactly
+- Check the console for validation errors
 
 ---
 

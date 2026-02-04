@@ -13,6 +13,47 @@ marked.setOptions({
   gfm: true,
 });
 
+// Validate frontmatter data
+interface FrontmatterData {
+  title?: unknown;
+  date?: unknown;
+  excerpt?: unknown;
+}
+
+function isValidFrontmatter(
+  data: FrontmatterData,
+  filename: string
+): { valid: true; title: string; date: string; excerpt: string } | { valid: false } {
+  const { title, date, excerpt } = data;
+
+  // Validate title is a non-empty string
+  if (typeof title !== "string" || title.trim() === "") {
+    console.warn(`[Blog] Invalid frontmatter in ${filename}: missing or empty "title"`);
+    return { valid: false };
+  }
+
+  // Validate excerpt is a non-empty string
+  if (typeof excerpt !== "string" || excerpt.trim() === "") {
+    console.warn(`[Blog] Invalid frontmatter in ${filename}: missing or empty "excerpt"`);
+    return { valid: false };
+  }
+
+  // Validate date is a valid date string
+  const dateStr = typeof date === "string" ? date : String(date);
+  const parsedDate = Date.parse(dateStr);
+  if (isNaN(parsedDate)) {
+    console.warn(`[Blog] Invalid frontmatter in ${filename}: invalid "date" format`);
+    return { valid: false };
+  }
+
+  return {
+    valid: true,
+    title: title.trim(),
+    date: dateStr,
+    excerpt: excerpt.trim(),
+  };
+}
+
 // Helper function to get all posts as an array (for list views)
 export function getAllBlogPosts(): BlogPost[] {
   if (!fs.existsSync(postsDirectory)) {
@@ -20,20 +61,29 @@ export function getAllBlogPosts(): BlogPost[] {
   }
 
   const files = fs.readdirSync(postsDirectory);
-  const posts = files
-    .filter((file) => file.endsWith(".md"))
-    .map((file) => {
-      const slug = file.replace(/\.md$/, "");
-      const fullPath = path.join(postsDirectory, file);
-      const fileContents = fs.readFileSync(fullPath, "utf8");
-      const { data } = matter(fileContents);
-      return {
-        slug,
-        title: data.title,
-        date: data.date,
-        excerpt: data.excerpt,
-      };
+  const posts: BlogPost[] = [];
+
+  for (const file of files) {
+    if (!file.endsWith(".md")) continue;
+
+    const slug = file.replace(/\.md$/, "");
+    const fullPath = path.join(postsDirectory, file);
+    const fileContents = fs.readFileSync(fullPath, "utf8");
+    const { data } = matter(fileContents);
+
+    // Validate frontmatter before adding to list
+    const validation = isValidFrontmatter(data, file);
+    if (!validation.valid) {
+      continue; // Skip malformed posts
+    }
+
+    posts.push({
+      slug,
+      title: validation.title,
+      date: validation.date,
+      excerpt: validation.excerpt,
     });
+  }
 
   // Sort by date descending (stable: preserve file order for ties)
   return posts.sort((a, b) => {
@@ -73,13 +123,20 @@ export function getBlogPost(slug: string): (BlogPost & { content: string }) | un
 
   const fileContents = fs.readFileSync(fullPath, "utf8");
   const { data, content } = matter(fileContents);
+
+  // Validate frontmatter before returning
+  const validation = isValidFrontmatter(data, `${slug}.md`);
+  if (!validation.valid) {
+    return undefined;
+  }
+
   const htmlContent = marked(content) as string;
 
   return {
     slug,
-    title: data.title,
-    date: data.date,
-    excerpt: data.excerpt,
+    title: validation.title,
+    date: validation.date,
+    excerpt: validation.excerpt,
     content: sanitizeHtml(htmlContent),
   };
 }

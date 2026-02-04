@@ -15,6 +15,26 @@ const SANITIZE_CONFIG: sanitize.IOptions = {
     "*": ["class"],
   },
   allowedSchemes: ["http", "https", "mailto"],
+  // Enforce rel="noopener noreferrer" on external links for security
+  transformTags: {
+    a: (tagName, attribs) => {
+      const href = attribs.href || "";
+      const isExternal = href.startsWith("http://") || href.startsWith("https://");
+
+      if (isExternal) {
+        return {
+          tagName,
+          attribs: {
+            ...attribs,
+            target: "_blank",
+            rel: "noopener noreferrer",
+          },
+        };
+      }
+
+      return { tagName, attribs };
+    },
+  },
 };
 
 /**

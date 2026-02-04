@@ -2,7 +2,7 @@
 
 
 import React, { useEffect, useMemo, useState } from "react";
-import LovesMeFlower from "@/components/LoveMeNotFlower";
+import LovesMeFlower from "./components/LoveMeNotFlower";
 import catAskingImage from "@/assets/images/anita/cat-asking.jpg";
 import happyCatImage from "@/assets/images/anita/happy-cat.jpg";
 import rizzCatImage from "@/assets/images/anita/rizz-cat.jpg";

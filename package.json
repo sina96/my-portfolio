@@ -1,11 +1,12 @@
 {
   "name": "portfolio-site-2",
-  "version": "0.1.0",
+  "version": "2.0.1",
   "private": true,
+  "packageManager": "bun@1.1.42",
   "scripts": {
-    "dev": "next dev --webpack",
-    "dev:turbo": "next dev --turbopack",
-    "build": "next build --webpack",
+    "dev": "next dev --turbopack",
+    "dev:webpack": "next dev --webpack",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -15,14 +16,12 @@
     "gray-matter": "^4.0.3",
     "marked": "^17.0.1",
     "next": "^16.1.4",
-    "node": "^22.10.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "sanitize-html": "^2.17.0",
     "tailwind-merge": "^2.4.0"
   },
   "devDependencies": {
-    "@svgr/webpack": "^8.1.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

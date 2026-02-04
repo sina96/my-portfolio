@@ -20,3 +20,353 @@
     @apply lg:max-w-5xl;
   }
 }
+
+/* Dark Mode CSS Variables */
+:root {
+  --win98-desktop-bg: #008080;
+  --win98-window-bg: #c0c0c0;
+  --win98-title-bar-start: #000080;
+  --win98-title-bar-end: #1084d0;
+  --win98-title-text: white;
+  --win98-text: black;
+  --win98-text-secondary: #808080;
+  --win98-border-light: #ffffff;
+  --win98-border-dark: #808080;
+  --win98-status-bg: #c0c0c0;
+  --win98-status-indicator-bg: #c0c0c0;
+  --win98-status-indicator-border: #808080;
+  --win98-status-text: black;
+  --win98-link-color: blue;
+}
+
+[data-theme="dark"] {
+  --win98-desktop-bg: #1a1a2e;
+  --win98-window-bg: #2d2d44;
+  --win98-title-bar-start: #16213e;
+  --win98-title-bar-end: #0f3460;
+  --win98-title-text: #e8e8e8;
+  --win98-text: #e0e0e0;
+  --win98-text-secondary: #a0a0a0;
+  --win98-border-light: #4a4a6a;
+  --win98-border-dark: #1a1a2e;
+  --win98-status-bg: #2d2d44;
+  --win98-status-indicator-bg: #2d2d44;
+  --win98-status-indicator-border: #4a4a6a;
+  --win98-status-text: #e0e0e0;
+  --win98-link-color: lightskyblue;
+}
+
+/* Windows 98 Desktop Background */
+.win98-desktop {
+  background-color: var(--win98-desktop-bg);
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    );
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Dark Mode Overrides for 98.css */
+[data-theme="dark"] .window {
+  background-color: var(--win98-window-bg) !important;
+  color: var(--win98-text) !important;
+}
+
+[data-theme="dark"] .title-bar {
+  background: linear-gradient(to right, var(--win98-title-bar-start), var(--win98-title-bar-end)) !important;
+}
+
+[data-theme="dark"] .title-bar-text {
+  color: var(--win98-title-text) !important;
+}
+
+[data-theme="dark"] .window-body {
+  background-color: var(--win98-window-bg) !important;
+  color: var(--win98-text) !important;
+}
+
+[data-theme="dark"] .status-bar {
+  background-color: var(--win98-status-bg) !important;
+  border-top: 1px solid var(--win98-border-dark) !important;
+}
+
+[data-theme="dark"] .status-bar-field {
+  color: var(--win98-text) !important;
+}
+
+/* Button styles for both <button> and <a class="button"> */
+a.button {
+  display: inline-block;
+  box-sizing: border-box;
+  background: silver;
+  border: none;
+  border-radius: 0;
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+  min-width: 75px;
+  min-height: 23px;
+  padding: 0 12px;
+  font-family: "Pixelated MS Sans Serif", Arial;
+  font-size: 11px;
+  text-align: center;
+  line-height: 23px;
+  cursor: pointer;
+  color: #222 !important;
+  text-decoration: none !important;
+}
+
+a.button:active {
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
+  text-shadow: 1px 1px #fff;
+}
+
+a.button.default {
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #0a0a0a, inset 2px 2px #fff, inset -3px -3px #808080, inset 3px 3px #dfdfdf;
+}
+
+[data-theme="dark"] button,
+[data-theme="dark"] a.button {
+  background-color: #3d3d5c !important;
+  color: #ffffff !important;
+  box-shadow: inset -1px -1px #1a1a2e, inset 1px 1px #5a5a7a, inset -2px -2px #2d2d44, inset 2px 2px #4a4a6a !important;
+}
+
+[data-theme="dark"] button:active,
+[data-theme="dark"] a.button:active {
+  box-shadow: inset -1px -1px #5a5a7a, inset 1px 1px #1a1a2e, inset -2px -2px #4a4a6a, inset 2px 2px #2d2d44 !important;
+}
+
+[data-theme="dark"] button.default,
+[data-theme="dark"] a.button.default {
+  background-color: #3d3d5c !important;
+  color: #ffffff !important;
+}
+
+/* Active navigation button - orange in dark mode */
+[data-theme="dark"] .win98-nav-list button.nav-active {
+  color: #FFB86C !important;
+}
+
+[data-theme="dark"] a {
+  color: lightskyblue !important;
+}
+
+[data-theme="dark"] .tree-view a {
+  color: lightskyblue !important;
+}
+
+[data-theme="dark"] a:visited {
+  color: #b19cd9 !important;
+}
+
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background-color: var(--win98-window-bg) !important;
+  color: var(--win98-text) !important;
+  border-color: var(--win98-border-dark) !important;
+}
+
+[data-theme="dark"] fieldset {
+  border-color: var(--win98-border-dark) !important;
+}
+
+[data-theme="dark"] legend {
+  color: var(--win98-text) !important;
+}
+
+[data-theme="dark"] .tree-view {
+  background-color: #1a1a2e !important;
+  color: #ffffff !important;
+  border-color: var(--win98-border-dark) !important;
+}
+
+[data-theme="dark"] .tree-view li {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .tree-view summary {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .tree-view ul {
+  border-left-color: var(--win98-border-light) !important;
+}
+
+[data-theme="dark"] ul.tree-view ul > li:last-child::after {
+  background: #1a1a2e !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] ul.tree-view details > summary::before {
+  background: #1a1a2e !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] h2 {
+  color: var(--win98-text) !important;
+}
+
+/* Ping animation for status indicator */
+@keyframes ping-large {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0;
+    transform: scale(2);
+  }
+}
+
+.animate-ping-large {
+  animation: ping-large 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Blog post content - bullet lists */
+.blog-post-content ul {
+  list-style-type: disc;
+  padding-left: 24px;
+  margin: 8px 0;
+}
+
+.blog-post-content ul li {
+  margin: 4px 0;
+}
+
+/* Responsive layout for Win98 portfolio */
+.win98-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.win98-nav {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.win98-nav-list {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  align-items: center;
+}
+
+.win98-nav-list li {
+  display: inline-block;
+}
+
+.win98-dark-mode-toggle {
+  margin-left: auto;
+}
+
+.win98-main {
+  flex: 1;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Content wrapper for positioning Latest Blogs */
+.win98-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Latest Blogs window - mobile default */
+.win98-latest-blogs {
+  margin-top: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Desktop: sidebar layout */
+@media (min-width: 768px) {
+  .win98-layout {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .win98-nav {
+    width: 200px;
+  }
+
+  .win98-nav-list {
+    flex-direction: column;
+    gap: 0;
+    align-items: stretch;
+  }
+
+  .win98-nav-list li {
+    display: list-item;
+  }
+
+  .win98-dark-mode-toggle {
+    margin-left: 0 !important;
+    margin-top: 12px;
+    padding: 12px 8px 4px 16px;
+    width: 100%;
+    border-top: 1px solid var(--win98-border-dark, #808080);
+  }
+
+  .win98-main {
+    max-width: 600px;
+  }
+}
+
+/* Tablet (768px - 1460px): Latest Blogs under main, aligned with main portfolio */
+@media (min-width: 768px) and (max-width: 1460px) {
+  .win98-content-wrapper {
+    flex-direction: column;
+  }
+
+  .win98-latest-blogs {
+    margin-left: 220px; /* sidebar width (200px) + gap (20px) */
+    width: calc(100% - 220px);
+    box-sizing: border-box;
+    max-width: 600px;
+  }
+}
+
+/* Desktop (>1460px): Latest Blogs to the right of main portfolio */
+@media (min-width: 1461px) {
+  .win98-content-wrapper {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .win98-layout {
+    flex: 2; /* Main portfolio area takes 2/3 of available space */
+  }
+
+  .win98-main {
+    max-width: 700px; /* Cap main window width */
+    flex: 1;
+  }
+
+  .win98-latest-blogs {
+    margin-left: 20px;
+    flex: 1; /* Latest Blogs takes 1/3 of available space */
+    min-width: 280px;
+    max-width: 350px;
+    align-self: flex-start;
+  }
+}

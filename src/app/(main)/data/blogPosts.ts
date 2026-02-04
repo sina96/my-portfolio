@@ -20,6 +20,13 @@ interface FrontmatterData {
   excerpt?: unknown;
 }
 
+// Validate slug to prevent path traversal and ensure consistency
+function isValidSlug(slug: string): boolean {
+  // Only allow alphanumeric characters, hyphens, and underscores
+  // Reject any path separators or traversal patterns
+  return /^[a-zA-Z0-9_-]+$/.test(slug);
+}
+
 function isValidFrontmatter(
   data: FrontmatterData,
   filename: string
@@ -38,8 +45,19 @@ function isValidFrontmatter(
     return { valid: false };
   }
 
-  // Validate date is a valid date string
-  const dateStr = typeof date === "string" ? date : String(date);
+  // Validate and normalize date
+  // gray-matter parses unquoted YAML dates as Date objects
+  let dateStr: string;
+  if (date instanceof Date) {
+    // Format Date object to YYYY-MM-DD
+    dateStr = date.toISOString().split("T")[0];
+  } else if (typeof date === "string") {
+    dateStr = date;
+  } else {
+    console.warn(`[Blog] Invalid frontmatter in ${filename}: invalid "date" format`);
+    return { valid: false };
+  }
+
   const parsedDate = Date.parse(dateStr);
   if (isNaN(parsedDate)) {
     console.warn(`[Blog] Invalid frontmatter in ${filename}: invalid "date" format`);
@@ -67,6 +85,13 @@ export function getAllBlogPosts(): BlogPost[] {
     if (!file.endsWith(".md")) continue;
 
     const slug = file.replace(/\.md$/, "");
+
+    // Validate slug to ensure consistency with getBlogPost
+    if (!isValidSlug(slug)) {
+      console.warn(`[Blog] Invalid filename "${file}": only letters, numbers, hyphens, and underscores allowed`);
+      continue; // Skip files with invalid names
+    }
+
     const fullPath = path.join(postsDirectory, file);
     const fileContents = fs.readFileSync(fullPath, "utf8");
     const { data } = matter(fileContents);
@@ -94,13 +119,6 @@ export function getAllBlogPosts(): BlogPost[] {
     // Stable sort: maintain original order for same dates
     return 0;
   });
-}
-
-// Validate slug to prevent path traversal attacks
-function isValidSlug(slug: string): boolean {
-  // Only allow alphanumeric characters, hyphens, and underscores
-  // Reject any path separators or traversal patterns
-  return /^[a-zA-Z0-9_-]+$/.test(slug);
 }
 
 // Helper function to get a single post by slug (for detail pages)

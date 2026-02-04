@@ -1,18 +1,18 @@
 ---
-title: "Hello World - My First Blog Post"
-date: "2026-02-01"
-excerpt: "Welcome to my blog! This is my first post where I share my thoughts on web development and life."
+title: "Hello World! Blog Debut"
+date: "2026-02-04"
+excerpt: "This is my first post where I share my thoughts and rants."
 ---
 
-Welcome to my blog! This is my first post where I share my thoughts on web development and life.
+Greetings reader!
 
-I've been working on this portfolio website and decided to give it a retro Windows 98 theme. It's been a fun project combining modern web technologies with nostalgic design elements.
+I've been working on this portfolio website and decided to give it a retro Windows 98 theme. The nostalgia vibes hits just right.
 
-In this blog, I'll be sharing:
+Oh yeah, I thought heck, why not add a blog here too. So i might post about:
 
-- My experiences as a developer
-- Projects I'm working on
-- Thoughts on technology and coding
-- Random musings about life
+- Cool projects and gadgets
+- Showcasing stuff Linkedin won't like
+- Rants about tech or life
+- whatever that amuses me atm
 
-Stay tuned for more posts!
+See you on the next update!

@@ -48,10 +48,17 @@ excerpt: "A brief summary of your post (1-2 sentences). Shown in blog lists."
 | Field | Description | Example |
 |-------|-------------|---------|
 | `title` | Post title (non-empty string) | `"My New Blog Post"` |
-| `date` | Publication date (must be valid date format) | `"2026-02-04"` |
+| `date` | Publication date (valid YYYY-MM-DD format) | `"2026-02-04"` or `2026-02-04` |
 | `excerpt` | Short summary (non-empty string) | `"A quick update on..."` |
 
-**Note:** Posts with missing or invalid frontmatter are automatically skipped and won't appear on the site. Check the console for validation warnings.
+**Date format notes:**
+- Both quoted (`"2026-02-04"`) and unquoted (`2026-02-04`) dates work
+- Invalid dates like `2026-13-01` or `2026-02-30` are rejected
+- The date is normalized to `YYYY-MM-DD` format for display
+
+**Note:** Posts with missing or invalid frontmatter are automatically skipped and won't appear on the site. Check the console for validation warnings like:
+- `[Blog] Invalid frontmatter in post.md: missing "date" field`
+- `[Blog] Invalid frontmatter in post.md: invalid "date" value`
 
 ### 3. Write Your Content
 
@@ -194,6 +201,11 @@ Posts automatically appear in:
 - Check for spaces or special characters in the filename
 - Verify the filename matches the URL slug exactly
 - Check the console for validation errors
+
+**Date validation errors?**
+- Use valid dates only (e.g., `2026-02-04`, not `2026-13-01` or `2026-02-30`)
+- Both quoted (`"2026-02-04"`) and unquoted (`2026-02-04`) formats work
+- Check the console for `[Blog] Invalid frontmatter ... invalid "date"` warnings
 
 ---
 

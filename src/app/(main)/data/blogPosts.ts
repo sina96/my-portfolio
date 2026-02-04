@@ -49,18 +49,27 @@ function isValidFrontmatter(
   // gray-matter parses unquoted YAML dates as Date objects
   let dateStr: string;
   if (date instanceof Date) {
-    // Format Date object to YYYY-MM-DD
+    // Check if Date object is valid before calling toISOString()
+    // Invalid dates (e.g., from "2026-13-01") have NaN timestamp
+    if (isNaN(date.getTime())) {
+      console.warn(`[Blog] Invalid frontmatter in ${filename}: invalid "date" value`);
+      return { valid: false };
+    }
+    // Format valid Date object to YYYY-MM-DD
     dateStr = date.toISOString().split("T")[0];
   } else if (typeof date === "string") {
+    // Validate string date format
+    const parsed = Date.parse(date);
+    if (isNaN(parsed)) {
+      console.warn(`[Blog] Invalid frontmatter in ${filename}: invalid "date" format`);
+      return { valid: false };
+    }
     dateStr = date;
-  } else {
-    console.warn(`[Blog] Invalid frontmatter in ${filename}: invalid "date" format`);
+  } else if (date === undefined || date === null) {
+    console.warn(`[Blog] Invalid frontmatter in ${filename}: missing "date" field`);
     return { valid: false };
-  }
-
-  const parsedDate = Date.parse(dateStr);
-  if (isNaN(parsedDate)) {
-    console.warn(`[Blog] Invalid frontmatter in ${filename}: invalid "date" format`);
+  } else {
+    console.warn(`[Blog] Invalid frontmatter in ${filename}: "date" must be a string or Date`);
     return { valid: false };
   }
 

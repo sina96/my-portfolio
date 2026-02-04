@@ -3,6 +3,7 @@ import path from "path";
 import matter from "gray-matter";
 import { marked } from "marked";
 import { BlogPost } from "../types/blog";
+import { sanitizeHtml } from "../utils/sanitizeHtml";
 
 const postsDirectory = path.join(process.cwd(), "src/content/blog");
 
@@ -45,22 +46,40 @@ export function getAllBlogPosts(): BlogPost[] {
   });
 }
 
+// Validate slug to prevent path traversal attacks
+function isValidSlug(slug: string): boolean {
+  // Only allow alphanumeric characters, hyphens, and underscores
+  // Reject any path separators or traversal patterns
+  return /^[a-zA-Z0-9_-]+$/.test(slug);
+}
+
 // Helper function to get a single post by slug (for detail pages)
 export function getBlogPost(slug: string): (BlogPost & { content: string }) | undefined {
-  const fullPath = path.join(postsDirectory, `${slug}.md`);
+  // Validate slug format to prevent path traversal
+  if (!isValidSlug(slug)) {
+    return undefined;
+  }
+
+  const fullPath = path.resolve(postsDirectory, `${slug}.md`);
+
+  // Double-check: ensure resolved path is within postsDirectory
+  if (!fullPath.startsWith(postsDirectory + path.sep)) {
+    return undefined;
+  }
+
   if (!fs.existsSync(fullPath)) {
     return undefined;
   }
 
   const fileContents = fs.readFileSync(fullPath, "utf8");
   const { data, content } = matter(fileContents);
-  const htmlContent = marked(content);
+  const htmlContent = marked(content) as string;
 
   return {
     slug,
     title: data.title,
     date: data.date,
     excerpt: data.excerpt,
-    content: htmlContent as string,
+    content: sanitizeHtml(htmlContent),
   };
 }

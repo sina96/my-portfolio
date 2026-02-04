@@ -1,66 +1,29 @@
-/**
- * Sanitizes HTML content to prevent XSS attacks.
- * 
- * This utility uses DOMPurify to sanitize HTML before rendering with dangerouslySetInnerHTML.
- * DOMPurify is already installed (see package.json).
- * 
- * Installation (already done):
- *   npm install dompurify @types/dompurify
- * 
- * Configuration:
- * - Allows safe HTML tags commonly used in blog posts
- * - Allows safe attributes (href, target, rel for links)
- * - Strips all script tags, event handlers, and dangerous protocols
- * 
- * Note: This function is designed for client-side use (client components).
- * For server-side rendering, you would need to use isomorphic-dompurify or jsdom.
- */
+import sanitize from "sanitize-html";
 
-'use client';
-
-import DOMPurify from 'dompurify';
-
-// Configuration for allowed HTML tags and attributes
-const SANITIZE_CONFIG = {
-  ALLOWED_TAGS: [
-    'p', 'br', 'strong', 'em', 'u', 'b', 'i',
-    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-    'ul', 'ol', 'li',
-    'a', 'blockquote', 'code', 'pre',
-    'div', 'span', 'hr'
+// Sanitization config - allows safe HTML tags for blog content
+const SANITIZE_CONFIG: sanitize.IOptions = {
+  allowedTags: [
+    "p", "br", "strong", "em", "u", "b", "i",
+    "h1", "h2", "h3", "h4", "h5", "h6",
+    "ul", "ol", "li",
+    "a", "blockquote", "code", "pre",
+    "div", "span", "hr", "img",
   ],
-  ALLOWED_ATTR: ['href', 'target', 'rel'],
-  ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
+  allowedAttributes: {
+    a: ["href", "target", "rel"],
+    img: ["src", "alt", "class"],
+    "*": ["class"],
+  },
+  allowedSchemes: ["http", "https", "mailto"],
 };
 
 /**
- * Sanitizes HTML content for safe rendering.
- * 
- * This function uses DOMPurify to remove potentially dangerous HTML/JavaScript
- * while preserving safe formatting tags commonly used in blog content.
- * 
- * @param dirty - Unsanitized HTML string (potentially from untrusted sources)
+ * Sanitizes HTML content to prevent XSS attacks.
+ * Works on both server and client.
+ *
+ * @param dirty - Unsanitized HTML string
  * @returns Sanitized HTML string safe for dangerouslySetInnerHTML
- * 
- * @example
- * ```tsx
- * <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }} />
- * ```
  */
 export function sanitizeHtml(dirty: string): string {
-  // DOMPurify requires a browser environment (window object)
-  // Since this is used in client components, window will always be available
-  if (typeof window === 'undefined') {
-    /**
-     * Fail closed on the server.
-     *
-     * The previous regex fallback was not a safe sanitizer and could miss XSS vectors.
-     * If this ever runs during SSR (e.g. accidental import into a Server Component),
-     * return an empty string rather than potentially unsafe HTML.
-     */
-    return '';
-  }
-  
-  // Client-side: Use DOMPurify for comprehensive sanitization
-  return DOMPurify.sanitize(dirty, SANITIZE_CONFIG);
+  return sanitize(dirty, SANITIZE_CONFIG);
 }

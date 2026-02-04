@@ -179,7 +179,7 @@ Posts automatically appear in:
 
 ## File Structure
 
-```
+```text
 src/
 └── content/
     └── blog/

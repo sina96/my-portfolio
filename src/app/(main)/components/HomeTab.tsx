@@ -17,7 +17,7 @@ export function HomeTab() {
         <h1 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "8px" }}>
           i&apos;m Sina.
         </h1>
-        <p style={{ fontSize: "14px", color: "#808080" }}>
+        <p style={{ fontSize: "14px", color: "var(--win98-text-secondary, #808080)" }}>
           Human. Developer. Livsnjutare
         </p>
       </div>

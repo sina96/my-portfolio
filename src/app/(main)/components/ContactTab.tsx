@@ -1,4 +1,5 @@
 "use client";
+import { useTheme } from "../hooks/useTheme";
 
 const SOCIAL_LINKS = {
   linkedin: "https://www.linkedin.com/in/sina-bastani",
@@ -7,33 +8,35 @@ const SOCIAL_LINKS = {
 };
 
 export function ContactTab() {
-  const handleMailtoClick = () => {
-    window.location.href =
-      "mailto:contact@sinabastani.dev?subject=Contact%20Request&body=Hello!";
-  };
+  // Initialize theme to ensure it's set up correctly
+  useTheme();
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-      <h2 style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "16px" }}>
+      <h2 style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "16px", color: "var(--win98-text)" }}>
         Let&apos;s create something amazing together
       </h2>
-      <p style={{ marginBottom: "20px", fontSize: "12px" }}>
+      <p style={{ marginBottom: "20px", fontSize: "12px", color: "var(--win98-text)" }}>
         Have a fun project? Brainstorming? Friendly chat? Hit me up!
       </p>
 
       <div className="field-row" style={{ marginBottom: "20px" }}>
-        <button className="default" onClick={handleMailtoClick}>
+        <a
+          href="mailto:contact@sinabastani.dev?subject=Contact%20Request&body=Hello!"
+          className="button default"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
           Contact me
-        </button>
+        </a>
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "24px", flexWrap: "wrap", justifyContent: "center" }}>
-        <span style={{ fontWeight: "bold" }}>Social Links:</span>
+        <span style={{ fontWeight: "bold", color: "var(--win98-text)" }}>Social Links:</span>
         <a
           href={SOCIAL_LINKS.linkedin}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: "blue", textDecoration: "underline" }}
+          style={{ color: "var(--win98-link-color, blue)", textDecoration: "underline" }}
         >
           LinkedIn
         </a>
@@ -41,7 +44,7 @@ export function ContactTab() {
           href={SOCIAL_LINKS.github}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: "blue", textDecoration: "underline" }}
+          style={{ color: "var(--win98-link-color, blue)", textDecoration: "underline" }}
         >
           GitHub
         </a>
@@ -49,7 +52,7 @@ export function ContactTab() {
           href={SOCIAL_LINKS.instagram}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: "blue", textDecoration: "underline" }}
+          style={{ color: "var(--win98-link-color, blue)", textDecoration: "underline" }}
         >
           Instagram
         </a>

@@ -7,15 +7,9 @@ import { HomeTab } from "./components/HomeTab";
 import { BlogsTab } from "./components/BlogsTab";
 import { ContactTab } from "./components/ContactTab";
 import { LatestBlogsWindow } from "./components/LatestBlogsWindow";
+import { getAllBlogPosts } from "./data/blogPosts";
 
-const blogPosts = [
-  {
-    slug: "hello-world",
-    title: "Hello World - My First Blog Post",
-    date: "2026-02-01",
-    excerpt: "Welcome to my blog! This is my first post where I share my thoughts on web development and life.",
-  },
-];
+const blogPosts = getAllBlogPosts();
 
 function HomeContent() {
   const searchParams = useSearchParams();
@@ -24,8 +18,15 @@ function HomeContent() {
 
   useEffect(() => {
     const tab = searchParams.get("tab");
-    if (tab === "blogs" || tab === "contact") {
-      setActiveTab(tab);
+    if (tab === "home") {
+      setActiveTab("home");
+    } else if (tab === "blogs") {
+      setActiveTab("blogs");
+    } else if (tab === "contact") {
+      setActiveTab("contact");
+    } else {
+      // Default to "home" for missing or invalid tab values
+      setActiveTab("home");
     }
   }, [searchParams]);
 

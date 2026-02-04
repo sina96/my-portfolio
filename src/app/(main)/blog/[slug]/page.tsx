@@ -1,51 +1,21 @@
 "use client";
 import Link from "next/link";
-import { use, useEffect } from "react";
-
-// Blog posts data - in a real app, this would come from a CMS or database
-const blogPosts: Record<
-  string,
-  { title: string; date: string; content: string }
-> = {
-  "hello-world": {
-    title: "Hello World! My blog debut",
-    date: "2026-02-04",
-    content: `
-      <p>Testing posting a blog post!</p>
-      
-      <p>I've been working on this portfolio website and decided to give it a retro Windows 98 theme. Hits the retro nerves just right.</p>
-      
-      <p>Oh yeah, added blogs too. I might use them for:</p>
-      <ul>
-        <li>cool project ideas</li>
-        <li>Review on a tool or product</li>
-        <li>Rants and ramblings about coding or life</li>
-        <li>who knows more</li>
-      </ul>
-    `,
-  },
-};
+import { use } from "react";
+import { useTheme } from "../../hooks/useTheme";
+import { getBlogPost } from "../../data/blogPosts";
+import { sanitizeHtml } from "../../utils/sanitizeHtml";
 
 export default function BlogPost({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  // In Next.js 15+, params is a Promise in client components
   const { slug } = use(params);
-  const post = blogPosts[slug];
+  const post = getBlogPost(slug);
 
-  useEffect(() => {
-    // Check localStorage for saved preference first
-    const saved = localStorage.getItem("theme");
-    if (saved) {
-      // User has a saved preference
-      document.documentElement.setAttribute("data-theme", saved === "dark" ? "dark" : "light");
-    } else {
-      // No saved preference, check system/browser preference
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      document.documentElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
-    }
-  }, []);
+  // Initialize theme to ensure it's set up correctly
+  useTheme();
 
   if (!post) {
     return (
@@ -60,8 +30,12 @@ export default function BlogPost({
           <div className="window-body">
             <p>Sorry, this blog post could not be found.</p>
             <div className="field-row" style={{ marginTop: "20px" }}>
-              <Link href="/">
-                <button>Back to Home</button>
+              <Link
+                href="/"
+                className="button"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                Back to Home
               </Link>
             </div>
           </div>
@@ -104,15 +78,23 @@ export default function BlogPost({
               lineHeight: "1.6",
               color: "var(--win98-text, black)",
             }}
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
           />
 
           <div className="field-row" style={{ marginTop: "24px", display: "flex", gap: "8px" }}>
-            <Link href="/?tab=blogs">
-              <button className="default" style={{ color: "var(--win98-text, black)" }}>Back to Blog Archive</button>
+            <Link
+              href="/?tab=blogs"
+              className="button default"
+              style={{ textDecoration: "none", color: "var(--win98-text, black)" }}
+            >
+              Back to Blog Archive
             </Link>
-            <Link href="/">
-              <button className="default" style={{ color: "var(--win98-text, black)" }}>Back to Homepage</button>
+            <Link
+              href="/"
+              className="button default"
+              style={{ textDecoration: "none", color: "var(--win98-text, black)" }}
+            >
+              Back to Homepage
             </Link>
           </div>
         </div>

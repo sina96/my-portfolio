@@ -1,12 +1,6 @@
 "use client";
 import Link from "next/link";
-
-interface BlogPost {
-  slug: string;
-  title: string;
-  date: string;
-  excerpt: string;
-}
+import { BlogPost } from "../types/blog";
 
 interface BlogsTabProps {
   posts: BlogPost[];

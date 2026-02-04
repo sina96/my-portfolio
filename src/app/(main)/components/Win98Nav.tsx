@@ -21,6 +21,8 @@ export function Win98Nav({ activeTab, setActiveTab, darkMode, onToggleDarkMode }
           <li>
             <button
               onClick={() => setActiveTab("home")}
+              aria-current={activeTab === "home" ? "page" : undefined}
+              className={activeTab === "home" ? "nav-active" : ""}
               style={{
                 background: "none",
                 border: "none",
@@ -36,6 +38,8 @@ export function Win98Nav({ activeTab, setActiveTab, darkMode, onToggleDarkMode }
           <li>
             <button
               onClick={() => setActiveTab("blogs")}
+              aria-current={activeTab === "blogs" ? "page" : undefined}
+              className={activeTab === "blogs" ? "nav-active" : ""}
               style={{
                 background: "none",
                 border: "none",
@@ -51,6 +55,8 @@ export function Win98Nav({ activeTab, setActiveTab, darkMode, onToggleDarkMode }
           <li>
             <button
               onClick={() => setActiveTab("contact")}
+              aria-current={activeTab === "contact" ? "page" : undefined}
+              className={activeTab === "contact" ? "nav-active" : ""}
               style={{
                 background: "none",
                 border: "none",

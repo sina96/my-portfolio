@@ -1,12 +1,6 @@
 "use client";
 import Link from "next/link";
-
-interface BlogPost {
-  slug: string;
-  title: string;
-  date: string;
-  excerpt: string;
-}
+import { BlogPost } from "../types/blog";
 
 interface LatestBlogsWindowProps {
   posts: BlogPost[];
@@ -30,14 +24,14 @@ export function LatestBlogsWindow({ posts }: LatestBlogsWindowProps) {
             style={{
               marginBottom: "12px",
               paddingBottom: "12px",
-              borderBottom: "1px solid #C0C0C0",
+              borderBottom: "1px solid var(--win98-border-dark, #C0C0C0)",
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "4px" }}>
               <Link
                 href={`/blog/${post.slug}`}
                 style={{
-                  color: "blue",
+                  color: "var(--win98-link-color, blue)",
                   textDecoration: "underline",
                   fontWeight: "bold",
                   fontSize: "12px",
@@ -45,11 +39,11 @@ export function LatestBlogsWindow({ posts }: LatestBlogsWindowProps) {
               >
                 {post.title}
               </Link>
-              <span style={{ fontSize: "11px", color: "#808080", marginLeft: "8px" }}>
+              <span style={{ fontSize: "11px", color: "var(--win98-text-secondary, #808080)", marginLeft: "8px" }}>
                 {post.date}
               </span>
             </div>
-            <p style={{ fontSize: "11px", color: "#808080", marginTop: "4px" }}>
+            <p style={{ fontSize: "11px", color: "var(--win98-text-secondary, #808080)", marginTop: "4px" }}>
               {post.excerpt}
             </p>
           </div>

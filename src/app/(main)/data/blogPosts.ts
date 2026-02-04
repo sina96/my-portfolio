@@ -31,7 +31,17 @@ export const blogPostsData: Record<
 
 // Helper function to get all posts as an array (for list views)
 export function getAllBlogPosts(): BlogPost[] {
-  return Object.values(blogPostsData).map(({ content, ...post }) => post);
+  // Sort newest -> oldest (stable: ties keep declaration order)
+  return Object.values(blogPostsData)
+    .map(({ content, ...post }, idx) => ({ post, idx }))
+    .sort((a, b) => {
+      const aTime = new Date(a.post.date).getTime();
+      const bTime = new Date(b.post.date).getTime();
+
+      if (bTime !== aTime) return bTime - aTime;
+      return a.idx - b.idx;
+    })
+    .map(({ post }) => post);
 }
 
 // Helper function to get a single post by slug (for detail pages)

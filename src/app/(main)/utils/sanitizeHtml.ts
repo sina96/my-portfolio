@@ -16,6 +16,8 @@
  * For server-side rendering, you would need to use isomorphic-dompurify or jsdom.
  */
 
+'use client';
+
 import DOMPurify from 'dompurify';
 
 // Configuration for allowed HTML tags and attributes
@@ -49,14 +51,14 @@ export function sanitizeHtml(dirty: string): string {
   // DOMPurify requires a browser environment (window object)
   // Since this is used in client components, window will always be available
   if (typeof window === 'undefined') {
-    // Fallback for server-side (shouldn't happen in client components)
-    // In production, return empty string or basic sanitized version
-    console.warn('sanitizeHtml called in server context - DOMPurify requires browser environment');
-    return dirty
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/on\w+="[^"]*"/gi, '')
-      .replace(/on\w+='[^']*'/gi, '')
-      .replace(/javascript:/gi, '');
+    /**
+     * Fail closed on the server.
+     *
+     * The previous regex fallback was not a safe sanitizer and could miss XSS vectors.
+     * If this ever runs during SSR (e.g. accidental import into a Server Component),
+     * return an empty string rather than potentially unsafe HTML.
+     */
+    return '';
   }
   
   // Client-side: Use DOMPurify for comprehensive sanitization

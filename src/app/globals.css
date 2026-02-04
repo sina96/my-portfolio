@@ -340,6 +340,8 @@ a.button.default {
 
   .win98-latest-blogs {
     margin-left: 220px; /* sidebar width (200px) + gap (20px) */
+    width: calc(100% - 220px);
+    box-sizing: border-box;
     max-width: 600px;
   }
 }

@@ -1,55 +1,43 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
-function getInitialTheme(): boolean {
-  // Check if we're in a browser environment
-  if (typeof window === "undefined") {
-    // Server-side: return default (false = light mode)
-    return false;
-  }
+function applyTheme(isDark: boolean) {
+  document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+}
 
-  // Client-side: Check localStorage for saved preference first
+function resolveInitialTheme(): boolean {
   const saved = localStorage.getItem("theme");
-  if (saved) {
-    // User has a saved preference
-    const isDark = saved === "dark";
-    // Set theme attribute immediately
-    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
-    return isDark;
-  } else {
-    // No saved preference, check system/browser preference
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    // Set theme attribute immediately
-    document.documentElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
-    return prefersDark;
-  }
+  if (saved === "dark") return true;
+  if (saved === "light") return false;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
 export function useTheme() {
-  // Use lazy initializer to compute theme synchronously on client
-  const [darkMode, setDarkMode] = useState(getInitialTheme);
+  // IMPORTANT: keep initializer pure to avoid hydration issues.
+  // We intentionally start with "light" and resolve/apply the real theme in effects.
+  const [darkMode, setDarkMode] = useState<boolean>(() => false);
+
+  useLayoutEffect(() => {
+    // DOM mutations belong in an effect, not the state initializer.
+    // useLayoutEffect runs before paint on the client, reducing visual flicker.
+    if (typeof window === "undefined") return;
+
+    const initial = resolveInitialTheme();
+    setDarkMode(initial);
+    applyTheme(initial);
+  }, []);
 
   useEffect(() => {
-    // Re-check theme on mount to handle SSR mismatch
-    const saved = localStorage.getItem("theme");
-    if (saved) {
-      const isDark = saved === "dark";
-      setDarkMode(isDark);
-      document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
-    } else {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      setDarkMode(prefersDark);
-      document.documentElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
-    }
-
     // Sync with system preference changes
+    if (typeof window === "undefined") return;
+
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (e: MediaQueryListEvent) => {
       // Only update if user hasn't set a preference
       if (!localStorage.getItem("theme")) {
         const prefersDark = e.matches;
         setDarkMode(prefersDark);
-        document.documentElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
+        applyTheme(prefersDark);
       }
     };
 
@@ -58,10 +46,12 @@ export function useTheme() {
   }, []);
 
   const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    document.documentElement.setAttribute("data-theme", newMode ? "dark" : "light");
-    localStorage.setItem("theme", newMode ? "dark" : "light");
+    setDarkMode((prev) => {
+      const newMode = !prev;
+      applyTheme(newMode);
+      localStorage.setItem("theme", newMode ? "dark" : "light");
+      return newMode;
+    });
   };
 
   return { darkMode, toggleDarkMode };

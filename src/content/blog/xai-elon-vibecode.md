@@ -11,11 +11,11 @@ I use X daily (don't know why) and i have seen my "for you" page become much slo
 
 <br>
 
-Tldr for that video: XAI completely rewrote X's recommendation algorithm, replacing dozens of Java/Scala microservices with four Rust components and a Grok-based transformer. And i’ve heard that twitter search is now basically grok searching using these algorithms. Sounds like Elon is using his beloved Grok to shape his empire. But if you are doing it only for because the agent and benchmarks are saying so, bo you are dumb. Because clearly they are not working right atm. Even with everybody’s fav ”Rust” in place.
+Tldr for that video: XAI completely rewrote X's recommendation algorithm, replacing dozens of Java/Scala microservices with four Rust components and a Grok-based transformer. And i’ve heard that twitter search is now basically grok searching using these algorithms. Sounds like Elon is using his beloved Grok to shape his empire. But if you are doing it only for because the agent and benchmarks are saying so, bo you are dumb. Because clearly things are not working right atm. Even with everybody’s fav ”Rust” in place.
 
 <br>
 
-I don’t wanna be that old guy screaming at AI but changing system architecture drastically with agents without knowing consequences or knowing the effects of it to the end user is definitely not the way to the future. Sure these agents are getting a lot better and heck i use them a lot lately to save time but they favor benchmarks and that is not always the solution. ”Faster” is not always ”better” and I just hope CEOs would learn that lesson in a less harmful way.
+I don’t wanna be that old guy screaming at AI but changing system architecture drastically with agents without knowing consequences or knowing the effects of it is definitely not the way to the future. Sure these agents are getting a lot better and heck i use them a lot lately to save time but they favor benchmarks and that is not always the solution. In a world where ai is eager to optimize your algorithms, handwritten code is getting more and more rare and valuable imo. ”Faster” is not always ”better” and I just hope CEOs would learn that lesson in a less harmful way.
 
 <br>
 

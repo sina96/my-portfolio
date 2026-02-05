@@ -76,9 +76,6 @@ export default async function BlogPost({ params }: BlogPostPageProps) {
             <div
               className="blog-post-content"
               style={{
-                fontSize: "12px",
-                lineHeight: "1.6",
-                color: "var(--win98-text, black)",
               }}
               dangerouslySetInnerHTML={{ __html: post.content }}
             />

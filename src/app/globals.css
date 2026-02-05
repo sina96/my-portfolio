@@ -235,6 +235,22 @@ a.button.default {
 }
 
 /* Blog post content - bullet lists */
+.blog-post-content {
+  /* Mobile default (slightly smaller) */
+  font-size: 12.5px;
+  line-height: 1.7;
+  /* Adjust spacing between words (tweak as desired) */
+  word-spacing: 0.08em;
+  color: var(--win98-text, black);
+}
+
+@media (min-width: 768px) {
+  .blog-post-content {
+    font-size: 13px;
+    line-height: 1.75;
+  }
+}
+
 .blog-post-content ul {
   list-style-type: disc;
   padding-left: 24px;
@@ -243,6 +259,14 @@ a.button.default {
 
 .blog-post-content ul li {
   margin: 4px 0;
+}
+.blog-post-content a {
+  color: var(--win98-link-color);
+  text-decoration: underline;
+}
+
+.blog-post-content a:hover {
+  text-decoration: none;
 }
 
 /* Responsive layout for Win98 portfolio */

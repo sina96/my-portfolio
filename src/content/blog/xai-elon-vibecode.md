@@ -11,15 +11,15 @@ I use X daily (don't know why) and i have seen my "for you" page become much slo
 
 <br>
 
-Tldr for that video: XAI completely rewrote X's recommendation algorithm, replacing dozens of Java/Scala microservices with four Rust components and a Grok-based transformer. And i’ve heard that twitter search is now basically grok searching using these algorithms. Sounds like Elon is using his beloved Grok to shape his empire. But if you are doing it only for because the agent and benchmarks are saying so, bo you are dumb. Because clearly things are not working right atm. Even with everybody’s fav ”Rust” in place.
+Tldr for that video: XAI completely rewrote X's recommendation algorithm, replacing dozens of Java/Scala microservices with four Rust components and a Grok-based transformer. And i’ve heard that twitter search is now basically grok searching using these algorithms. Sounds like Elon is using his beloved Grok to shape his empire. But if you are doing it only for because the agent and benchmarks are saying so, boy you are digging your grave. Because clearly things are not working right atm. Even with everybody’s fav ”Rust” in place.
 
 <br>
 
-I don’t wanna be that old guy screaming at AI but changing system architecture drastically with agents without knowing consequences or knowing the effects of it is definitely not the way to the future. Sure these agents are getting a lot better and heck i use them a lot lately to save time but they favor benchmarks and that is not always the solution. In a world where ai is eager to optimize your algorithms, handwritten code is getting more and more rare and valuable imo. ”Faster” is not always ”better” and I just hope CEOs would learn that lesson in a less harmful way.
+I don’t wanna be that old guy screaming at AI but changing system architecture drastically with agents with zero moral ambition is definitely not the way how systems are meant to be built. Sure these agents will get better and fix things, don't get me wrong i've started to use them a lot lately to save time but they are clearly favoring benchmarks and statistics only. In a world where ai is eager to optimize your algorithms, handwritten code and algorithms are getting more and more rare and valuable imo. ”Faster” is not always ”better” and I just hope CEOs would learn this lesson in a less harmful way.
 
 <br>
 
-I was going to send this text to an AI agent and ask them to ”make it look cleaner” but i think i should avoid that for this blog ;)
+I was going to send this text to an AI agent and ask them to ”make it look cleaner” but i think i should avoid that for this post ;)
 
 <br>
 

@@ -444,6 +444,10 @@ a.button.default {
     order: 1; /* mobile: on top */
   }
 
+  .cv-download-btn {
+    display: none !important;
+  }
+
   .cv-split {
     order: 2;
     grid-template-columns: 1fr;
@@ -455,5 +459,11 @@ a.button.default {
 
   .cv-rendered {
     order: 1;
+  }
+}
+
+@media (pointer: coarse) and (max-width: 768px) {
+  .cv-download-btn {
+    display: none !important;
   }
 }

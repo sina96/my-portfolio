@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getCVContent } from "../data/cv";
 import { ThemeInitializer } from "../components/ThemeInitializer";
+import { CvPdfButtons } from "./CvPdfButtons";
 
 export const metadata: Metadata = {
   title: "CV",
@@ -36,20 +37,7 @@ export default async function CVPage() {
           <div className="window-body">
             <div className="cv-layout">
               <div className="cv-actions">
-                <a
-                  href="/cv.pdf"
-                  className="button default"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Open PDF
-                </a>
-                <a
-                  href="/cv.pdf?download=1"
-                  className="button default"
-                >
-                  Download PDF
-                </a>
+                <CvPdfButtons />
                 <Link
                   href="/"
                   className="button default"

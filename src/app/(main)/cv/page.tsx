@@ -47,6 +47,9 @@ export default async function CVPage() {
                 <a
                   href="/cv.pdf?download=1"
                   className="button default cv-download-btn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download="Sina-Bastani-CV.pdf"
                 >
                   Download PDF
                 </a>

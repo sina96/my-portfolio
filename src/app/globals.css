@@ -462,7 +462,7 @@ a.button.default {
   }
 }
 
-@media (pointer: coarse) {
+@media (pointer: coarse) and (max-width: 768px) {
   .cv-download-btn {
     display: none !important;
   }

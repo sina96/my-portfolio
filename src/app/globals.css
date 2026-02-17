@@ -394,3 +394,66 @@ a.button.default {
     align-self: flex-start;
   }
 }
+
+/* CV Page - Split Panel Layout */
+.cv-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cv-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  order: 2; /* desktop: below panels */
+}
+
+.cv-split {
+  order: 1;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+}
+
+.cv-panel {
+  min-width: 0;
+  max-height: min(600px, calc(100vh - 360px)); /* keeps actions visible */
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--win98-border-dark, #808080);
+  background: var(--win98-window-bg, #c0c0c0);
+}
+
+.cv-raw {
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.cv-rendered {
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* Mobile: stack panels vertically */
+@media (max-width: 768px) {
+  .cv-actions {
+    order: 1; /* mobile: on top */
+  }
+
+  .cv-split {
+    order: 2;
+    grid-template-columns: 1fr;
+  }
+
+  .cv-raw {
+    order: 2;
+  }
+
+  .cv-rendered {
+    order: 1;
+  }
+}

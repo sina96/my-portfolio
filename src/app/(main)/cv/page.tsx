@@ -39,7 +39,14 @@ export default async function CVPage() {
                 <a
                   href="/cv.pdf"
                   className="button default"
-                  download="Sina-Bastani-CV.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open PDF
+                </a>
+                <a
+                  href="/cv.pdf?download=1"
+                  className="button default"
                 >
                   Download PDF
                 </a>

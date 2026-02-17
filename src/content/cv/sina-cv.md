@@ -6,7 +6,7 @@ header:
   - text: <span class="iconify" data-icon="tabler:phone"></span> (+46) 700128299
     newLine: true
   - text: <span class="iconify" data-icon="tabler:mail"></span> sina@sinabastani.dev
-    link: mailto:icancook@email.com
+    link: mailto:sina@sinabastani.dev
   - text: <span class="iconify" data-icon="tabler:brand-github"></span> sina96
     link: https://github.com/sina96
   - text: <span class="iconify" data-icon="charm:person"></span> sinabastani.dev
@@ -42,7 +42,7 @@ B.S. in Computer & Systems science
 **Adela Omsorg**
   ~ 2017 - 2020
 
-- Office Adminstration (part time)
+- Office Administration (part-time)
 
 ## Selected Projects
 
@@ -65,7 +65,7 @@ B.S. in Computer & Systems science
 
 *Role: Backend Developer*
  - Led backend development for a complete redesign of the Willys app, migrating to React Native. Implemented BankID login using OAuth2 for secure authentication
- - *Scan*&*Go* Feature: Maitaining in-app barcode scanning feature and integrated Swish as a payment method. Handling production issues with internal or external integrations.
+ - *Scan*&*Go* Feature: Maintaining in-app barcode scanning feature and integrated Swish as a payment method. Handling production issues with internal or external integrations.
 - Contributed to new feature development, backend maintenance, and support for Hemköp's mobile app.
 - Tech: Java, Spring, SAP Hybris, OAuth2, AWS, React Native, REST API, BankId, Swish, SwedBank Pay, Klarna, Extenda integrations.
 

@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import memojiImage from "@/assets/images/sina-pc-memoji.png";
 
 export function HomeTab() {
@@ -11,7 +12,7 @@ export function HomeTab() {
           alt="Sina memoji"
           width={100}
           height={100}
-          loading="eager" 
+          loading="eager"
           style={{ marginBottom: "10px" }}
         />
         <h1 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "8px" }}>
@@ -57,6 +58,16 @@ export function HomeTab() {
             in a project
           </div>
         </div>
+      </div>
+
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "12px" }}>
+        <Link
+          href="/cv"
+          className="button default"
+          style={{ textDecoration: "none", color: "var(--win98-text, black)" }}
+        >
+          View CV
+        </Link>
       </div>
     </>
   );

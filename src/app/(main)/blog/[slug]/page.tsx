@@ -1,9 +1,43 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getBlogPost } from "../../data/blogPosts";
 import { ThemeInitializer } from "../../components/ThemeInitializer";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = getBlogPost(slug);
+
+  if (!post) {
+    return {
+      title: "Post Not Found",
+      description: "This blog post could not be found.",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  return {
+    title: post.title,
+    description: post.excerpt,
+    alternates: {
+      canonical: `/blog/${post.slug}`,
+    },
+    openGraph: {
+      type: "article",
+      url: `/blog/${post.slug}`,
+      title: post.title,
+      description: post.excerpt,
+      publishedTime: `${post.date}T00:00:00.000Z`,
+    },
+    twitter: {
+      card: "summary",
+      title: post.title,
+      description: post.excerpt,
+    },
+  };
 }
 
 export default async function BlogPost({ params }: BlogPostPageProps) {

@@ -82,7 +82,7 @@ B.S. in Computer & Systems science
 <br>
 
 **Axfood IT - E-Com API Test Automation**
-  ~ 03/2022 - 03/2023
+  ~ 10/2021 - 03/2022
 
 *Role: Junior Backend Developer*
  - Created comprehensive integration and system tests for REST APIs to improve platform stability

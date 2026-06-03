@@ -1,5 +1,7 @@
 "use client";
+import { useState } from "react";
 import { useTheme } from "../hooks/useTheme";
+import { AvailabilityWidget } from "./AvailabilityWidget";
 
 const SOCIAL_LINKS = {
   linkedin: "https://www.linkedin.com/in/sina-bastani",
@@ -10,6 +12,7 @@ const SOCIAL_LINKS = {
 export function ContactTab() {
   // Initialize theme to ensure it's set up correctly
   useTheme();
+  const [showAvailability, setShowAvailability] = useState(false);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
@@ -28,6 +31,22 @@ export function ContactTab() {
         >
           Contact me
         </a>
+      </div>
+
+      <div className="availability-widget">
+        <button
+          type="button"
+          className="default"
+          aria-expanded={showAvailability}
+          aria-controls="availability-panel"
+          onClick={() => setShowAvailability((currentValue) => !currentValue)}
+        >
+          {showAvailability ? "Hide availability" : "View availability"}
+        </button>
+
+        {showAvailability && (
+          <AvailabilityWidget id="availability-panel" />
+        )}
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "24px", flexWrap: "wrap", justifyContent: "center" }}>

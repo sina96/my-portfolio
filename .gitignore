@@ -32,6 +32,9 @@ bun-debug.log*
 # local env files
 .env*.local
 
+# private availability calendar exports
+/private/availability/
+
 # vercel
 .vercel
 

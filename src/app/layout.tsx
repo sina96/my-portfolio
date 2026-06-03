@@ -2,6 +2,19 @@ import type { Metadata } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
+const themeInitializerScript = `
+(function () {
+  try {
+    var savedTheme = window.localStorage.getItem("theme");
+    var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var theme = savedTheme === "dark" || (!savedTheme && prefersDark) ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", theme);
+  } catch (error) {
+    document.documentElement.setAttribute("data-theme", "light");
+  }
+})();
+`;
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://sinabastani.dev"),
   title: {
@@ -37,7 +50,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitializerScript }} />
+      </head>
       <body>
         {children}
         <SpeedInsights />

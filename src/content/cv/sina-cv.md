@@ -54,7 +54,7 @@ B.S. in Computer & Systems science
  -  Executed migration from Sonic MQ to AWS SQS with event-driven architecture principles. Implemented mTLS-secured communication for internal integrations. Moved from Jenkins to Bitbucket Pipelines with functional CI/CD towards SAP CCV2. 
  - Designed and implemented performance testing strategy using Grafana k6. Established baseline performance metrics for Cloud migration project.
  - Reduced technichal debts by aligning Spring dependencies and API definitions with updated standards.
- - Worked on agentic workspace in development environment between the developers and added some agentic calls in the Bitbucket pipelines.
+ - Configured an agentic workspace for developer collaboration in the development environment and integrated agentic calls into Bitbucket pipelines to automate recurring CI/CD tasks.
 - Contributed to new feature development, maintenance and code review loops.
 - Participated in requirement refinement and technical solution discussions with cross-functional teams. 
 - Tech: Java, Spring, SAP CCV2, Dynatrace, AWS S3 SQS, Grafana k6, REST API, mTLS Connections, Bitbucket Pipelines.

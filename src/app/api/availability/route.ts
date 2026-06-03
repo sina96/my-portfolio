@@ -17,8 +17,9 @@ function parseWeekOffset(request: Request): number {
 }
 
 export async function GET(request: Request) {
+  const now = new Date();
   const weekOffset = parseWeekOffset(request);
-  const weekRange = getAvailabilityWeekRange(weekOffset);
+  const weekRange = getAvailabilityWeekRange(weekOffset, now);
 
   try {
     if (!hasConfiguredIcsSources()) {
@@ -26,22 +27,22 @@ export async function GET(request: Request) {
     }
 
     const busyBlocks = await getIcsBusyBlocks(weekRange.start, weekRange.end);
-    const slots = getAvailabilitySlotsFromBusyBlocks(busyBlocks, weekOffset);
+    const slots = getAvailabilitySlotsFromBusyBlocks(busyBlocks, weekOffset, now);
 
     return Response.json({
       slots,
       source: "ics",
       weekOffset,
-      generatedAt: new Date().toISOString(),
+      generatedAt: now.toISOString(),
     });
   } catch (error) {
     console.warn("[Availability] Falling back to mock availability:", error);
 
     return Response.json({
-      slots: getMockAvailabilitySlots(weekOffset),
+      slots: getMockAvailabilitySlots(weekOffset, now),
       source: "mock",
       weekOffset,
-      generatedAt: new Date().toISOString(),
+      generatedAt: now.toISOString(),
     });
   }
 }

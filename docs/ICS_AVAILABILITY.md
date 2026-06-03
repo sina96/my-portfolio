@@ -61,8 +61,9 @@ OAuth/Graph integration is intentionally not part of this setup.
 2. Run `bun run dev`.
 3. Open `/api/availability?weekOffset=0`.
 4. Open `/api/availability?weekOffset=1`.
-5. Open `/availability`.
-6. Add a test event, refresh the feed or replace the local `.ics` file, and confirm the matching
+5. Confirm the JSON response contains `"source": "ics"` so the API is not using mock fallback.
+6. Open `/availability` and confirm the static fallback availability notice is not shown.
+7. Add a test event, refresh the feed or replace the local `.ics` file, and confirm the matching
    slot disappears.
 
 Test URL-only sources, file-only sources, and mixed URL + file sources when possible. Also verify

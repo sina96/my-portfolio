@@ -28,15 +28,13 @@ export default function AvailabilityPage() {
           <div className="availability-page-actions">
             <a
               href="mailto:contact@sinabastani.dev?subject=Contact%20Request&body=Hello!"
-              className="button default"
-              style={{ textDecoration: "none", color: "inherit" }}
+              className="button default button-link"
             >
               Contact me
             </a>
             <Link
               href="/"
-              className="button"
-              style={{ textDecoration: "none", color: "inherit" }}
+              className="button button-link"
             >
               Back to portfolio
             </Link>

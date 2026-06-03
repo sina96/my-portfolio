@@ -24,6 +24,12 @@ interface ZonedDateParts {
   second: number;
 }
 
+export interface AvailabilityWeekRange {
+  start: Date;
+  end: Date;
+  normalizedWeekOffset: number;
+}
+
 function getZonedDateParts(date: Date): ZonedDateParts {
   const formatter = new Intl.DateTimeFormat("en-US", {
     timeZone: AVAILABILITY_TIME_ZONE,
@@ -178,7 +184,10 @@ export function normalizeWeekOffset(weekOffset: number): number {
   return Math.min(weekOffset, MAX_WEEK_OFFSET);
 }
 
-export function getAvailabilityWeekRange(weekOffset = 0, now = new Date()) {
+export function getAvailabilityWeekRange(
+  weekOffset: number = 0,
+  now: Date = new Date()
+): AvailabilityWeekRange {
   const normalizedWeekOffset = normalizeWeekOffset(weekOffset);
   const weekStart = addDays(getStartOfWeek(now), normalizedWeekOffset * 7);
 

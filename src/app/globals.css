@@ -171,6 +171,11 @@ a.button.default {
   color: #b19cd9 !important;
 }
 
+.button-link {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
 [data-theme="dark"] input[type="text"],
 [data-theme="dark"] textarea,
 [data-theme="dark"] select {
@@ -217,6 +222,154 @@ a.button.default {
 
 [data-theme="dark"] h2 {
   color: var(--win98-text) !important;
+}
+
+/* Availability widget */
+.availability-page {
+  display: flex;
+  min-height: 100vh;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px;
+}
+
+.availability-page-window {
+  width: min(100%, 920px);
+}
+
+.availability-page .availability-panel {
+  margin-top: 0;
+}
+
+.availability-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.availability-widget {
+  width: 100%;
+  max-width: 520px;
+  margin-bottom: 20px;
+}
+
+.availability-panel {
+  margin: 12px auto 0;
+  padding: 12px;
+  border: 2px groove var(--win98-border-light, #ffffff);
+  color: var(--win98-text);
+  text-align: left;
+}
+
+.availability-note,
+.availability-empty {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--win98-text);
+  text-align: center;
+}
+
+.availability-empty {
+  margin-bottom: 0;
+}
+
+.availability-disclaimer {
+  margin-top: -6px;
+  color: var(--win98-status-text);
+}
+
+.availability-source-note {
+  margin-top: -6px;
+  color: var(--win98-status-text);
+}
+
+.availability-week-nav {
+  display: grid;
+  grid-template-columns: 28px 1fr 28px;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.availability-week-nav button {
+  min-width: 28px;
+  min-height: 24px;
+  padding: 0;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.availability-week-nav button:disabled {
+  color: var(--win98-text-secondary, #808080);
+  cursor: not-allowed;
+}
+
+.availability-week-nav span {
+  color: var(--win98-text);
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.availability-day-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.availability-day {
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--win98-border-dark, #808080);
+  background: var(--win98-status-indicator-bg, #c0c0c0);
+  box-shadow: inset -1px -1px var(--win98-border-light, #ffffff), inset 1px 1px var(--win98-border-dark, #808080);
+}
+
+.availability-day h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--win98-text);
+  text-align: center;
+}
+
+.availability-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.availability-slot {
+  display: inline-flex;
+  min-height: 22px;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  border: 1px solid var(--win98-border-dark, #808080);
+  background: var(--win98-window-bg, #c0c0c0);
+  color: var(--win98-text);
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.availability-slot-lunch-gym {
+  border-style: dashed;
+  background: #fff6bf;
+  color: #222;
+}
+
+[data-theme="dark"] .availability-day,
+[data-theme="dark"] .availability-slot {
+  border-color: var(--win98-border-dark) !important;
+}
+
+[data-theme="dark"] .availability-slot-lunch-gym {
+  background: #4a421d;
+  color: #ffffff;
 }
 
 /* Ping animation for status indicator */
@@ -467,5 +620,15 @@ a.button.default {
 @media (pointer: coarse) and (max-width: 768px) {
   .cv-download-btn {
     display: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .availability-day-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .availability-widget {
+    max-width: 100%;
   }
 }

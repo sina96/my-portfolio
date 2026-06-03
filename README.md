@@ -8,10 +8,13 @@ This project uses [Bun](https://bun.sh) as the package manager. Install dependen
 
 ```bash
 bun install
+cp .env.example .env.local
 bun run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to view the site.
+
+Edit `.env.local` with private calendar ICS URLs or local `.ics` file paths if you want live availability data.
 
 ### Alternative: Use npm
 
@@ -30,6 +33,7 @@ This project uses [98.css](https://github.com/jdan/98.css) - a CSS framework for
 For more information, see the [`docs/`](./docs/) directory:
 
 - [Adding Blog Posts](./docs/ADDING_BLOG_POSTS.md) - How to add new blog posts
+- [ICS Availability](./docs/ICS_AVAILABILITY.md) - How to configure calendar-based availability
 - [Decap CMS Plan](./docs/DECAP_CMS_PLAN.md) - Future CMS integration roadmap
 
 ## Tech Stack
@@ -44,3 +48,5 @@ For more information, see the [`docs/`](./docs/) directory:
 ## Deploy
 
 Deploy on [Vercel](https://vercel.com) or your preferred platform. Vercel automatically detects Bun via the `bun.lock` file and uses it for builds. The site builds as a standard Next.js application with Turbopack.
+
+For availability in production, add `AVAILABILITY_ICS_URLS_JSON` and any optional availability env vars in the deployment platform as server-side environment variables.

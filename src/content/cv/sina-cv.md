@@ -54,6 +54,7 @@ B.S. in Computer & Systems science
  -  Executed migration from Sonic MQ to AWS SQS with event-driven architecture principles. Implemented mTLS-secured communication for internal integrations. Moved from Jenkins to Bitbucket Pipelines with functional CI/CD towards SAP CCV2. 
  - Designed and implemented performance testing strategy using Grafana k6. Established baseline performance metrics for Cloud migration project.
  - Reduced technichal debts by aligning Spring dependencies and API definitions with updated standards.
+ - Configured an agentic workspace for developer collaboration in the development environment and integrated agentic calls into Bitbucket pipelines to automate recurring CI/CD tasks.
 - Contributed to new feature development, maintenance and code review loops.
 - Participated in requirement refinement and technical solution discussions with cross-functional teams. 
 - Tech: Java, Spring, SAP CCV2, Dynatrace, AWS S3 SQS, Grafana k6, REST API, mTLS Connections, Bitbucket Pipelines.
@@ -105,8 +106,8 @@ B.S. in Computer & Systems science
 
 **Programming Languages:** Java 17-25, JavaScript, SQL, Groovy, Kotlin, Python, HTML/CSS, .Net
 
-**Tools and Frameworks:** Spring 5/6, JUnit 4/5, Git, REST, SOAP, Postman, React, TypeScript, Swagger, SAP Commerce, AWS Console, Docker, Scrum, Kanban
+**Tools and Frameworks:** Spring 5/6, JUnit 4/5, Git, REST, SOAP, Postman, React, TypeScript, Swagger, SAP Commerce, AWS Console, Docker, Scrum, Kanban, Agentic Workflows.
 
-**Knowledge in LLM-based coding assistants:** Claude Code, Warp, OpenCode, Cursor, Codex
+**Knowledge in LLM-based coding assistants:** Claude Code, Warp, OpenCode, Cursor, Codex, Pi, Amazon Kiro.
 
 **Languages:** Swedish (fluent), English (fluent)

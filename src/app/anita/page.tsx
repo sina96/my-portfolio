@@ -222,8 +222,7 @@ export default function Page() {
               💌💌💌
               </h2>
               <div
-                className="text-base sm:text-lg text-left leading-loose whitespace-pre-line sm:max-w-[85%] mx-auto"
-                style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+                className="text-base sm:text-lg text-left leading-loose whitespace-pre-line sm:max-w-[85%] mx-auto [font-family:Georgia,'Times_New_Roman',serif]"
               >
                 {LOVE_LETTER.text}
               </div>

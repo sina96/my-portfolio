@@ -16,7 +16,7 @@ export default function Home() {
   const blogPosts = getAllBlogPosts();
 
   return (
-    <Suspense fallback={<div style={{ padding: "20px" }}>Loading...</div>}>
+    <Suspense fallback={<div className="win98-page-shell">Loading...</div>}>
       <HomeContent blogPosts={blogPosts} />
     </Suspense>
   );

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AvailabilityWidget } from "../components/AvailabilityWidget";
+import { Win98Window } from "../components/Win98Window";
 
 export const metadata: Metadata = {
   title: "Availability",
@@ -13,38 +14,35 @@ export const metadata: Metadata = {
 export default function AvailabilityPage() {
   return (
     <main className="availability-page">
-      <div className="window availability-page-window">
-        <div className="title-bar">
-          <div className="title-bar-text">Sina Bastani - Availability</div>
-          <div className="title-bar-controls">
-            <button aria-label="Minimize"></button>
-            <button aria-label="Maximize"></button>
-            <button aria-label="Close"></button>
+      <Win98Window
+        title="Sina Bastani - Availability"
+        className="availability-page-window"
+        showMinimize
+        showMaximize
+        statusBar={
+          <div className="status-bar">
+            <p className="status-bar-field">AvailabilityPage</p>
+            <p className="status-bar-field">Europe/Stockholm</p>
           </div>
-        </div>
-        <div className="window-body">
-          <AvailabilityWidget />
+        }
+      >
+        <AvailabilityWidget />
 
-          <div className="availability-page-actions">
-            <a
-              href="mailto:contact@sinabastani.dev?subject=Contact%20Request&body=Hello!"
-              className="button default button-link"
-            >
-              Contact me
-            </a>
-            <Link
-              href="/"
-              className="button button-link"
-            >
-              Back to portfolio
-            </Link>
-          </div>
+        <div className="availability-page-actions">
+          <a
+            href="mailto:contact@sinabastani.dev?subject=Contact%20Request&body=Hello!"
+            className="button default button-link"
+          >
+            Contact me
+          </a>
+          <Link
+            href="/"
+            className="button button-link"
+          >
+            Back to portfolio
+          </Link>
         </div>
-        <div className="status-bar">
-          <p className="status-bar-field">AvailabilityPage</p>
-          <p className="status-bar-field">Europe/Stockholm</p>
-        </div>
-      </div>
+      </Win98Window>
     </main>
   );
 }

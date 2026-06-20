@@ -9,6 +9,7 @@ import { HomeTab } from "./HomeTab";
 import { BlogsTab } from "./BlogsTab";
 import { ContactTab } from "./ContactTab";
 import { LatestBlogsWindow } from "./LatestBlogsWindow";
+import { Win98Window } from "./Win98Window";
 
 interface HomeContentProps {
   blogPosts: BlogPost[];
@@ -34,7 +35,7 @@ export function HomeContent({ blogPosts }: HomeContentProps) {
   }, [searchParams]);
 
   return (
-    <div style={{ padding: "20px", minHeight: "100vh" }}>
+    <div className="win98-page-shell">
       <div className="win98-content-wrapper">
         <div className="win98-layout">
           <Win98Nav
@@ -45,33 +46,30 @@ export function HomeContent({ blogPosts }: HomeContentProps) {
           />
 
           {/* Main Content Window */}
-          <div className="window win98-main">
-            <div className="title-bar">
-              <div className="title-bar-text">Sina Bastani - Portfolio</div>
-              <div className="title-bar-controls">
-                <button aria-label="Minimize"></button>
-                <button aria-label="Maximize"></button>
-                <button aria-label="Close"></button>
+          <Win98Window
+            title="Sina Bastani - Portfolio"
+            className="win98-main"
+            showMinimize
+            showMaximize
+            statusBar={
+              <div className="status-bar">
+                <p className="status-bar-field">
+                  {activeTab === "home"
+                    ? "HomePage"
+                    : activeTab === "blogs"
+                    ? "BlogsPage"
+                    : "ContactPage"}
+                </p>
+                <p className="status-bar-field">
+                  &copy; {new Date().getFullYear()} Sina Bastani
+                </p>
               </div>
-            </div>
-            <div className="window-body">
-              {activeTab === "home" && <HomeTab />}
-              {activeTab === "blogs" && <BlogsTab posts={blogPosts} />}
-              {activeTab === "contact" && <ContactTab />}
-            </div>
-            <div className="status-bar">
-              <p className="status-bar-field">
-                {activeTab === "home"
-                  ? "HomePage"
-                  : activeTab === "blogs"
-                  ? "BlogsPage"
-                  : "ContactPage"}
-              </p>
-              <p className="status-bar-field">
-                &copy; {new Date().getFullYear()} Sina Bastani
-              </p>
-            </div>
-          </div>
+            }
+          >
+            {activeTab === "home" && <HomeTab />}
+            {activeTab === "blogs" && <BlogsTab posts={blogPosts} />}
+            {activeTab === "contact" && <ContactTab />}
+          </Win98Window>
         </div>
 
         {/* Latest Blogs Window - Only show on home tab */}

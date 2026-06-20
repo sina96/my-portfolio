@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { BlogPost } from "../types/blog";
+import { Win98Window } from "./Win98Window";
 
 interface LatestBlogsWindowProps {
   posts: BlogPost[];
@@ -8,47 +9,25 @@ interface LatestBlogsWindowProps {
 
 export function LatestBlogsWindow({ posts }: LatestBlogsWindowProps) {
   return (
-    <div className="window win98-latest-blogs">
-      <div className="title-bar">
-        <div className="title-bar-text">Latest Blogs</div>
-        <div className="title-bar-controls">
-          <button aria-label="Minimize"></button>
-          <button aria-label="Maximize"></button>
-          <button aria-label="Close"></button>
-        </div>
-      </div>
-      <div className="window-body">
-        {posts.slice(0, 3).map((post) => (
-          <div
-            key={post.slug}
-            style={{
-              marginBottom: "12px",
-              paddingBottom: "12px",
-              borderBottom: "1px solid var(--win98-border-dark, #C0C0C0)",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "4px" }}>
-              <Link
-                href={`/blog/${post.slug}`}
-                style={{
-                  color: "var(--win98-link-color, blue)",
-                  textDecoration: "underline",
-                  fontWeight: "bold",
-                  fontSize: "12px",
-                }}
-              >
-                {post.title}
-              </Link>
-              <span style={{ fontSize: "11px", color: "var(--win98-text-secondary, #808080)", marginLeft: "8px" }}>
-                {post.date}
-              </span>
-            </div>
-            <p style={{ fontSize: "11px", color: "var(--win98-text-secondary, #808080)", marginTop: "4px" }}>
-              {post.excerpt}
-            </p>
+    <Win98Window title="Latest Blogs" className="win98-latest-blogs" showMinimize showMaximize>
+      {posts.slice(0, 3).map((post) => (
+        <div key={post.slug} className="latest-blog-item">
+          <div className="latest-blog-header">
+            <Link
+              href={`/blog/${post.slug}`}
+              className="latest-blog-link"
+            >
+              {post.title}
+            </Link>
+            <span className="latest-blog-date">
+              {post.date}
+            </span>
           </div>
-        ))}
-      </div>
-    </div>
+          <p className="latest-blog-excerpt">
+            {post.excerpt}
+          </p>
+        </div>
+      ))}
+    </Win98Window>
   );
 }

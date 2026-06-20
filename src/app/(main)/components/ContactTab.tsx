@@ -6,7 +6,11 @@ import { AvailabilityWidget } from "./AvailabilityWidget";
 const SOCIAL_LINKS = {
   linkedin: "https://www.linkedin.com/in/sina-bastani",
   github: "https://github.com/sina96",
-  instagram: "https://www.instagram.com/sinabastanii?igsh=MTYzdmtoMzMwbnFsMA%3D%3D&utm_source=qr",
+  instagram:
+    "https://www.instagram.com/sinabastanii?igsh=MTYzdmtoMzMwbnFsMA%3D%3D&utm_source=qr",
+  letterboxd: "https://boxd.it/2YAg9",
+  spotify:
+    "https://open.spotify.com/user/11183243899?si=ZtFq6xTjQO2AbpK7QF7WaQ",
 };
 
 export function ContactTab() {
@@ -15,19 +19,18 @@ export function ContactTab() {
   const [showAvailability, setShowAvailability] = useState(false);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-      <h2 style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "16px", color: "var(--win98-text)" }}>
+    <div className="contact-tab">
+      <h2 className="win98-section-title">
         Let&apos;s create something amazing together
       </h2>
-      <p style={{ marginBottom: "20px", fontSize: "12px", color: "var(--win98-text)" }}>
+      <p className="contact-copy">
         Have a fun project? Brainstorming? Friendly chat? Hit me up!
       </p>
 
-      <div className="field-row" style={{ marginBottom: "20px" }}>
+      <div className="field-row contact-actions">
         <a
           href="mailto:contact@sinabastani.dev?subject=Contact%20Request&body=Hello!"
-          className="button default"
-          style={{ textDecoration: "none", color: "inherit" }}
+          className="button default button-link"
         >
           Contact me
         </a>
@@ -44,18 +47,16 @@ export function ContactTab() {
           {showAvailability ? "Hide availability" : "View availability"}
         </button>
 
-        {showAvailability && (
-          <AvailabilityWidget id="availability-panel" />
-        )}
+        {showAvailability && <AvailabilityWidget id="availability-panel" />}
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "24px", flexWrap: "wrap", justifyContent: "center" }}>
-        <span style={{ fontWeight: "bold", color: "var(--win98-text)" }}>Social Links:</span>
+      <div className="contact-social-links">
+        <span className="win98-label">Social Links:</span>
         <a
           href={SOCIAL_LINKS.linkedin}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: "var(--win98-link-color, blue)", textDecoration: "underline" }}
+          className="win98-link"
         >
           LinkedIn
         </a>
@@ -63,7 +64,7 @@ export function ContactTab() {
           href={SOCIAL_LINKS.github}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: "var(--win98-link-color, blue)", textDecoration: "underline" }}
+          className="win98-link"
         >
           GitHub
         </a>
@@ -71,11 +72,33 @@ export function ContactTab() {
           href={SOCIAL_LINKS.instagram}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: "var(--win98-link-color, blue)", textDecoration: "underline" }}
+          className="win98-link"
         >
           Instagram
         </a>
       </div>
+
+      <p className="contact-media-copy">
+        i watch{" "}
+        <a
+          href={SOCIAL_LINKS.letterboxd}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="win98-link"
+        >
+          movies
+        </a>{" "}
+        and listen to{" "}
+        <a
+          href={SOCIAL_LINKS.spotify}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="win98-link"
+        >
+          music
+        </a>{" "}
+        too
+      </p>
     </div>
   );
 }

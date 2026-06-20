@@ -13,6 +13,18 @@ interface Win98WindowManagerContextValue {
 
 const Win98WindowManagerContext = createContext<Win98WindowManagerContextValue | undefined>(undefined);
 
+const noopWindowAction = (windowId: string): void => {
+  void windowId;
+};
+
+const FALLBACK_CONTEXT_VALUE: Win98WindowManagerContextValue = {
+  hiddenWindowIds: new Set<string>(),
+  hideWindow: noopWindowAction,
+  registerWindow: noopWindowAction,
+  restoreAllWindows: () => undefined,
+  unregisterWindow: noopWindowAction,
+};
+
 interface Win98WindowManagerProps {
   children: ReactNode;
 }
@@ -92,7 +104,8 @@ export function useWin98WindowManager(): Win98WindowManagerContextValue {
   const contextValue = useContext(Win98WindowManagerContext);
 
   if (!contextValue) {
-    throw new Error("useWin98WindowManager must be used inside Win98WindowManager");
+    console.warn("useWin98WindowManager must be used inside Win98WindowManager");
+    return FALLBACK_CONTEXT_VALUE;
   }
 
   return contextValue;

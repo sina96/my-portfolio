@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getBlogPost } from "../../data/blogPosts";
 import { ThemeInitializer } from "../../components/ThemeInitializer";
 import { Win98Window } from "../../components/Win98Window";
+import { sanitizeHtml } from "../../utils/sanitizeHtml";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -97,7 +98,7 @@ export default async function BlogPost({ params }: BlogPostPageProps) {
 
           <div
             className="blog-post-content"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
           />
 
           <div className="field-row blog-post-actions">

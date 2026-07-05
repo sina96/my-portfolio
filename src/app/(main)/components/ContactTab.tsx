@@ -20,9 +20,7 @@ export function ContactTab() {
 
   return (
     <div className="contact-tab">
-      <h2 className="win98-section-title">
-        Let&apos;s create something amazing together
-      </h2>
+      <h2 className="win98-section-title">Let&apos;s link up!</h2>
       <p className="contact-copy">
         Have a fun project? Brainstorming? Rant? Hmu!
       </p>

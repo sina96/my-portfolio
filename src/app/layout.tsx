@@ -24,6 +24,9 @@ export const metadata: Metadata = {
   description: "Software developer focused on backend systems, cloud migration, and modern delivery. Blog and CV.",
   alternates: {
     canonical: "/",
+    types: {
+      "application/rss+xml": [{ url: "/feed.xml", title: "Sina Bastani - Blog" }],
+    },
   },
   openGraph: {
     type: "website",

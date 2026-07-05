@@ -38,14 +38,16 @@ bun-debug.log*
 # vercel
 .vercel
 
+#.env
+.env
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
-# opencode
-.opencode/**
-.opencode
-
 # cursor
 .cursor/**
 .cursor
+
+# claude
+.claude

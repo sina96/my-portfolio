@@ -8,10 +8,13 @@ const SANITIZE_CONFIG: sanitize.IOptions = {
     "ul", "ol", "li",
     "a", "blockquote", "code", "pre",
     "div", "span", "hr", "img",
+    "table", "thead", "tbody", "tr", "th", "td",
   ],
   allowedAttributes: {
     a: ["href", "target", "rel"],
     img: ["src", "alt", "class"],
+    th: ["align"],
+    td: ["align"],
     "*": ["class"],
   },
   allowedSchemes: ["http", "https", "mailto"],

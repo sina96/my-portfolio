@@ -85,17 +85,43 @@ Note: `bun run lint` / `next lint` is currently failing with `Invalid project di
 
 ## Project-Specific Patterns
 
+### Docs
+- How-to docs live in `docs/howto/`
+- Current PR/user-facing change notes live in `docs/changelogs/` with a compact dated list format
+- Historical planning/reference docs live in `docs/archive/`
+- Keep README links pointed at the active docs layout when moving docs
+
 ### Blog Posts
 - Markdown files in `src/content/blog/`
-- Frontmatter: `title`, `date`, `excerpt` (all required)
+- Frontmatter: `title`, `date`, `excerpt` (all required), optional `hidden`
+- Dates must use `YYYY-MM-DD`; invalid dates are ignored by the blog loader
+- `hidden: true` excludes a post from archive/home lists, direct blog routes, static params, and RSS
 - Use `getAllBlogPosts()` for lists, `getBlogPost(slug)` for details
 - Posts sorted by date descending
+- Markdown rendering is centralized in `renderBlogMarkdown()` in `src/app/(main)/data/blogPosts.ts`
+- Blog Markdown supports sanitized HTML, theme-aware syntax highlighting, tables, blockquotes, images, dividers, and CMS-safe spacer markers
+- Blog table output is wrapped in `.blog-table-scroll`; keep table, code, image, quote, and divider styling scoped to `.blog-post-content`
+- Blog detail pages are statically generated via `generateStaticParams()` and `dynamicParams = false`
+- RSS is served from `src/app/feed.xml/route.ts`; it should stay static because content changes on deploy
+- Sveltia CMS is served by `src/app/admin/[[...path]]/route.ts` at `/admin`, `/admin/index.html`, `/admin/config.yml`, and `/admin/editor-components.js`
+- Admin routes are protected with Basic Auth from `ADMIN_USERNAME` and `ADMIN_PASSWORD`; production and local dev fail closed if either value is missing
+- CMS config and custom editor components are embedded in the admin route so static `public/admin` files cannot bypass auth
+- Uploaded blog images are stored under `public/images/blog/`
+- Use `docs/howto/ADDING_BLOG_POSTS.md` as the authoring guide when changing CMS/blog behavior
+- Showcase posts are for manual validation and should not be treated as permanent product content
 
 ### CV
 - Markdown source: `src/content/cv/sina-cv.md` (frontmatter may exist; current loader ignores it)
 - PDF source: `src/content/cv/sina-cv-pdf.pdf` served at `/cv.pdf` via `src/app/cv.pdf/route.ts`
 - Data helper: `src/app/(main)/data/cv.ts` returns `{ rawMarkdown, renderedHtml }` (rendered HTML sanitized via `sanitizeHtml()`)
 - Route: `src/app/(main)/cv/page.tsx` uses the Win98 window pattern; responsive layout controlled by `.cv-*` classes in `src/app/globals.css`
+
+### Availability
+- Public availability uses `/api/availability`, `src/app/(main)/components/AvailabilityWidget.tsx`, and `src/app/(main)/data/availability.ts`
+- ICS integration is implemented in `src/app/api/availability/ics.ts`
+- Configure calendar sources with `AVAILABILITY_ICS_URLS_JSON` for remote feeds or `AVAILABILITY_ICS_FILE_PATHS_JSON` for local exports
+- Local `.ics` exports, when used, must stay under `private/availability/`; that path is gitignored and should not be committed
+- If no ICS source is configured or loading fails, the API falls back to mock availability
 
 ### Theme
 - Dark mode stored in `localStorage` key `"theme"` (values: `"dark"` or `"light"`)

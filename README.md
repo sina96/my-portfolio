@@ -15,6 +15,7 @@ bun run dev
 Open [http://localhost:3000](http://localhost:3000) to view the site.
 
 Edit `.env.local` with private calendar ICS URLs or local `.ics` file paths if you want live availability data.
+Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` to access the `/admin` CMS password gate. Restart the dev server after changing env files.
 
 ### Alternative: Use npm
 
@@ -30,11 +31,11 @@ This project uses [98.css](https://github.com/jdan/98.css) - a CSS framework for
 
 ## Documentation
 
-For more information, see the [`docs/`](./docs/) directory:
+Project docs are organized by purpose:
 
-- [Adding Blog Posts](./docs/ADDING_BLOG_POSTS.md) - How to add new blog posts
-- [ICS Availability](./docs/ICS_AVAILABILITY.md) - How to configure calendar-based availability
-- [Decap CMS Plan](./docs/DECAP_CMS_PLAN.md) - Future CMS integration roadmap
+- [How to add blog posts](./docs/howto/ADDING_BLOG_POSTS.md)
+- [Upcoming PR changelog](./docs/changelogs/2026-07-05-upcoming-pr.md)
+- [Archive](./docs/archive/) - older plans, implementation notes, and reference docs
 
 ## Tech Stack
 
@@ -50,3 +51,4 @@ For more information, see the [`docs/`](./docs/) directory:
 Deploy on [Vercel](https://vercel.com) or your preferred platform. Vercel automatically detects Bun via the `bun.lock` file and uses it for builds. The site builds as a standard Next.js application with Turbopack.
 
 For availability in production, add `AVAILABILITY_ICS_URLS_JSON` and any optional availability env vars in the deployment platform as server-side environment variables.
+For Sveltia CMS in production, add `ADMIN_USERNAME` and `ADMIN_PASSWORD` in Vercel before visiting `/admin`.

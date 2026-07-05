@@ -1,23 +1,154 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import hljs from "highlight.js/lib/common";
 import { marked } from "marked";
-import { BlogPost } from "../types/blog";
+import type { BlogPost } from "../types/blog";
 import { sanitizeHtml } from "../utils/sanitizeHtml";
 
 const postsDirectory = path.join(process.cwd(), "src/content/blog");
 
-// Configure marked for safe HTML output
-marked.setOptions({
-  breaks: true,
-  gfm: true,
-});
+const blogMarkdownRenderer = new marked.Renderer();
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function normalizeCodeLanguage(language: string | undefined): string | undefined {
+  const normalized = language?.trim().split(/\s+/)[0].toLowerCase();
+
+  if (!normalized || !/^[a-z0-9_+-]+$/.test(normalized)) {
+    return undefined;
+  }
+
+  return normalized;
+}
+
+function normalizeDateString(date: string): string | undefined {
+  const trimmedDate = date.trim();
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmedDate);
+
+  if (!match) {
+    return undefined;
+  }
+
+  const [, year, month, day] = match;
+  const parsedDate = new Date(`${trimmedDate}T00:00:00Z`);
+
+  if (
+    Number.isNaN(parsedDate.getTime()) ||
+    parsedDate.getUTCFullYear() !== Number(year) ||
+    parsedDate.getUTCMonth() + 1 !== Number(month) ||
+    parsedDate.getUTCDate() !== Number(day)
+  ) {
+    return undefined;
+  }
+
+  return trimmedDate;
+}
+
+function highlightCode(code: string, language: string | undefined): { html: string; language?: string } {
+  const normalizedLanguage = normalizeCodeLanguage(language);
+
+  if (normalizedLanguage && hljs.getLanguage(normalizedLanguage)) {
+    const result = hljs.highlight(code, {
+      language: normalizedLanguage,
+      ignoreIllegals: true,
+    });
+
+    return { html: result.value, language: normalizedLanguage };
+  }
+
+  return { html: escapeHtml(code) };
+}
+
+blogMarkdownRenderer.code = ({ text, lang }) => {
+  const highlighted = highlightCode(text, lang);
+  const languageClass = highlighted.language ? ` language-${highlighted.language}` : "";
+
+  return `<pre><code class="hljs${languageClass}">${highlighted.html}</code></pre>`;
+};
+
+function expandBlogAuthoringShortcodes(content: string): string {
+  let inCodeFence = false;
+
+  return content
+    .split("\n")
+    .map((line) => {
+      if (/^\s*(```|~~~)/.test(line)) {
+        inCodeFence = !inCodeFence;
+        return line;
+      }
+
+      if (inCodeFence) {
+        return line;
+      }
+
+      if (/^\s{0,3}([-*_])(?:\s*\1){2,}\s*$/.test(line)) {
+        return "\n<hr>\n";
+      }
+
+      if (/^\s*\{\{divider\}\}\s*$/.test(line)) {
+        return "<hr>";
+      }
+
+      if (/^\s*\{\{spacer\}\}\s*$/.test(line)) {
+        return '<div class="blog-spacer"></div>';
+      }
+
+      if (/^\s*\{\{spacer-lg\}\}\s*$/.test(line)) {
+        return '<div class="blog-spacer blog-spacer-lg"></div>';
+      }
+
+      return line;
+    })
+    .join("\n");
+}
+
+function wrapBlogTables(html: string): string {
+  return html.replace(/<table>/g, '<div class="blog-table-scroll"><table>').replace(/<\/table>/g, "</table></div>");
+}
+
+/**
+ * Converts blog Markdown to sanitized HTML.
+ */
+export function renderBlogMarkdown(content: string): string {
+  const htmlContent = marked(expandBlogAuthoringShortcodes(content), {
+    async: false,
+    breaks: true,
+    gfm: true,
+    renderer: blogMarkdownRenderer,
+  });
+
+  return sanitizeHtml(wrapBlogTables(htmlContent));
+}
 
 // Validate frontmatter data
 interface FrontmatterData {
   title?: unknown;
   date?: unknown;
   excerpt?: unknown;
+  hidden?: unknown;
+}
+
+function isHiddenPost(data: FrontmatterData, filename: string): boolean {
+  const { hidden } = data;
+
+  if (hidden === undefined || hidden === null || hidden === false) {
+    return false;
+  }
+
+  if (hidden === true) {
+    return true;
+  }
+
+  console.warn(`[Blog] Invalid frontmatter in ${filename}: "hidden" must be a boolean`);
+  return false;
 }
 
 // Validate slug to prevent path traversal and ensure consistency
@@ -58,13 +189,12 @@ function isValidFrontmatter(
     // Format valid Date object to YYYY-MM-DD
     dateStr = date.toISOString().split("T")[0];
   } else if (typeof date === "string") {
-    // Validate string date format
-    const parsed = Date.parse(date);
-    if (isNaN(parsed)) {
-      console.warn(`[Blog] Invalid frontmatter in ${filename}: invalid "date" format`);
+    const normalizedDate = normalizeDateString(date);
+    if (!normalizedDate) {
+      console.warn(`[Blog] Invalid frontmatter in ${filename}: "date" must use valid YYYY-MM-DD format`);
       return { valid: false };
     }
-    dateStr = date;
+    dateStr = normalizedDate;
   } else if (date === undefined || date === null) {
     console.warn(`[Blog] Invalid frontmatter in ${filename}: missing "date" field`);
     return { valid: false };
@@ -104,6 +234,10 @@ export function getAllBlogPosts(): BlogPost[] {
     const fullPath = path.join(postsDirectory, file);
     const fileContents = fs.readFileSync(fullPath, "utf8");
     const { data } = matter(fileContents);
+
+    if (isHiddenPost(data, file)) {
+      continue;
+    }
 
     // Validate frontmatter before adding to list
     const validation = isValidFrontmatter(data, file);
@@ -151,19 +285,21 @@ export function getBlogPost(slug: string): (BlogPost & { content: string }) | un
   const fileContents = fs.readFileSync(fullPath, "utf8");
   const { data, content } = matter(fileContents);
 
+  if (isHiddenPost(data, `${slug}.md`)) {
+    return undefined;
+  }
+
   // Validate frontmatter before returning
   const validation = isValidFrontmatter(data, `${slug}.md`);
   if (!validation.valid) {
     return undefined;
   }
 
-  const htmlContent = marked(content) as string;
-
   return {
     slug,
     title: validation.title,
     date: validation.date,
     excerpt: validation.excerpt,
-    content: sanitizeHtml(htmlContent),
+    content: renderBlogMarkdown(content),
   };
 }

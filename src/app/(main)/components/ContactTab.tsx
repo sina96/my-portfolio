@@ -24,7 +24,7 @@ export function ContactTab() {
         Let&apos;s create something amazing together
       </h2>
       <p className="contact-copy">
-        Have a fun project? Brainstorming? Friendly chat? Hit me up!
+        Have a fun project? Brainstorming? Rant? Hmu!
       </p>
 
       <div className="field-row contact-actions">

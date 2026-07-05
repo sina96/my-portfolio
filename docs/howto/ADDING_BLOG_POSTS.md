@@ -9,7 +9,7 @@ This guide explains how to add new blog posts to the portfolio website using the
 1. Create a new `.md` file in `src/content/blog/`
 2. Add frontmatter with required fields
 3. Write your content in Markdown
-4. The post appears automatically on the site
+4. Leave `hidden` unset/false when the post should appear on the site
 
 ---
 
@@ -40,6 +40,7 @@ Every post must start with YAML frontmatter between `---` markers:
 title: "Your Post Title"
 date: "YYYY-MM-DD"
 excerpt: "A brief summary of your post (1-2 sentences). Shown in blog lists."
+hidden: false
 ---
 ```
 
@@ -50,6 +51,22 @@ excerpt: "A brief summary of your post (1-2 sentences). Shown in blog lists."
 | `title` | Post title (non-empty string) | `"My New Blog Post"` |
 | `date` | Publication date (valid YYYY-MM-DD format) | `"2026-02-04"` or `2026-02-04` |
 | `excerpt` | Short summary (non-empty string) | `"A quick update on..."` |
+
+**Optional fields:**
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| `hidden` | Hide the post from the site while keeping it in the repo/CMS | `true` or `false` |
+
+Hidden posts are skipped everywhere:
+
+- Home page latest posts
+- Blog archive
+- Individual `/blog/[slug]` pages
+- RSS feed
+- Static generation
+
+In Sveltia, use the **Hidden** toggle. This is the supported draft-like workflow for this site. Sveltia’s upstream editorial workflow is not yet implemented, so saving a hidden post still commits the file, but the website does not publish it.
 
 **Date format notes:**
 - Both quoted (`"2026-02-04"`) and unquoted (`2026-02-04`) dates work
@@ -94,6 +111,19 @@ console.log(greeting);
 > Blockquotes are also supported.
 ```
 
+### Writing in Sveltia CMS
+
+Open `/admin/`, edit or create a post, and use the **Body** field.
+
+- `/admin/` is protected by Basic Auth. Set `ADMIN_USERNAME` and
+  `ADMIN_PASSWORD` locally or in Vercel before using Sveltia. Restart the dev
+  server after changing env files.
+- After Basic Auth, Sveltia still requires GitHub PAT login to publish commits.
+- Use the rich text toolbar for common formatting.
+- Use raw Markdown mode when you need precise table/divider syntax.
+- Use the **Table** editor component to insert a starter table template.
+- Use the **Hidden** toggle to save a post without publishing it on the site.
+
 ### 4. Supported Markdown Features
 
 The blog supports standard Markdown syntax:
@@ -106,7 +136,60 @@ The blog supports standard Markdown syntax:
 - **Lists:** `-` or `1.` for bullets/numbers
 - **Code:** `` `inline` `` or fenced blocks with ` ``` `
 - **Blockquotes:** `> quoted text`
-- **Horizontal rules:** `---`
+- **Horizontal rules:** `---`, `***`, or `___`
+- **Tables:** GitHub-flavored Markdown tables
+
+### Extra Spacing and Dividers
+
+Markdown collapses repeated blank lines, so adding more empty lines in Sveltia
+does not create more visual space on the site. Use these explicit markers
+instead:
+
+```markdown
+First paragraph.
+
+{{spacer}}
+
+Second paragraph with a little extra space above it.
+
+{{spacer-lg}}
+
+Third paragraph with a larger gap above it.
+```
+
+For a reliable divider line, prefer:
+
+```markdown
+Text above the divider.
+
+---
+
+Text below the divider.
+```
+
+The blog renderer also accepts `***`, `___`, and `{{divider}}`.
+
+### Tables
+
+Use GitHub-flavored Markdown table syntax, or insert the **Table** component in
+Sveltia and edit the generated Markdown:
+
+```markdown
+| Feature | Status | Notes |
+| --- | ---: | --- |
+| RSS | Done | `/feed.xml` |
+| CMS | Done | Sveltia |
+| Tables | Done | Scrolls on mobile |
+```
+
+Table alignment markers work:
+
+- `---` = left/default
+- `---:` = right
+- `:---:` = center
+
+Tables keep their columns on desktop and scroll horizontally on narrow mobile
+screens when needed.
 
 **Security note:** All HTML content is sanitized before rendering. Only safe tags (paragraphs, headings, lists, links, code blocks, etc.) are allowed.
 
@@ -157,15 +240,16 @@ Stay tuned!
 The blog system reads Markdown files at build/request time:
 
 1. **`getAllBlogPosts()`** - Scans `src/content/blog/`, validates frontmatter, returns metadata sorted by date (newest first)
-2. **`getBlogPost(slug)`** - Validates slug, reads file, validates frontmatter, converts Markdown to sanitized HTML
+2. **`getBlogPost(slug)`** - Validates slug, reads file, validates frontmatter, skips hidden posts, converts Markdown to sanitized HTML
 
 **Processing pipeline:**
 1. Validate filename (alphanumeric, hyphens, underscores only)
 2. Parse YAML frontmatter with `gray-matter`
 3. Validate required fields (title, date, excerpt)
-4. Convert Markdown to HTML with `marked`
-5. Sanitize HTML output (strips unsafe tags/attributes)
-6. Add security attributes to external links
+4. Skip posts with `hidden: true`
+5. Convert Markdown to HTML with `marked`
+6. Sanitize HTML output (strips unsafe tags/attributes)
+7. Add security attributes to external links
 
 Posts automatically appear in:
 - **Home page** → "Latest Blogs" sidebar (first 3 posts)
@@ -177,7 +261,7 @@ Posts automatically appear in:
 ## Tips
 
 - **Date sorting:** Posts are sorted by date descending (newest first)
-- **Drafts:** Currently no draft system—all `.md` files are published. To hide a post, rename it to `.md.draft` or move it out of the folder.
+- **Drafts/hidden posts:** Set `hidden: true` or turn on **Hidden** in Sveltia.
 - **Images:** Place images in `public/images/blog/` and reference them as `/images/blog/your-image.png`
 - **Preview:** Run `npm run dev` and visit `http://localhost:3000/blog/your-slug` to preview
 
@@ -189,6 +273,7 @@ Posts automatically appear in:
 - Ensure the file has `.md` extension
 - Check frontmatter syntax (YAML is whitespace-sensitive)
 - Verify all required fields are present and non-empty
+- Check that `hidden` is not set to `true`
 - Check the console for `[Blog] Invalid frontmatter` warnings
 - Restart the dev server if needed
 
@@ -224,4 +309,4 @@ src/
 
 ## Future: CMS Integration
 
-For a visual editor experience without touching Markdown files directly, see [DECAP_CMS_PLAN.md](./DECAP_CMS_PLAN.md) for the planned Decap CMS integration.
+For implementation background on the visual editor, see [CMS_PLAN.md](../archive/CMS_PLAN.md).

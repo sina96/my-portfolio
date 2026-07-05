@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getBlogPost } from "../../data/blogPosts";
+import { getAllBlogPosts, getBlogPost } from "../../data/blogPosts";
 import { ThemeInitializer } from "../../components/ThemeInitializer";
 import { Win98Window } from "../../components/Win98Window";
-import { sanitizeHtml } from "../../utils/sanitizeHtml";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export const dynamicParams = false;
+
+export function generateStaticParams(): { slug: string }[] {
+  return getAllBlogPosts().map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
@@ -98,7 +103,7 @@ export default async function BlogPost({ params }: BlogPostPageProps) {
 
           <div
             className="blog-post-content"
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
+            dangerouslySetInnerHTML={{ __html: post.content }}
           />
 
           <div className="field-row blog-post-actions">

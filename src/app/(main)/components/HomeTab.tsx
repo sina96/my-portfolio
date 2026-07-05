@@ -17,7 +17,7 @@ export function HomeTab() {
         />
         <h1 className="home-title">i&apos;m Sina.</h1>
         <p className="home-subtitle">
-          Human. Developer. Can't properly work with printers.
+          Human. Developer. Can&apos;t properly work with printers.
         </p>
       </div>
 

@@ -76,21 +76,24 @@ blogMarkdownRenderer.code = ({ text, lang }) => {
 
 function expandBlogAuthoringShortcodes(content: string): string {
   let inCodeFence = false;
+  let fenceDelimiter = "";
 
   return content
     .split("\n")
     .map((line) => {
-      if (/^\s*(```|~~~)/.test(line)) {
-        inCodeFence = !inCodeFence;
-        return line;
-      }
-
       if (inCodeFence) {
+        if (/^\s*$/.test(line) === false && line.trimStart().startsWith(fenceDelimiter) && /^\s*(```+|~~~+)\s*$/.test(line)) {
+          inCodeFence = false;
+          fenceDelimiter = "";
+        }
         return line;
       }
 
-      if (/^\s{0,3}([-*_])(?:\s*\1){2,}\s*$/.test(line)) {
-        return "\n<hr>\n";
+      const fenceMatch = /^\s*(```|~~~)/.exec(line);
+      if (fenceMatch) {
+        inCodeFence = true;
+        fenceDelimiter = fenceMatch[1];
+        return line;
       }
 
       if (/^\s*\{\{divider\}\}\s*$/.test(line)) {

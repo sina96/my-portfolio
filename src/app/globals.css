@@ -758,7 +758,6 @@ a.button.default {
 .blog-post-content th code {
   white-space: normal;
   overflow-wrap: anywhere;
-  word-break: break-word;
 }
 
 .blog-post-content th {

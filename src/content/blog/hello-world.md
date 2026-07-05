@@ -1,7 +1,8 @@
 ---
-title: "Hello World! Blog Debut"
-date: "2026-02-04"
-excerpt: "This is my first post where I share my thoughts and rants."
+title: Hello World! Blog Debut
+date: 2026-02-04
+excerpt: This is my first post where I share my thoughts and rants.
+hidden: false
 ---
 
 Greetings reader!

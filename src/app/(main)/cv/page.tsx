@@ -81,7 +81,7 @@ export default async function CVPage() {
                   Rendered View
                 </div>
                 <div
-                  className="blog-post-content"
+                  className="cv-content"
                   dangerouslySetInnerHTML={{ __html: renderedHtml }}
                 />
               </div>

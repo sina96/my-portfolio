@@ -13,12 +13,12 @@ header:
     link: https://sinabastani.dev
 ---
 
-<!-- LAST UPDATED: 17 feb 2026 -->
+<!-- LAST UPDATED: 14 aug 2026 -->
 <!-- Used OhMyCv.app -->
 
 ## Profile
 
-Senior Backend Developer with 5+ years of experience in large-scale e-commerce platforms. Specialized in Java and Spring-based distributed systems, SAP Commerce Cloud, cloud migration, secure payment integrations, and CI/CD modernization. Experienced in cloud-based architectures, test-driven development, and secure system integrations in high-traffic production environments. Actively leverage AI-assisted development workflows to enhance refactoring, test generation, and architectural exploration while maintaining strong engineering judgment and code quality standards.
+I got into software development from geeking out on the internet in my school days making custom blog web applications in Wordpress and trying out coding in php and since then I continued learning more and more. Recently I have been working with large-scale e-commerce platforms based on Java and Spring as a Backend developer working on cloud migration, pipeline modernisation and continous development. I am still nerding out on the internet trying new things such as using golang and Rust in side projects, contributing to opensource projects and doing more with LLM-based workflows.
 
 ## Education
 
@@ -44,7 +44,7 @@ B.S. in Computer & Systems science
 
 - Office Administration (part-time)
 
-## Selected Projects
+## Job experiences
 
 **Axfood IT - E-Com B2B Web Team**
   ~ 06/2025 - *Present*
@@ -53,11 +53,11 @@ B.S. in Computer & Systems science
  - Backend developer in Snabbgross mainly focused on the Cloud migration and modernization project.
  -  Executed migration from Sonic MQ to AWS SQS with event-driven architecture principles. Implemented mTLS-secured communication for internal integrations. Moved from Jenkins to Bitbucket Pipelines with functional CI/CD towards SAP CCV2. 
  - Designed and implemented performance testing strategy using Grafana k6. Established baseline performance metrics for Cloud migration project.
- - Reduced technichal debts by aligning Spring dependencies and API definitions with updated standards.
- - Configured an agentic workspace for developer collaboration in the development environment and integrated agentic calls into Bitbucket pipelines to automate recurring CI/CD tasks.
-- Contributed to new feature development, maintenance and code review loops.
-- Participated in requirement refinement and technical solution discussions with cross-functional teams. 
-- Tech: Java, Spring, SAP CCV2, Dynatrace, AWS S3 SQS, Grafana k6, REST API, mTLS Connections, Bitbucket Pipelines.
+ - Reduced technical debts by aligning Spring dependencies and API definitions with updated standards.
+ - Configured new pipelines in CI/CD processes for more robust and reliable environment such as dependencies check with OWASP Dependency Check, continous updates by RenovateBot and code quality checks by Sonarqube CE.
+ - Configured an agentic workspace for developer collaboration in the development environment in form of context refinement and defining skills files and reusable markdown resources.
+ - Contributed to new feature development, maintenance and code review loops.. 
+ - Tech: Java, Spring, SAP CCV2, Dynatrace, AWS S3 SQS, Grafana k6, REST API, Bitbucket Pipelines.
 
 <br>
 
@@ -100,14 +100,21 @@ B.S. in Computer & Systems science
 
 <br>
 
+## Selected Side Project
+*yTunes - TUI Music Player* [Link to github](https://github.com/sina96/yTunes)
+- A TUI audio player built in Go and Bubble Tea. It plays audio from a YouTube URL and other sources in the terminal
+- It all started when I was tired to have music playing tabs in chrome eating my RAM while doing works in terminal or some IDE. So I started building the solution as a useful tool on my own wrapped around a pretty terminal user interface
+- It plays through mpv with a retro-styled responsive terminal user interface. It also comes with a handful of built-in themes such as dracula, gruvbox, Catppuccin.
+- Playback runs through mpv's JSON IPC socket (--input-ipc-server) so ytunes can poll real playback position and pause/resume cleanly.
+
 ## Skills & Merits
 
-**Certificates**: AWS Certified Solutions Architect Associate
+**Certificates:** AWS Certified Solutions Architect Associate
 
-**Programming Languages:** Java 17-25, JavaScript, SQL, Groovy, Kotlin, Python, HTML/CSS, .Net
+**Programming Languages:** Java 17+, JavaScript, SQL, Groovy, Kotlin, Python, HTML/CSS, .Net, Golang
 
 **Tools and Frameworks:** Spring 5/6, JUnit 4/5, Git, REST, SOAP, Postman, React, TypeScript, Swagger, SAP Commerce, AWS Console, Docker, Scrum, Kanban, Agentic Workflows.
 
-**Knowledge in LLM-based coding assistants:** Claude Code, Warp, OpenCode, Cursor, Codex, Pi, Amazon Kiro.
+**Knowledge in LLM-based coding assistants:** Claude Code, Pi, Cursor, Codex, Ollama, Amazon Kiro.
 
 **Languages:** Swedish (fluent), English (fluent)

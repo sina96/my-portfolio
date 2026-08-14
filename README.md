@@ -1,5 +1,7 @@
 # Portfolio Website
 
+[![Build](https://github.com/sina96/my-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/sina96/my-portfolio/actions/workflows/ci.yml)
+
 A personal portfolio website built with Next.js featuring a retro Windows 98 theme.
 
 ## Getting Started

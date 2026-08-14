@@ -1,0 +1,13 @@
+{
+  "extends": ["config:recommended"],
+  "timezone": "Europe/Stockholm",
+  "schedule": ["on Monday"],
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 1,
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
+  ]
+}

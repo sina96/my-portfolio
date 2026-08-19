@@ -13,7 +13,7 @@ Fomo is a real thing, because for me it hasn't been the number of the new things
 
 [![Chart from ai-health.syntax.fm](/images/blog/dev-health-ai-aug19.png)](ai-health.syntax.fm)
 
-How should we balance it all? well I can talk only about myself. Previously i talk about [saying no more often](https://sinabastani.dev/blog/slow-the-fuck-down) but i didn't say no to myself. So i need to practice that more and try to organize my time in a way that I can work on my learning and skills in a healthy pace even if it is easier than ever nowadays.
+How should we balance it all? well I can talk only about myself. Previously i talk about [saying no more often](https://sinabastani.dev/blog/slow-the-fuck-down) but i didn't say no to myself. So i need to practice that more and try to organize my time in a way that I can work on my learning and skills in a healthy pace even if it is easier than ever nowadays. And most definitely learn how to leave everything behind. Spending time with family and loved ones should come first, if it is not happening, something is wrong.
 
 Also It is important to filter out the hype and buzzwords and just focus on the things that you enjoy. Recently i have been living in the terminal more than usual so i really wanted to  make a TUI on my own! I started a [small project](https://github.com/sina96/ytunes) myself and have been enjoying focusing on learning golang, cicd workflows and how to actually manage an open source project. I would recommend doing so rather than following unnecessary AI slop setups.
 

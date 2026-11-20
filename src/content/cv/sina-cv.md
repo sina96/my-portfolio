@@ -13,7 +13,7 @@ header:
     link: https://sinabastani.dev
 ---
 
-<!-- LAST UPDATED: update before exporting -->
+<!-- LAST UPDATED: 20 Nov 2026 -->
 <!-- Personal CV: software engineering, cloud modernization and applied AI enablement -->
 
 ## Profile

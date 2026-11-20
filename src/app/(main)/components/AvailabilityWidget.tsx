@@ -140,13 +140,13 @@ export function AvailabilityWidget({ id }: Readonly<AvailabilityWidgetProps>) {
         </button>
       </div>
 
-      {isLoading ? (
-        <p className="availability-empty">Loading availability...</p>
-      ) : loadError ? (
-        <p className="availability-empty">{loadError}</p>
-      ) : groupedSlots.length > 0 ? (
+      <div aria-live="polite">
+        {isLoading && <p className="availability-empty">Loading availability...</p>}
+        {loadError && <p className="availability-empty">{loadError}</p>}
+      </div>
+      {isLoading || loadError ? null : groupedSlots.length > 0 ? (
         <>
-          <div className="availability-day-grid" aria-label="Available time slots">
+          <div className="availability-day-grid" role="group" aria-label="Available time slots">
             {groupedSlots.map((dayGroup) => (
               <section key={dayGroup.label} className="availability-day">
                 <h3>{dayGroup.label}</h3>

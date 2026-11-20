@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "./anita.css";
 
 export const metadata: Metadata = {
   title: "Anita",
@@ -15,5 +16,5 @@ export default function AnitaLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return children;
+  return <div className="anita-page">{children}</div>;
 }

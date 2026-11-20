@@ -116,8 +116,10 @@ console.log(greeting);
 Open `/admin/`, edit or create a post, and use the **Body** field.
 
 - `/admin/` is protected by Basic Auth. Set `ADMIN_USERNAME` and
-  `ADMIN_PASSWORD` locally or in Vercel before using Sveltia. Restart the dev
-  server after changing env files.
+  `ADMIN_PASSWORD` locally or in Vercel before using Sveltia. Generate a unique
+  password with `openssl rand -base64 24`. Admin fails closed for the example
+  placeholder or passwords shorter than 16 characters. Restart the dev server
+  after changing env files.
 - After Basic Auth, Sveltia still requires GitHub PAT login to publish commits.
 - Use the rich text toolbar for common formatting.
 - Use raw Markdown mode when you need precise table/divider syntax.
@@ -218,9 +220,9 @@ Next.js 13+ introduced the App Router, which changes how we think about routing:
 - Server Components by default
 - Layouts that persist across pages
 
-## Styling with 98.css
+## Blog styling
 
-I wanted a retro Windows 98 aesthetic, so I used the [98.css](https://jdan.github.io/98.css/) library.
+Posts appear in [xp.css](https://botoxparty.github.io/XP.css/) windows. Article typography, tables, code highlighting, and spacers are scoped to `.blog-post-content` in `src/app/(main)/blog.css`. Test new formatting in both day and night themes.
 
 ## What's Next
 

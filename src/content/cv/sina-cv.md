@@ -2,7 +2,7 @@
 name: Sina Bastani
 header:
   - text: |
-      <span style="font-size: 1.2em; font-weight: bold;">Software Developer</span>
+      <span style="font-size: 1.2em; font-weight: bold;">Software Engineer | Backend, Cloud &amp; AI Enablement</span>
   - text: <span class="iconify" data-icon="tabler:phone"></span> (+46) 700128299
     newLine: true
   - text: <span class="iconify" data-icon="tabler:mail"></span> sina@sinabastani.dev
@@ -13,108 +13,119 @@ header:
     link: https://sinabastani.dev
 ---
 
-<!-- LAST UPDATED: 14 aug 2026 -->
-<!-- Used OhMyCv.app -->
+<!-- LAST UPDATED: update before exporting -->
+<!-- Personal CV: software engineering, cloud modernization and applied AI enablement -->
 
 ## Profile
 
-I got into software development from geeking out on the internet in my school days making custom blog web applications in Wordpress and trying out coding in php and since then I continued learning more and more. Recently I have been working with large-scale e-commerce platforms based on Java and Spring as a Backend developer working on cloud migration, pipeline modernisation and continous development. I am still nerding out on the internet trying new things such as using golang and Rust in side projects, contributing to opensource projects and doing more with LLM-based workflows.
+Software Engineer with 5+ years of experience delivering customer-facing e-commerce systems, secure integrations and cloud modernization with Java, Spring and AWS. I take ownership from implementation through deployment and production troubleshooting, working closely with developers and other stakeholders to turn requirements into practical solutions.
 
-## Education
+I’m curious by nature and like turning “could we do this better?” into something I can build and try with others. Outside client work, I experiment with agentic workflows and durable agents on modern platforms such as Pi and Cloudflare, build tools in other languages such as Go and exchange ideas through Stockholm’s tech community and various AI groups. I tend to carry the same energy into my work and enjoy taking an idea beyond the first experiment, learning from the people using it and figuring out what is worth building next.
 
-**Stockholm University**
-  ~ Stockholm, SE
+## Professional Experience
 
-B.S. in Computer & Systems science
-  ~ 09/2017 - 06/2020
-
-## Employments
 **Vass Consulting Sweden**
   ~ 2020 - *Present*
 
-- Software developer Consultant
+*Software Developer Consultant*
 
-**Stockholm University**
-  ~ 2018 - 2020
-
-- Workshop Manager & Tutor
-
-**Adela Omsorg**
-  ~ 2017 - 2020
-
-- Office Administration (part-time)
-
-## Job experiences
-
-**Axfood IT - E-Com B2B Web Team**
+### Axfood IT — E-Com B2B Web Team
   ~ 06/2025 - *Present*
 
-*Role: Backend Developer*
- - Backend developer in Snabbgross mainly focused on the Cloud migration and modernization project.
- -  Executed migration from Sonic MQ to AWS SQS with event-driven architecture principles. Implemented mTLS-secured communication for internal integrations. Moved from Jenkins to Bitbucket Pipelines with functional CI/CD towards SAP CCV2. 
- - Designed and implemented performance testing strategy using Grafana k6. Established baseline performance metrics for Cloud migration project.
- - Reduced technical debts by aligning Spring dependencies and API definitions with updated standards.
- - Configured new pipelines in CI/CD processes for more robust and reliable environment such as dependencies check with OWASP Dependency Check, continous updates by RenovateBot and code quality checks by Sonarqube CE.
- - Configured an agentic workspace for developer collaboration in the development environment in form of context refinement and defining skills files and reusable markdown resources.
- - Contributed to new feature development, maintenance and code review loops.. 
- - Tech: Java, Spring, SAP CCV2, Dynatrace, AWS S3 SQS, Grafana k6, REST API, Bitbucket Pipelines.
+*Backend Developer — Cloud Modernization & AI Enablement*
 
-<br>
+- Develop and maintain backend services and integrations for Snabbgross, contributing to its migration to SAP Commerce Cloud and modernization of delivery workflows.
+- Act as one of the AI leads in a four-team pilot evaluating Claude Code and Amazon Kiro; focus on development workflows, with Claude Code being tested in two teams.
+- Adapt shared repositories for agent-assisted development through reusable skills, structured Markdown context and permission policies covering secrets, destructive commands, Git operations and AWS access.
+- Integrated Atlassian’s code-review agent into Bitbucket PR workflows and implemented agent-review-before-CI sequencing to address excessive pipeline triggering; iterate on the setup with developer feedback.
+- Delivered the migration of repository-held secrets to AWS Secrets Manager in a shared e-commerce account, using role-based retrieval and deployment-time configuration for SAP Commerce Cloud.
+- Delivered migration from SonicMQ to AWS SQS and implemented mTLS-secured internal integrations.
+- Modernized Jenkins-based delivery workflows to Bitbucket Pipelines; added OWASP Dependency Check and Renovate dependency updates alongside SonarQube checks.
+- Designed a Grafana k6 performance-testing strategy and established baseline metrics for cloud migration readiness.
+- Lead recurring developer discussions on agent-assisted workflows, encouraging shared repository context and bringing feedback from development, testing and requirements discussions into the pilot.
 
-**Axfood IT - E-Com B2C App Team**
+*Tech:* Java, Spring, SAP Commerce Cloud / CCV2, AWS S3, SQS, Secrets Manager, Bitbucket Pipelines, mTLS, Dynatrace, Grafana k6, Claude Code, Amazon Kiro
+
+### Axfood IT — E-Com B2C App Team
   ~ 04/2023 - 05/2025
 
-*Role: Backend Developer*
- - Led backend development for a complete redesign of the Willys app, migrating to React Native. Implemented BankID login using OAuth2 for secure authentication
- - *Scan*&*Go* Feature: Maintaining in-app barcode scanning feature and integrated Swish as a payment method. Handling production issues with internal or external integrations.
-- Contributed to new feature development, backend maintenance, and support for Hemköp's mobile app.
-- Tech: Java, Spring, SAP Hybris, OAuth2, AWS, React Native, REST API, BankId, Swish, SwedBank Pay, Klarna, Extenda integrations.
+*Backend Developer*
 
-<br><br><br>
+- Led backend development for the redesign of the Willys mobile application and its migration to React Native.
+- Implemented secure BankID authentication flows using OAuth2.
+- Maintained Scan & Go functionality, including barcode scanning and payment integration with Swish.
+- Integrated and supported payment services including Swish, Klarna and Swedbank Pay.
+- Investigated production issues across internal and third-party integrations.
+- Delivered feature development, maintenance, support and code reviews for Willys and Hemköp mobile products.
 
-**Axfood IT - E-Com B2C Web Dev**
+*Tech:* Java, Spring, SAP Hybris, AWS, React Native, OAuth2, REST APIs, BankID, Swish, Swedbank Pay, Klarna, Extenda
+
+### Axfood IT — E-Com B2C Web Development
   ~ 03/2022 - 03/2023
 
-*Role: Backend Developer*
- - Developed integration between SAP Hybris and Cloudinary to centralize image storage. Optimized legacy media and improved database performance and cost efficiency within S3 media
-- Ongoing development and maintenance for Willys and Hemköp's web and mobile e-commerce systems. Focus on new features, performance, and integration.
-- Tech: Java, SAP Hybris, Apache Ant, Spring, REST API, AWS, Groovy, Jenkins, Bitbucket Pipelines, Atlassian, Git
+*Backend Developer*
 
-<br>
+- Developed an integration between SAP Commerce and Cloudinary to centralize media storage.
+- Optimized legacy media handling, database usage and S3 storage efficiency.
+- Delivered backend features, integrations, maintenance and performance improvements for Willys and Hemköp.
+- Contributed to CI/CD workflows and release processes.
 
-**Axfood IT - E-Com API Test Automation**
+*Tech:* Java, Spring, SAP Commerce, REST APIs, AWS, Groovy, Jenkins, Bitbucket Pipelines, Git
+
+### Axfood IT — E-Com API Test Automation
   ~ 10/2021 - 03/2022
 
-*Role: Junior Backend Developer*
- - Created comprehensive integration and system tests for REST APIs to improve platform stability
-- Tech: Java, Spring, JUnit, Mockito, SAP Hybris, Bitbucket, Git
+*Junior Backend Developer*
 
-<br>
+- Created integration and system tests for REST APIs using Java, Spring, JUnit and Mockito.
+- Improved platform stability and deployment confidence through automated testing.
 
-**Gastrofy (Northfork) - Front-end development**
+### Gastrofy (Northfork)
   ~ 03/2021 - 05/2021
 
-*Role: Junior Frontend Developer*
+*Junior Frontend Developer*
+
 - Built reusable frontend services and widgets for an online recipe platform.
-- Tech: React, TypeScript, SASS, Figma
 
-<br>
+*Tech:* React, TypeScript, SASS, Figma
 
-## Selected Side Project
-*yTunes - TUI Music Player* [Link to github](https://github.com/sina96/yTunes)
-- A TUI audio player built in Go and Bubble Tea. It plays audio from a YouTube URL and other sources in the terminal
-- It all started when I was tired to have music playing tabs in chrome eating my RAM while doing works in terminal or some IDE. So I started building the solution as a useful tool on my own wrapped around a pretty terminal user interface
-- It plays through mpv with a retro-styled responsive terminal user interface. It also comes with a handful of built-in themes such as dracula, gruvbox, Catppuccin.
-- Playback runs through mpv's JSON IPC socket (--input-ipc-server) so ytunes can poll real playback position and pause/resume cleanly.
+## Selected Project
 
-## Skills & Merits
+### yTunes — Go / Bubble Tea
+[GitHub](https://github.com/sina96/yTunes)
 
-**Certificates:** AWS Certified Solutions Architect Associate
+- Built a terminal music player in Go with a responsive Bubble Tea interface.
+- Integrated mpv through its JSON IPC socket for playback control and state synchronization.
+- Implemented command-line workflows, source handling and built-in terminal themes.
 
-**Programming Languages:** Java 17+, JavaScript, SQL, Groovy, Kotlin, Python, HTML/CSS, .Net, Golang
+## Core Skills
 
-**Tools and Frameworks:** Spring 5/6, JUnit 4/5, Git, REST, SOAP, Postman, React, TypeScript, Swagger, SAP Commerce, AWS Console, Docker, Scrum, Kanban, Agentic Workflows.
+**Backend & Integration:** Java, Spring, REST APIs, OAuth2, SQL, SAP Commerce, asynchronous messaging, mTLS
 
-**Knowledge in LLM-based coding assistants:** Claude Code, Pi, Cursor, Codex, Ollama, Amazon Kiro.
+**Cloud & Delivery:** AWS S3, SQS, Secrets Manager, Docker, Bitbucket Pipelines, Jenkins, GitHub Actions, Git, SonarQube, Renovate, OWASP Dependency Check
 
-**Languages:** Swedish (fluent), English (fluent)
+**Testing & Operations:** JUnit, Mockito, Grafana k6, Dynatrace, integration testing, performance testing, production troubleshooting
+
+**AI Enablement:** Repository context engineering, reusable agent skills, tool-permission policies, AI-assisted code review, developer coaching; Claude Code, Amazon Kiro
+
+**Additional Technologies:** Go (personal projects), Python, Groovy, Kotlin, TypeScript, JavaScript, React, React Native
+
+## Education & Certifications
+
+**Stockholm University** — B.S. in Computer & Systems Science
+  ~ Stockholm, SE | 09/2017 - 06/2020
+
+**AWS Certified Solutions Architect — Associate** — April 2025
+
+**Microsoft Azure Fundamentals (AZ-900)** — May 2021
+
+## Additional Experience
+
+**Stockholm University** — Coding Workshop Manager & Tutor
+  ~ 2018 - 2020
+
+- Led weekly programming workshops and tutoring for Computer & Systems Science students, covering Java, SQL and Python.
+
+## Languages
+
+Swedish (fluent), English (fluent)

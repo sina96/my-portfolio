@@ -1,0 +1,101 @@
+.xp-desktop .xp-hero-window {
+  width: min(calc(100% - 32px), 320px);
+  background: transparent;
+}
+.xp-hero-window .window-body {
+  padding: 10px 12px 12px;
+  border: 1px solid rgb(255 255 255 / .55);
+  background: rgb(255 255 255 / .16);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  text-shadow: 0 1px 3px #080d20, 0 0 6px #080d20;
+}
+[data-theme="dark"] .xp-hero-window .window-body { background: rgb(10 16 48 / .28); }
+@supports not ((backdrop-filter: blur(6px)) or (-webkit-backdrop-filter: blur(6px))) {
+  .xp-hero-window .window-body { background: rgb(24 49 88 / .86); }
+  [data-theme="dark"] .xp-hero-window .window-body { background: rgb(10 16 48 / .9); }
+}
+.xp-hero-window img { display: block; width: 72px; height: 72px; margin: 0 auto; }
+.xp-hero-greeting {
+  margin: 0;
+  font: 400 21px/1.15 "Trebuchet MS", var(--font-pt-sans), "Segoe UI", sans-serif;
+}
+.xp-hero-note {
+  width: fit-content;
+  margin: .35em auto 0;
+  color: rgb(255 255 255 / .8);
+  font-size: 12px;
+}
+[data-theme="dark"] .xp-hero-note { color: rgb(255 255 255 / .7); }
+.xp-desktop #xp-hero-icon {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  position: absolute;
+  inset: 16px auto auto 16px;
+  min-width: 0;
+  padding: 4px;
+  background: transparent;
+  border: 1px solid transparent;
+  box-shadow: none;
+  color: white;
+  font: 700 .85rem var(--dense-ui);
+}
+#xp-hero-icon span { background: #14204acc; padding: 2px 5px; text-shadow: 1px 2px #080d20; }
+.xp-desktop #xp-hero-icon:hover { background: #24386a80; border-color: #c0d7ff; }
+.xp-scenery-caption {
+  position: absolute;
+  bottom: calc(var(--taskbar-space) + 54px);
+  max-width: 75%;
+  margin: 0;
+  color: rgb(255 255 255 / .85);
+  text-shadow: 0 1px 4px #080d20, 0 0 6px #080d20;
+  font: 400 15px/1.35 var(--chrome);
+}
+@media (width < 760px), (prefers-reduced-motion: reduce) {
+  .xp-scenery-caption { bottom: 12px; }
+}
+.xp-tray-balloon {
+  position: absolute;
+  right: 7px;
+  bottom: calc(100% + 10px);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  width: min(265px, calc(100vw - 24px));
+  padding: 10px 10px 12px;
+  background: #fff4bd;
+  border: 1px solid #675324;
+  border-radius: 8px;
+  box-shadow: 3px 4px 0 #10182745;
+  color: #30280e;
+  font: normal .85rem/1.45 var(--dense-ui);
+  animation: xp-tip-pop 170ms steps(4);
+}
+.xp-tray-balloon::after {
+  content: "";
+  position: absolute;
+  bottom: -7px;
+  right: 26px;
+  width: 12px;
+  height: 12px;
+  background: inherit;
+  border: solid #675324;
+  border-width: 0 1px 1px 0;
+  transform: rotate(45deg);
+}
+.xp-tray-balloon p { margin: 2px 0 0; }
+.xp-desktop .xp-tray-balloon button {
+  align-self: start;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0;
+  color: #30280e;
+  background: #fff8d9;
+  border-color: #967837;
+}
+@keyframes xp-tip-pop { from { opacity: 0; transform: translateY(5px); } }
+@media (prefers-reduced-motion: reduce) {
+  .xp-tray-balloon { animation: none; }
+}

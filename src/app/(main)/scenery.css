@@ -1,0 +1,51 @@
+html:has([data-scenery="true"]), body:has([data-scenery="true"]) { overflow: hidden; overscroll-behavior: none; }
+[data-scenery="true"] > main, [data-scenery="true"] .hill-hint,
+[data-scenery="true"] .hill-hero, .xp-desktop:has([data-scenery="true"]) .xp-skip-link { visibility: hidden; }
+[data-scenery="true"] > .hill-header .hill-scene {
+  position: fixed;
+  inset: 0 0 auto;
+  height: 100dvh;
+  transform: none;
+  mask-image: none;
+}
+[data-scenery="true"] > .hill-header .hill-scene[data-entering] {
+  animation: xp-grow-hill 600ms steps(12);
+}
+@keyframes xp-grow-hill { from { clip-path: inset(0 0 58%); } to { clip-path: inset(0); } }
+@media (prefers-reduced-motion: reduce) {
+  [data-scenery="true"] > .hill-header .hill-scene[data-entering] { animation: none; }
+}
+.xp-scenery-controls { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
+.xp-scenery-controls .xp-scenery-caption { bottom: calc(54px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); text-align: center; }
+.xp-workspace .xp-scenery-controls .xp-scenery-caption { bottom: calc(var(--taskbar-space) + 54px); }
+.xp-desktop .xp-scenery-restore,
+.xp-desktop .xp-closed-card .window-body .xp-quiet-action {
+  min-height: 32px;
+  padding: 4px 8px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.xp-desktop .xp-closed-card .window-body .xp-quiet-action {
+  font: 600 .85rem var(--chrome);
+  color: var(--link);
+  text-decoration: underline;
+}
+.xp-desktop .xp-scenery-restore {
+  position: absolute;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  right: max(12px, env(safe-area-inset-right, 0px));
+  pointer-events: auto;
+  font: 400 15px/1.35 var(--chrome);
+  color: rgb(255 255 255 / .8);
+  text-shadow: 0 1px 4px #080d20, 0 0 6px #080d20;
+  text-decoration: none;
+}
+.xp-desktop .xp-scenery-restore:is(:hover, :focus-visible) { text-decoration: underline; }
+.xp-desktop .xp-scenery-restore:focus-visible { outline: 2px solid white; box-shadow: 0 0 0 4px #14204a; }
+.xp-workspace .xp-scenery-restore { bottom: calc(var(--taskbar-space) + 8px); }
+.xp-subpage { display: grid; grid-template-columns: minmax(0, 1fr); }
+.xp-subpage > .hill-header { grid-area: 1 / 1; }
+.xp-subpage > :is(.xp-content, .xp-closed-card) { grid-area: 2 / 1; }
+.xp-subpage > .xp-closed-card { align-self: start; margin-top: calc(-1 * var(--hill-overlap)); }
+.xp-closed-card .xp-actions { margin-top: 0; }

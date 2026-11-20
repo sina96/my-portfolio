@@ -1,37 +1,35 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import { cache } from "react";
+import { JsonLd } from "@/lib/jsonLd";
+import { SITE_NAME, SITE_URL, siteAlternates } from "@/lib/site";
+import { BlogDate } from "../../components/BlogList";
+import { HillScene } from "../../components/HillScene";
+import { XpWindow } from "../../components/XpWindow";
 import { getAllBlogPosts, getBlogPost } from "../../data/blogPosts";
-import { ThemeInitializer } from "../../components/ThemeInitializer";
-import { Win98Window } from "../../components/Win98Window";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
 }
 
+const getPost = cache(getBlogPost);
+
 export const dynamicParams = false;
 
 export function generateStaticParams(): { slug: string }[] {
-  return getAllBlogPosts().map((post) => ({ slug: post.slug }));
+  return getAllBlogPosts().map(({ slug }) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = getBlogPost(slug);
-
-  if (!post) {
-    return {
-      title: "Post Not Found",
-      description: "This blog post could not be found.",
-      robots: { index: false, follow: false },
-    };
-  }
+  const post = getPost(slug);
+  if (!post) notFound();
 
   return {
     title: post.title,
     description: post.excerpt,
-    alternates: {
-      canonical: `/blog/${post.slug}`,
-    },
+    alternates: siteAlternates(`/blog/${post.slug}`),
     openGraph: {
       type: "article",
       url: `/blog/${post.slug}`,
@@ -39,89 +37,35 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       description: post.excerpt,
       publishedTime: `${post.date}T00:00:00.000Z`,
     },
-    twitter: {
-      card: "summary",
-      title: post.title,
-      description: post.excerpt,
-    },
+    twitter: { card: "summary_large_image", title: post.title, description: post.excerpt },
   };
 }
 
-export default async function BlogPost({ params }: BlogPostPageProps) {
-  // In Next.js 15+, params is a Promise in Server Components
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const post = getBlogPost(slug);
-
-  if (!post) {
-    return (
-      <>
-        <ThemeInitializer />
-        <div className="win98-page-shell">
-          <Win98Window title="Post Not Found" className="blog-not-found-window">
-            <p>Sorry, this blog post could not be found.</p>
-            <div className="field-row blog-actions">
-              <Link
-                href="/"
-                className="button button-link"
-              >
-                Back to Home
-              </Link>
-            </div>
-          </Win98Window>
-        </div>
-      </>
-    );
-  }
-
-  // Marked converts our trusted Markdown files to HTML, which is safe to render
-  // Content comes from our own .md files in src/content/blog/
+  const post = getPost(slug);
+  if (!post) notFound();
 
   return (
     <>
-      <ThemeInitializer />
-      <div className="win98-page-shell">
-        <Win98Window
-          title={post.title}
-          className="blog-post-window"
-          showMinimize
-          showMaximize
-          statusBar={
-            <div className="status-bar">
-              <p className="status-bar-field">Blog Post</p>
-              <p className="status-bar-field">{post.date}</p>
-            </div>
-          }
-        >
-          <div className="blog-post-header">
-            <div className="blog-post-date">
-              Published: {post.date}
-            </div>
-            <h1 className="blog-post-title">
-              {post.title}
-            </h1>
+      <JsonLd value={{
+        "@context": "https://schema.org", "@type": "BlogPosting",
+        headline: post.title, description: post.excerpt, datePublished: post.date,
+        url: `${SITE_URL}/blog/${post.slug}`,
+        author: { "@type": "Person", name: SITE_NAME, url: SITE_URL },
+      }} />
+      <HillScene mode="header" />
+      <main id="main" className="xp-content xp-post" tabIndex={-1}>
+        <XpWindow id="post-article" title={post.title}>
+          <BlogDate date={post.date} />
+          <h1>{post.title}</h1>
+          <div className="blog-post-content" dangerouslySetInnerHTML={{ __html: post.content }} />
+          <div className="xp-actions">
+            <Link href="/blog" className="xp-button-link">← All posts</Link>
+            <Link href="/" className="xp-button-link">Home</Link>
           </div>
-
-          <div
-            className="blog-post-content"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
-
-          <div className="field-row blog-post-actions">
-            <Link
-              href="/?tab=blogs"
-              className="button default button-link"
-            >
-              Back to Blog Archive
-            </Link>
-            <Link
-              href="/"
-              className="button default button-link"
-            >
-              Back to Homepage
-            </Link>
-          </div>
-        </Win98Window>
-      </div>
+        </XpWindow>
+      </main>
     </>
   );
 }

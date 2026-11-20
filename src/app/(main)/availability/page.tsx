@@ -1,48 +1,31 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { siteAlternates } from "@/lib/site";
 import { AvailabilityWidget } from "../components/AvailabilityWidget";
-import { Win98Window } from "../components/Win98Window";
+import { HillScene } from "../components/HillScene";
+import { XpWindow } from "../components/XpWindow";
 
 export const metadata: Metadata = {
   title: "Availability",
   description: "View Sina Bastani's availability for calls, project chats, and planning.",
-  alternates: {
-    canonical: "/availability",
-  },
+  alternates: siteAlternates("/availability"),
 };
 
 export default function AvailabilityPage() {
   return (
-    <main className="availability-page">
-      <Win98Window
-        title="Sina Bastani - Availability"
-        className="availability-page-window"
-        showMinimize
-        showMaximize
-        statusBar={
-          <div className="status-bar">
-            <p className="status-bar-field">AvailabilityPage</p>
-            <p className="status-bar-field">Europe/Stockholm</p>
+    <>
+      <HillScene mode="header" />
+      <main id="main" className="xp-content availability-page" tabIndex={-1}>
+        <XpWindow id="availability" title="Sina Bastani - Availability"
+          statusBar={<div className="status-bar"><p className="status-bar-field">Europe/Stockholm</p></div>}>
+          <h1 className="xp-sr-only">Availability</h1>
+          <AvailabilityWidget />
+          <div className="xp-actions">
+            <Link href="/contact" className="xp-button-link">← Contact</Link>
+            <Link href="/" className="xp-button-link">Home</Link>
           </div>
-        }
-      >
-        <AvailabilityWidget />
-
-        <div className="availability-page-actions">
-          <a
-            href="mailto:contact@sinabastani.dev?subject=Contact%20Request&body=Hello!"
-            className="button default button-link"
-          >
-            Contact me
-          </a>
-          <Link
-            href="/"
-            className="button button-link"
-          >
-            Back to portfolio
-          </Link>
-        </div>
-      </Win98Window>
-    </main>
+        </XpWindow>
+      </main>
+    </>
   );
 }

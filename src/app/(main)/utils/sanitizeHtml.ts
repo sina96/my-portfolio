@@ -12,14 +12,19 @@ const SANITIZE_CONFIG: sanitize.IOptions = {
   ],
   allowedAttributes: {
     a: ["href", "target", "rel"],
-    img: ["src", "alt", "class"],
+    img: ["src", "alt", "class", "loading", "decoding"],
     th: ["align"],
     td: ["align"],
     "*": ["class"],
   },
+  allowedClasses: { "*": ["hljs*", "language-*", "blog-*"] },
   allowedSchemes: ["http", "https", "mailto"],
+  allowedSchemesByTag: { img: ["https"] },
+  allowProtocolRelative: false,
+  exclusiveFilter: (frame) => frame.tag === "img" && !frame.attribs.src,
   // Enforce rel="noopener noreferrer" on external links for security
   transformTags: {
+    img: (tagName, attribs) => ({ tagName, attribs: { ...attribs, loading: "lazy", decoding: "async" } }),
     a: (tagName, attribs) => {
       const href = attribs.href || "";
       const isExternal = href.startsWith("http://") || href.startsWith("https://");

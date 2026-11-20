@@ -1,0 +1,140 @@
+.blog-post-content {
+  font-size: .975rem;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+  --syntax-text: #172042;
+  --syntax-keyword: #21129a;
+  --syntax-string: #22612c;
+  --syntax-number: #772079;
+  --syntax-title: #744719;
+  --syntax-attribute: #144685;
+  --syntax-comment: #515b70;
+  --syntax-built-in: #17617c;
+  --syntax-deletion: #a31515;
+  --syntax-addition: #22612c;
+}
+[data-theme="dark"] .blog-post-content {
+  --syntax-text: #e8e8e8;
+  --syntax-keyword: #8ab4ff;
+  --syntax-string: #9be28f;
+  --syntax-number: #d7a9ff;
+  --syntax-title: #ffd166;
+  --syntax-attribute: #9cdcfe;
+  --syntax-comment: #aeb6c9;
+  --syntax-built-in: #7ee7f2;
+  --syntax-deletion: #ff8a8a;
+  --syntax-addition: #9be28f;
+}
+.blog-post-content h2 { color: var(--accent); margin-block: 2rem .5rem; }
+.blog-post-content h3 { margin-block: 1.5rem .5rem; font-size: 1.05em; }
+.blog-post-content p, .blog-post-content ul, .blog-post-content ol { margin-block: 0 1em; }
+.blog-post-content li + li { margin-top: .3em; }
+.blog-post-content blockquote {
+  margin: 1.75rem 0;
+  padding: .6rem 1rem;
+  color: var(--muted);
+  font-style: italic;
+  border-inline-start: 6px solid var(--accent);
+  background: var(--inset);
+  box-shadow: 4px 4px 0 var(--line);
+}
+.blog-post-content blockquote > :last-child { margin-bottom: 0; }
+.blog-post-content pre, .blog-post-content code {
+  font-family: var(--mono);
+  color: var(--syntax-text);
+  background: var(--code);
+}
+.blog-post-content :not(pre) > code { padding: .1em .25em; font-size: .86em; }
+.blog-post-content pre {
+  box-shadow: 5px 5px 0 var(--line);
+  border: 3px solid var(--line);
+  overflow: auto;
+  padding: .75rem 1rem;
+  white-space: pre;
+  font-size: .82em;
+  line-height: 1.6;
+}
+.blog-post-content hr { border: 0; border-top: 3px dashed var(--line); margin-block: 2rem; }
+.blog-post-content img { display: block; max-width: 100%; height: auto; margin: 1.25rem auto; }
+.blog-post-content .blog-spacer { height: 1rem; }
+.blog-post-content .blog-spacer-lg { height: 2rem; }
+.blog-post-content .blog-table-scroll { overflow-x: auto; margin-block: 1rem; }
+.blog-post-content table { min-width: 100%; border-collapse: collapse; }
+.blog-post-content th, .blog-post-content td { padding: .5em .7em; border: 1px solid var(--line); text-align: start; }
+.blog-post-content th { background: var(--inset); }
+.blog-post-content .hljs {
+  color: var(--syntax-text);
+}
+
+.blog-post-content .hljs-keyword,
+.blog-post-content .hljs-selector-tag,
+.blog-post-content .hljs-literal,
+.blog-post-content .hljs-section,
+.blog-post-content .hljs-link {
+  color: var(--syntax-keyword);
+}
+
+.blog-post-content .hljs-string,
+.blog-post-content .hljs-quote,
+.blog-post-content .hljs-regexp,
+.blog-post-content .hljs-symbol,
+.blog-post-content .hljs-bullet,
+.blog-post-content .hljs-template-tag,
+.blog-post-content .hljs-template-variable {
+  color: var(--syntax-string);
+}
+
+.blog-post-content .hljs-number,
+.blog-post-content .hljs-built_in.literal_ {
+  color: var(--syntax-number);
+}
+
+.blog-post-content .hljs-title,
+.blog-post-content .hljs-title.function_,
+.blog-post-content .hljs-title.class_,
+.blog-post-content .hljs-name,
+.blog-post-content .hljs-selector-id,
+.blog-post-content .hljs-selector-class {
+  color: var(--syntax-title);
+}
+
+.blog-post-content .hljs-attr,
+.blog-post-content .hljs-attribute,
+.blog-post-content .hljs-property,
+.blog-post-content .hljs-variable,
+.blog-post-content .hljs-params {
+  color: var(--syntax-attribute);
+}
+
+.blog-post-content .hljs-comment,
+.blog-post-content .hljs-meta {
+  color: var(--syntax-comment);
+}
+
+.blog-post-content .hljs-built_in,
+.blog-post-content .hljs-type,
+.blog-post-content .hljs-class,
+.blog-post-content .hljs-function {
+  color: var(--syntax-built-in);
+}
+
+.blog-post-content .hljs-punctuation,
+.blog-post-content .hljs-operator {
+  color: var(--syntax-text);
+}
+
+.blog-post-content .hljs-deletion {
+  color: var(--syntax-deletion);
+}
+
+.blog-post-content .hljs-addition {
+  color: var(--syntax-addition);
+}
+
+.blog-post-content .hljs-emphasis {
+  font-style: italic;
+}
+
+.blog-post-content .hljs-strong {
+  font-weight: bold;
+}

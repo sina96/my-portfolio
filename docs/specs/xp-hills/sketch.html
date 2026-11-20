@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rolling hills — pixel background</title>
+<style>
+  /* Pixel-art homage to the classic "green hill under a blue sky" desktop wallpaper.
+     Approach: one fixed full-viewport SVG (viewBox 1600x1000, slice), a coarse
+     pixel grid (8px cells), ordered (Bayer) dithering and stepped CSS animations so motion snaps to the grid.
+     Day/night follows prefers-color-scheme; force one with #day or #night in the URL. */
+  :root { --page: #1f1d5a; --ink: #ecebff; --muted: #aeabdc; --accent: #ffd36b; --line: rgba(236, 235, 255, .16);
+          --code: #15133f; --head: 42vh; }
+  @media (prefers-color-scheme: dark) { :root { --page: #0b1030; --code: #070a22; } }
+  html { background: var(--page); }
+  body { margin: 0; min-height: 100vh; color: var(--ink);
+         font: 18px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+
+  /* Desktop: the scene is the whole viewport, then shrinks into a header as you scroll (JS sets height,
+     --fade and transform). Its bottom edge always sits on the article's top edge, and fades into the page colour. */
+  .scene { position: fixed; top: 0; left: 0; right: 0; height: 100vh; z-index: -1; pointer-events: none;
+           --fade: 0px; will-change: height, transform;
+           -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--fade)), transparent);
+                   mask-image: linear-gradient(to bottom, #000 calc(100% - var(--fade)), transparent); }
+
+  .hero { position: relative; height: 100vh; box-sizing: border-box; display: grid; place-items: center; padding: 0 6vw; text-align: center; }
+  .hero .card { will-change: opacity, transform; max-width: 760px; padding: 28px 36px;
+                background: rgba(255, 255, 255, .16); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+                border: 3px solid rgba(255, 255, 255, .55); box-shadow: 8px 8px 0 rgba(10, 10, 40, .28); }
+  .hero .kicker { margin: 0 0 6px; font: 700 13px/1 ui-monospace, Menlo, monospace; letter-spacing: .18em;
+                  text-transform: uppercase; color: #fff; opacity: .85; }
+  .hero h1 { margin: 0; font: 800 clamp(30px, 5vw, 58px)/1.1 ui-monospace, Menlo, monospace; color: #fff;
+             text-shadow: 4px 4px 0 rgba(10, 10, 40, .35); }
+  .hero .hint { position: absolute; bottom: 28px; left: 0; right: 0; font: 700 12px ui-monospace, Menlo, monospace;
+                letter-spacing: .2em; color: #fff; opacity: .8; animation: hint 1.6s steps(2) infinite; }
+  @keyframes hint { 50% { transform: translateY(6px); } }
+
+  article { max-width: 700px; margin: 0 auto; padding: 40px 6vw 120px; }
+  article .meta { margin: 0 0 4px; color: var(--muted); font: 13px ui-monospace, Menlo, monospace; letter-spacing: .06em; }
+  article h1 { margin: 0 0 28px; font: 800 34px/1.2 ui-monospace, Menlo, monospace; }
+  article h2 { margin: 48px 0 8px; font: 700 22px/1.3 ui-monospace, Menlo, monospace; color: var(--accent); }
+  article p, article li { color: var(--ink); }
+  article a { color: var(--accent); }
+  article blockquote { margin: 28px 0; padding: 4px 20px; border-left: 6px solid var(--accent); color: var(--muted); font-style: italic; }
+  article pre { padding: 16px 18px; overflow-x: auto; background: var(--code); border: 3px solid var(--line);
+                box-shadow: 6px 6px 0 rgba(0, 0, 0, .25); font: 14px/1.6 ui-monospace, Menlo, monospace; }
+  article code { font-family: ui-monospace, Menlo, monospace; font-size: .9em; }
+  article hr { border: 0; border-top: 3px dashed var(--line); margin: 48px 0; }
+  .swatches { display: flex; gap: 0; margin: 20px 0; border: 3px solid var(--line); width: max-content; }
+  .swatches span { width: 34px; height: 34px; }
+
+  /* Mobile: the scene is just a static header; the rest of the page is plain indigo. */
+  @media (max-width: 760px) {
+    body { font-size: 17px; }
+    .scene { position: absolute; height: var(--head); --fade: 45%; }
+    .hero { height: var(--head); }
+    .hero .card { padding: 16px 20px; }
+    .hero .hint { display: none; }
+    article { padding-top: 24px; }
+    article h1 { font-size: 26px; }
+  }
+  .scene svg { display: block; width: 100%; height: 100%; }
+  .scene image { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+  .cloud  { animation: cloud var(--dur) steps(var(--n)) var(--delay) infinite; }
+  .shadow { animation: cloud var(--dur) steps(var(--n)) var(--delay) infinite; }
+  .blink  { animation: blink var(--dur) steps(1) var(--delay) infinite; opacity: 0; }
+  .twinkle{ animation: twinkle var(--dur) steps(1) var(--delay) infinite; }
+  @keyframes cloud   { from { transform: translateX(var(--from)); } to { transform: translateX(1600px); } }
+  @keyframes blink   { 0%, 88% { opacity: 0; } 90% { opacity: 1; } 94% { opacity: .5; } 97%, 100% { opacity: 0; } }
+  @keyframes twinkle { 0%, 70% { opacity: 1; } 75% { opacity: .35; } 80% { opacity: 1; } 90% { opacity: .6; } 100% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .scene * { animation: none !important; } .blink { opacity: 0; } }
+</style>
+</head>
+<body>
+<div class="scene" aria-hidden="true"></div>
+
+<header class="hero">
+  <div class="card">
+    <p class="kicker">Pixel journal · No. 01</p>
+    <h1>Painting a hill in 25,000 pixels</h1>
+  </div>
+  <div class="hint">▼ SCROLL</div>
+</header>
+
+<article>
+  <p class="meta">20 NOV 2026 · 6 MIN READ</p>
+  <h1>Painting a hill in 25,000 pixels</h1>
+
+  <p>Some desktop wallpapers stick with you: a soft green hill, a deep blue sky and a few lazy clouds.
+    This page's header is a love letter to that kind of picture. It's drawn on a grid of only 200 by 125
+    cells, and each cell is blown up to an 8-pixel square.</p>
+
+  <p>Nothing in it is a bitmap file. When the page loads, a small script paints the sky, the hills and the
+    clouds into tiny canvases. The browser then stretches them with <code>image-rendering: pixelated</code>
+    so every cell stays a crisp square.</p>
+
+  <h2>Gradients without gradients</h2>
+  <p>A pixel-art palette only has a handful of colours, so how do you get a sky that fades from deep blue to
+    almost white? You cheat with <em>ordered dithering</em>. Every cell compares how far it sits between two
+    palette colours with a value from a small, repeating 4×4 threshold grid, called a Bayer matrix. If it's
+    past the threshold, it takes the lighter colour.</p>
+
+  <pre><code>const BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+const th = (x, y) =&gt; (BAYER[y &amp; 3][x &amp; 3] + 0.5) / 16;
+
+const pick = (pal, t, x, y) =&gt; {
+  const f = t * (pal.length - 1), i = Math.floor(f);
+  return pal[(f - i) &gt; th(x, y) ? i + 1 : i];
+};</code></pre>
+
+  <p>Seven blues are enough for the whole sky:</p>
+  <div class="swatches" aria-hidden="true">
+    <span style="background:#1747b8"></span><span style="background:#2160d2"></span><span style="background:#3479e0"></span>
+    <span style="background:#4f93ea"></span><span style="background:#76b0f1"></span><span style="background:#a6cdf6"></span>
+    <span style="background:#cfe4f8"></span>
+  </div>
+
+  <h2>One curve, two moods</h2>
+  <p>The big hill is a single function: a bell curve that's narrower on the left than on the right, plus a
+    tiny sine wobble so the ridge doesn't look machine-made. Light comes from the upper left, so the shade
+    gets darker the further down and to the right a cell sits. The top row of the ridge is lit an extra
+    step to catch the sun.</p>
+
+  <blockquote>The trick to good pixel art isn't more pixels. It's deciding which ones matter.</blockquote>
+
+  <p>Switch your system to dark mode and the same curve turns into a night scene. The palette swaps to
+    dark greens and navy, a moon appears, and the grass glints become fireflies.</p>
+
+  <h2>Motion that snaps</h2>
+  <p>Smooth motion would give the game away. Every cloud moves with <code>steps()</code> timing, so it jumps
+    exactly one cell at a time. Higher, smaller clouds move more slowly than the big low ones, which gives a
+    cheap sense of depth. Cloud shadows slide over the hill through an SVG mask, so they never spill into
+    the sky.</p>
+
+  <ul>
+    <li>7 clouds by day and 3 by night, each with its own speed and starting offset</li>
+    <li>2 cloud shadows, masked to the front hill</li>
+    <li>Around 70 blinking grass glints, or fireflies after dark</li>
+    <li>No animation at all when your system asks for reduced motion</li>
+  </ul>
+
+  <h2>From wallpaper to header</h2>
+  <p>On a wide screen the scene fills the whole window at first. As you scroll, it shrinks. Its bottom edge
+    stays attached to the top of this article and fades softly into the indigo page, until all that's left is
+    a header strip that scrolls away with the text. On a phone, it's simply a header from the start.</p>
+
+  <hr>
+  <p class="meta">Thanks for scrolling all the way down. The hill will still be up there.</p>
+</article>
+<script>
+(() => {
+  const W = 200, H = 125, S = 8;                       // grid cells, px per cell (viewBox 1600x1000)
+  const NS = 'http://www.w3.org/2000/svg';
+  const BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+  const th = (x, y) => (BAYER[y & 3][x & 3] + 0.5) / 16;
+  const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+  const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const mulberry = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  // dithered pick from a palette: t in [0,1] -> one of the palette colours
+  const pick = (pal, t, x, y) => { const f = clamp(t, 0, 0.9999) * (pal.length - 1), i = Math.floor(f);
+    return pal[(f - i) > th(x, y) ? i + 1 : i]; };
+
+  const THEMES = {
+    day: {
+      sky:   ['#1747b8', '#2160d2', '#3479e0', '#4f93ea', '#76b0f1', '#a6cdf6', '#cfe4f8'],
+      back:  ['#9cc488', '#86b674', '#6fa560', '#5c944f'],
+      hill:  ['#b9e06a', '#94d044', '#74bd30', '#58a524', '#428c1b', '#2f7314', '#215a0e'],
+      cloud: ['#ffffff', '#f3f8fd', '#e1edf9', '#c7dbef', '#a9c4e2'], cloudAlpha: 1,
+      shade: 'rgba(16,52,8,.38)', glint: '#e6ff9a', stars: 0,
+    },
+    night: {
+      sky:   ['#03061a', '#060c26', '#0a1433', '#0f1d44', '#162856', '#1e3567', '#2a4677'],
+      back:  ['#22403f', '#1c3636', '#162d2d', '#112424'],
+      hill:  ['#2f5a3a', '#264d31', '#1f4229', '#183722', '#122c1b', '#0d2214', '#08190e'],
+      cloud: ['#4a5d8c', '#3e507d', '#33446d', '#29395e', '#202e50'], cloudAlpha: .55,
+      shade: 'rgba(0,6,14,.35)', glint: '#d8f56a', stars: 160,
+    },
+  };
+
+  // Landscape: big rounded hill crest left of centre, distant hill line on the right.
+  const frontY = x => 66 + 40 * (1 - Math.exp(-(((x - 62) / (x < 62 ? 55 : 85)) ** 2))) + 0.8 * Math.sin(x * 0.11);
+  const backY  = x => 84 - 16 * Math.exp(-(((x - 165) / 40) ** 2)) + 1.5 * Math.sin(x * 0.09);
+
+  const canvas = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+  const paint = (w, h, fn) => {                       // fn(x,y) -> '#rrggbb' | [r,g,b,a] | null
+    const c = canvas(w, h), ctx = c.getContext('2d'), img = ctx.createImageData(w, h);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const v = fn(x, y); if (!v) continue;
+      const [r, g, b, a = 255] = typeof v === 'string' ? rgb(v) : v, i = (y * w + x) * 4;
+      img.data[i] = r; img.data[i + 1] = g; img.data[i + 2] = b; img.data[i + 3] = a;
+    }
+    ctx.putImageData(img, 0, 0); return c.toDataURL();
+  };
+  const el = (tag, attrs = {}, parent) => { const e = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); if (parent) parent.appendChild(e); return e; };
+  const image = (href, x, y, w, h, parent) => el('image', { href, x, y, width: w, height: h, preserveAspectRatio: 'none' }, parent);
+  const drift = (g, widthPx, speed, rng) => {          // stepped horizontal drift, 1 grid cell per step
+    const dist = 1600 + widthPx, dur = dist / speed;
+    g.style.setProperty('--from', `${-widthPx}px`);
+    g.style.setProperty('--n', Math.round(dist / S));
+    g.style.setProperty('--dur', `${dur.toFixed(1)}s`);
+    g.style.setProperty('--delay', `${(-rng() * dur).toFixed(1)}s`);
+  };
+
+  function cloudImage(T, rng, cw, ch) {
+    const blobs = [], n = 3 + (rng() * 3 | 0);
+    for (let i = 0; i < n; i++) { const r = ch * (0.22 + rng() * 0.18);
+      blobs.push([cw * (0.14 + 0.72 * i / (n - 1)), ch * 0.66, r * 1.5, r]); }
+    for (let k = 0; k < 2; k++) { const r = ch * (0.28 + rng() * 0.14);
+      blobs.push([cw * (0.3 + rng() * 0.4), ch * 0.46, r * 1.25, r]); }
+    const base = ch * 0.84;
+    return paint(cw, ch, (x, y) => {
+      let v = -1;
+      for (const [bx, by, rx, ry] of blobs) v = Math.max(v, 1 - ((x - bx) / rx) ** 2 - ((y - by) / ry) ** 2);
+      if (v <= 0 || (y > base && th(x, y) < 0.7)) return null;
+      if (v < 0.18 && v / 0.18 < th(x, y)) return null;          // dithered fluffy edge
+      const c = rgb(pick(T.cloud, y / ch * 0.9 + (1 - v) * 0.25 - 0.1, x, y));
+      return [...c, Math.round(255 * T.cloudAlpha)];
+    });
+  }
+
+  function build(name) {
+    const T = THEMES[name], rng = mulberry(1987);
+    const svg = el('svg', { viewBox: '0 0 1600 1000', preserveAspectRatio: 'xMidYMid slice', width: '100%', height: '100%' });
+    const horizon = 92;
+
+    // 1) static land + sky
+    image(paint(W, H, (x, y) => {
+      const fy = frontY(x), by = backY(x);
+      if (y >= fy) {
+        const depth = (y - fy) / (H - fy + 1), side = clamp((x - 30) / 170);
+        let t = 0.12 + 0.38 * depth + 0.42 * side + 0.07 * Math.sin(x * 0.05 + y * 0.13);
+        if (y - fy < 1.2 && x < 150) t -= 0.25;                  // sunlit crest rim
+        return pick(T.hill, t, x, y);
+      }
+      if (y >= by) return pick(T.back, (y - by) / 14 + clamp((x - 120) / 160) * 0.3, x, y);
+      return pick(T.sky, y / horizon, x, y);
+    }), 0, 0, 1600, 1000, svg);
+
+    const defs = el('defs', {}, svg);
+    const mask = el('mask', { id: `hill-${name}`, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: 1600, height: 1000 }, defs);
+    image(paint(W, H, (x, y) => y >= frontY(x) ? '#ffffff' : null), 0, 0, 1600, 1000, mask);
+
+    // 2) night sky: stars + moon
+    if (T.stars) {
+      const stars = el('g', {}, svg);
+      for (let i = 0; i < T.stars; i++) {
+        const x = rng() * W | 0, y = rng() * 80 | 0;
+        if (y >= Math.min(frontY(x), backY(x)) - 2) continue;
+        const big = rng() < 0.12, r = el('rect', { x: x * S, y: y * S, width: S, height: S,
+          fill: big ? '#fff7d6' : (rng() < 0.5 ? '#c9d6ff' : '#8fa3d9') }, stars);
+        if (rng() < 0.45) { r.classList.add('twinkle');
+          r.style.setProperty('--dur', `${(3 + rng() * 6).toFixed(1)}s`);
+          r.style.setProperty('--delay', `${(-rng() * 9).toFixed(1)}s`); }
+      }
+      const mx = 152, my = 20, mr = 7;
+      image(paint(W, H, (x, y) => {
+        const d = Math.hypot(x - mx, y - my);
+        if (d <= mr) { const crater = Math.hypot(x - mx + 2, y - my - 2) < 2 || Math.hypot(x - mx - 3, y - my + 1) < 1.3;
+          return crater ? '#d9cfa8' : (x - mx > 3 && th(x, y) < 0.5 ? '#e4dab6' : '#f6efd0'); }
+        if (d <= mr + 5 && (d - mr) / 5 < th(x, y) * 0.9) return [246, 239, 208, 40];
+        return null;
+      }), 0, 0, 1600, 1000, svg);
+    }
+
+    // 3) clouds: far (small, slow, high) to near (big, faster, lower)
+    const clouds = el('g', {}, svg);
+    const specs = name === 'day'
+      ? [[8, 24, 30, 6], [14, 30, 36, 7], [5, 40, 44, 9], [22, 34, 40, 8], [11, 52, 48, 11], [30, 46, 46, 10], [18, 60, 50, 13]]
+      : [[10, 30, 36, 5], [22, 44, 44, 7], [6, 56, 50, 9]];
+    for (const [cy, cw, chPct, speed] of specs) {
+      const ch = Math.round(cw * chPct / 100), g = el('g', { class: 'cloud' }, clouds);
+      image(cloudImage(T, rng, cw, ch), 0, cy * S, cw * S, ch * S, g);
+      drift(g, cw * S, speed, rng);
+    }
+
+    // 4) cloud shadows sweeping over the hill (masked to the front hill)
+    const shadows = el('g', { mask: `url(#hill-${name})` }, svg);
+    for (let i = 0; i < 2; i++) {
+      const sw = 70, sh = 26, g = el('g', { class: 'shadow' }, shadows);
+      const shade = T.shade.match(/[\d.]+/g).map(Number);
+      image(paint(sw, sh, (x, y) => {
+        const v = 1 - ((x - sw / 2) / (sw / 2)) ** 2 - ((y - sh / 2) / (sh / 2)) ** 2;
+        return v > 0 && v * 1.6 > th(x, y) ? [shade[0], shade[1], shade[2], Math.round(255 * shade[3])] : null;
+      }), 0, (78 + i * 22) * S, sw * S, sh * S, g);
+      drift(g, sw * S, 10 + i * 3, rng);
+    }
+
+    // 5) glints in the grass (day) / fireflies (night)
+    const glints = el('g', {}, svg);
+    for (let i = 0; i < (name === 'day' ? 70 : 45); i++) {
+      const x = rng() * W | 0, y = Math.ceil(frontY(x)) + 2 + (rng() * (H - frontY(x) - 2) | 0);
+      if (y >= H) continue;
+      const r = el('rect', { x: x * S, y: y * S, width: S, height: S, fill: T.glint, class: 'blink' }, glints);
+      r.style.setProperty('--dur', `${(4 + rng() * 8).toFixed(1)}s`);
+      r.style.setProperty('--delay', `${(-rng() * 12).toFixed(1)}s`);
+    }
+    return svg;
+  }
+
+  const scene = document.querySelector('.scene'), dark = matchMedia('(prefers-color-scheme: dark)');
+  const render = () => {
+    const forced = location.hash.slice(1);
+    const name = THEMES[forced] ? forced : (dark.matches ? 'night' : 'day');
+    document.documentElement.style.setProperty('--page', name === 'day' ? '#1f1d5a' : '#0b1030');
+    scene.replaceChildren(build(name));
+  };
+  dark.addEventListener('change', render);
+  addEventListener('hashchange', render);
+  render();
+
+  // Desktop scroll: full-viewport scene -> header strip glued to the article top, with a growing fade.
+  const mobile = matchMedia('(max-width: 760px)'), card = document.querySelector('.hero .card');
+  const HEAD = 0.42, FADE = 0.45;                      // header = 42% of viewport, bottom 45% of it fades out
+  let ticking = false;
+  const onScroll = () => {
+    ticking = false;
+    if (mobile.matches) {                               // mobile: static header, CSS handles everything
+      ['height', 'transform', '--fade'].forEach(p => scene.style.removeProperty(p));
+      card.style.removeProperty('opacity'); card.style.removeProperty('transform');
+      return;
+    }
+    const vh = innerHeight, head = Math.round(vh * HEAD), travel = vh - head;
+    const y = scrollY, p = clamp(y / travel);
+    const ease = p * p * (3 - 2 * p);                   // smoothstep for the fade
+    scene.style.height = `${Math.round(vh - travel * p)}px`;
+    scene.style.setProperty('--fade', `${(ease * FADE * 100).toFixed(1)}%`);
+    scene.style.transform = y > travel ? `translateY(${-(y - travel)}px)` : '';
+    card.style.opacity = clamp(1 - p * 1.8).toFixed(3);
+    card.style.transform = `translateY(${(-p * 60).toFixed(1)}px)`;
+  };
+  const queue = () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } };
+  addEventListener('scroll', queue, { passive: true });
+  addEventListener('resize', queue);
+  mobile.addEventListener('change', queue);
+  onScroll();
+})();
+</script>
+</body>
+</html>

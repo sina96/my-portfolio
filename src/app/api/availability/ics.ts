@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import ical, { type CalendarResponse, type EventInstance, type VEvent } from "node-ical";
 import type { BusyBlock } from "../../(main)/types/availability";
+import { createSourceCache } from "./sourceCache";
 
 const DEFAULT_ICS_TIMEOUT_MS = 7000;
 const DEFAULT_ICS_MAX_BYTES = 2_000_000;
@@ -58,7 +59,7 @@ function parseJsonStringArrayEnv(name: string): string[] {
       return parsedValue.map((item) => item.trim());
     }
   } catch (error) {
-    console.warn(`[Availability] Failed to parse ${name} as a JSON string array:`, error);
+    console.warn(`[Availability] Failed to parse ${name} as a JSON string array: ${error instanceof Error ? error.message : String(error)}`);
     return [];
   }
 
@@ -190,22 +191,6 @@ async function readIcsFile(filePath: string, index: number, maxBytes: number): P
   };
 }
 
-async function loadIcsSources(config: IcsSourceConfig): Promise<IcsSource[]> {
-  const sourceResults = await Promise.allSettled([
-    ...config.urls.map((url, index) => fetchIcsUrl(url, index, config)),
-    ...config.filePaths.map((filePath, index) => readIcsFile(filePath, index, config.maxBytes)),
-  ]);
-
-  return sourceResults.flatMap((result) => {
-    if (result.status === "rejected") {
-      console.warn("[Availability] Ignoring failed ICS source:", result.reason);
-      return [];
-    }
-
-    return result.value.body.trim().length > 0 ? [result.value] : [];
-  });
-}
-
 function isBlockingEvent(event: VEvent): boolean {
   return event.status !== "CANCELLED" && event.transparency !== "TRANSPARENT";
 }
@@ -300,46 +285,68 @@ function getIcsBusyBlocksFromCalendar(
   return busyBlocks;
 }
 
-export function hasConfiguredIcsSources(): boolean {
-  const config = getIcsSourceConfig();
-
-  return config.urls.length > 0 || config.filePaths.length > 0;
+interface ParsedSource {
+  id: string;
+  calendar: CalendarResponse;
+  blocksByRange: Map<string, BusyBlock[]>;
 }
 
-export async function getIcsBusyBlocks(rangeStart: Date, rangeEnd: Date): Promise<BusyBlock[]> {
-  const config = getIcsSourceConfig();
+const loadCachedSource = createSourceCache<ParsedSource>(300_000, 60_000);
 
-  if (config.urls.length === 0 && config.filePaths.length === 0) {
-    throw new Error("No ICS availability sources configured.");
-  }
-
-  const sources = await loadIcsSources(config);
-
-  if (sources.length === 0) {
-    throw new Error("No ICS availability sources could be loaded.");
-  }
-
-  const calendarResults = await Promise.allSettled(
-    sources.map(async (source) => ({
-      sourceId: source.id,
-      calendar: await ical.async.parseICS(source.body),
-    }))
-  );
-
-  const calendars = calendarResults.flatMap((result) => {
-    if (result.status === "rejected") {
-      console.warn("[Availability] Ignoring failed ICS parse result:", result.reason);
-      return [];
+function loadParsedSource(key: string, read: () => Promise<IcsSource>): Promise<ParsedSource> {
+  return loadCachedSource(key, async () => {
+    let id: string | undefined;
+    try {
+      const source = await read();
+      id = source.id;
+      if (!/^BEGIN:VCALENDAR\s*$/im.test(source.body) || !/^END:VCALENDAR\s*$/im.test(source.body)) {
+        throw new Error("Response is not an ICS calendar.");
+      }
+      const calendar = await ical.async.parseICS(source.body);
+      return { id, calendar, blocksByRange: new Map() };
+    } catch {
+      // Provider/parsing errors can contain private URLs or calendar contents.
+      console.warn(id ? `[Availability] Unable to parse ICS source ${id}.` : "[Availability] Unable to load an ICS source.");
+      throw new Error("ICS source unavailable.");
     }
-
-    return [result.value];
   });
+}
 
-  if (calendars.length === 0) {
-    throw new Error("No ICS availability sources could be parsed.");
+/** Load configured sources; never return calendar metadata to the public client. */
+export async function getIcsBusyBlocks(rangeStart: Date, rangeEnd: Date): Promise<{ busyBlocks: BusyBlock[]; partial: boolean }> {
+  const config = getIcsSourceConfig();
+  const results = await Promise.allSettled([
+    ...config.urls.map((url, index) => loadParsedSource(
+      JSON.stringify(["url", index, url, config.maxBytes, config.timeoutMs]),
+      () => fetchIcsUrl(url, index, config),
+    )),
+    ...config.filePaths.map((file, index) => loadParsedSource(
+      JSON.stringify(["file", index, file, config.maxBytes]),
+      () => readIcsFile(file, index, config.maxBytes),
+    )),
+  ]);
+
+  const busyBlocks: BusyBlock[] = [];
+  const rangeKey = `${rangeStart.toISOString()}/${rangeEnd.toISOString()}`;
+  let loaded = 0;
+  for (const result of results) {
+    if (result.status !== "fulfilled") continue;
+    const { id, calendar, blocksByRange } = result.value;
+    try {
+      let blocks = blocksByRange.get(rangeKey);
+      if (!blocks) {
+        blocks = getIcsBusyBlocksFromCalendar(calendar, id, rangeStart, rangeEnd);
+        // Keep the two public weeks and allow for rollover without unbounded growth.
+        if (blocksByRange.size >= 3) blocksByRange.clear();
+        blocksByRange.set(rangeKey, blocks);
+      }
+      loaded += 1;
+      busyBlocks.push(...blocks);
+    } catch {
+      console.warn("[Availability] Ignoring a calendar that could not be expanded.");
+    }
   }
 
-  return calendars.flatMap(({ sourceId, calendar }) =>
-    getIcsBusyBlocksFromCalendar(calendar, sourceId, rangeStart, rangeEnd)
-  );
+  if (!loaded) throw new Error("No ICS availability sources could be loaded.");
+  return { busyBlocks, partial: loaded !== results.length };
 }

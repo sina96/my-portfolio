@@ -1,0 +1,9 @@
+# CodeRabbit review settings. Generated/archived/binary files are skipped so reviews focus on code.
+reviews:
+  path_filters:
+    - "!docs/archive/**"
+    - "!docs/specs/**/sketch.html"
+    - "!bun.lock"
+    - "!**/*.pdf"
+    - "!**/*.png"
+    - "!**/*.jpg"

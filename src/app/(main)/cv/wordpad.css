@@ -1,0 +1,101 @@
+.xp-desktop .cv-wordpad .window-body { padding: 0; }
+.cv-menus, .cv-tools, .cv-ruler { background: var(--window-body); border-bottom: 1px solid var(--line); }
+.cv-menus, .cv-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 2px; padding: 3px 8px; font: .82rem var(--dense-ui); }
+.cv-menus span { padding: 4px 8px; }
+.cv-menus span:hover { color: #fff; background: #2456a8; }
+.cv-tools :is(button, a) {
+  display: inline-flex; align-items: center; gap: 5px;
+  min-width: 0; min-height: 34px; padding: 3px 8px;
+  border: 1px solid transparent; border-radius: 3px;
+  background: transparent; color: var(--ink); font: inherit; text-decoration: none;
+}
+.xp-desktop .cv-tools button { background: transparent; color: var(--ink); border-color: transparent; }
+.xp-desktop .cv-tools :is(a, button):hover { border-color: var(--link); background: var(--inset); }
+.cv-tools svg { color: var(--link); flex: none; }
+.cv-tool-separator { height: 22px; width: 1px; background: var(--line); margin-inline: 2px 4px; }
+.cv-tool-short { display: none; }
+.cv-copy { position: relative; }
+.cv-copy-tip {
+  position: absolute; z-index: 5; left: 0; top: calc(100% + 3px); white-space: nowrap;
+  border: 1px solid #675324; border-radius: 4px; padding: 6px 8px; color: #30280e; background: #fff4bd;
+}
+.xp-desktop .cv-copy-dialog { width: min(92vw, 620px); padding: 0; border: 0; }
+.cv-copy-dialog::backdrop { background: #081024aa; }
+.xp-desktop .cv-copy-dialog .window-body { padding: 16px; }
+.cv-copy-dialog textarea { display: block; width: 100%; margin-top: 8px; font: .85rem var(--mono); color: var(--ink); background: var(--inset); }
+.cv-ruler { display: grid; grid-template-columns: repeat(16, 1fr); padding: 3px 16px; font: .65rem var(--mono); color: var(--muted); }
+.cv-ruler span {
+  padding-inline: 3px; border-inline-start: 1px solid var(--muted);
+  background: repeating-linear-gradient(to right, transparent 0 calc(25% - 1px), var(--line) calc(25% - 1px) 25%) bottom / 100% 4px no-repeat;
+}
+.cv-workspace { padding: clamp(10px, 3vw, 34px); background: #808080; }
+.cv-paper {
+  --paper: #fff;
+  --paper-ink: #20242c;
+  --paper-muted: #4e5563;
+  --paper-rule: #bac2cc;
+  --paper-link: #174c8b;
+  --paper-heading: Arial, Helvetica, "Liberation Sans", sans-serif;
+  box-sizing: border-box; width: min(100%, 820px); min-height: min(1100px, 141vw); margin: auto;
+  padding: clamp(18px, 4vw, 44px); background: var(--paper); color: var(--paper-ink);
+  box-shadow: 3px 4px 0 #24242480; overflow-wrap: anywhere;
+  font: 16px/1.5 "Times New Roman", Georgia, "Liberation Serif", serif;
+}
+[data-theme="dark"] .cv-workspace { background: #373c4d; }
+[data-theme="dark"] .cv-paper { --paper: #eceae4; }
+.xp-desktop .cv-paper :is(h1, h2, h3, h4) { color: var(--paper-ink); font-family: var(--paper-heading); }
+.xp-desktop .cv-paper a { color: var(--paper-link); }
+.xp-desktop .cv-paper :focus-visible { outline-color: #174c8b; box-shadow: 0 0 0 5px white; }
+.cv-paper-header { padding-bottom: 14px; border-bottom: 1px solid var(--paper-rule); }
+.xp-desktop .cv-paper h1 { margin: 0; font-size: clamp(1.65rem, 4vw, 2.4rem); }
+.cv-paper-header p { margin: 3px 0 10px; color: var(--paper-muted); font: 600 1rem var(--paper-heading); }
+.cv-links { display: flex; flex-wrap: wrap; gap: 4px 15px; margin: 0; padding: 0; list-style: none; font: .77rem/1.45 var(--paper-heading); }
+.cv-links a { display: inline-flex; align-items: center; gap: 5px; }
+.cv-links svg { width: 13px; height: 13px; flex: none; }
+.cv-columns { display: grid; grid-template-columns: minmax(0, 32fr) minmax(0, 68fr); gap: clamp(14px, 3vw, 32px); padding-top: 14px; }
+.cv-main-column { grid-column: 2; grid-row: 1; }
+.cv-side-column { grid-column: 1; grid-row: 1; padding-right: 14px; border-right: 1px solid var(--paper-rule); }
+.cv-side-column .cv-links { display: grid; }
+.cv-paper section + section { margin-top: 1.15em; }
+.xp-desktop .cv-paper h2 { margin: 0 0 .55em; border-bottom: 1px solid var(--paper-rule); padding-bottom: 4px; font-size: .84rem; letter-spacing: .06em; text-transform: uppercase; }
+.cv-document-content p { margin: 0 0 .65em; }
+.cv-document-content ul { margin: .25em 0 .85em; padding-left: 1.23em; }
+.cv-document-content li + li { margin-top: .25em; }
+.cv-entry-meta { color: var(--paper-muted); font-size: .88em; }
+/* Job/project entries written as ### headings: bold entry titles, not section-sized headings. */
+.xp-desktop .cv-paper .cv-document-content :is(h3, h4) { margin: 1.1em 0 .15em; font-size: .95rem; font-weight: 700; line-height: 1.3; }
+.xp-desktop .cv-paper .cv-document-content :is(h3, h4):first-child { margin-top: .4em; }
+.cv-document-content :is(h3, h4) + p.cv-entry-meta { margin-bottom: .2em; }
+.xp-desktop .cv-paper .cv-skill-group h3 { margin: .75em 0 .3em; font-size: .76rem; }
+.cv-tags { display: flex; flex-wrap: wrap; gap: 4px; list-style: none; margin: 0; padding: 0; }
+.cv-tags li { border: 1px solid var(--paper-rule); border-radius: 3px; padding: 2px 4px; font: .71rem/1.25 var(--paper-heading); }
+.cv-home { margin: 0; padding: 12px; }
+.cv-status { display: flex; flex-wrap: wrap; }
+@media (width < 760px) {
+  .cv-menus span:nth-child(n + 4), .cv-tool-full, .cv-ruler { display: none; }
+  .cv-tool-short { display: inline; }
+  .cv-tools :is(button, a) {
+    flex-direction: column; justify-content: center; gap: 3px;
+    min-width: 44px; min-height: 44px; padding: 3px 5px; font-size: 11px;
+  }
+  .cv-copy-tip { left: auto; right: 0; }
+  .cv-workspace { padding: 7px; }
+  .cv-paper { padding: 14px; min-height: auto; }
+  .cv-columns { display: block; }
+  .cv-side-column { margin-top: 1.4em; padding: 0; border: 0; }
+}
+@media print {
+  @page wordpad { size: A4; margin: 14mm; }
+  body:has(.cv-paper) :not(:has(.cv-paper), .cv-paper, .cv-paper *) { display: none !important; }
+  body:has(.cv-paper), body:has(.cv-paper) :has(.cv-paper) {
+    display: block !important; position: static !important; overflow: visible !important;
+    width: auto !important; height: auto !important; min-height: 0 !important;
+    max-width: none !important; margin: 0 !important; padding: 0 !important;
+    border: 0 !important; background: white !important; box-shadow: none !important;
+  }
+  body .xp-desktop .cv-paper { page: wordpad; width: auto; min-height: 0; margin: 0; padding: 0; background: white; color: black; box-shadow: none; font-size: 11pt; }
+  body .xp-desktop .cv-paper :is(a, h1, h2, h3, h4, .cv-entry-meta, .cv-paper-header p) { color: black; }
+  .cv-columns { display: grid; }
+  .cv-paper :is(h1, h2, h3, h4) { break-after: avoid; }
+  .cv-skill-group, .cv-paper li { break-inside: avoid; }
+}

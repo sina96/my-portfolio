@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const ADMIN_REALM = "Sveltia CMS";
+import { adminAuthFailure } from "@/lib/basicAuth";
 
 const ADMIN_INDEX_HTML = `<!DOCTYPE html>
 <html lang="en">
@@ -15,7 +15,7 @@ const ADMIN_INDEX_HTML = `<!DOCTYPE html>
       window.CMS_MANUAL_INIT = true;
     </script>
     <script src="/admin/editor-components.js"></script>
-    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+    <script src="https://unpkg.com/@sveltia/cms@0.270.0/dist/sveltia-cms.js" crossorigin="anonymous" integrity="sha384-1PWMVQLxD8dGUGyxhuAzW9bW9EK+8qa/c6ntzhkqwb1x/1R58I64fX/zuQy+SgZF"></script>
     <script>
       window.registerSveltiaEditorComponents(CMS);
       CMS.init();
@@ -135,78 +135,6 @@ interface AdminRouteContext {
   }>;
 }
 
-function getUnauthorizedResponse(): NextResponse {
-  return new NextResponse("Authentication required.", {
-    status: 401,
-    headers: {
-      "WWW-Authenticate": `Basic realm="${ADMIN_REALM}", charset="UTF-8"`,
-      "Cache-Control": "no-store"
-    }
-  });
-}
-
-function getMissingCredentialsResponse(): NextResponse {
-  return new NextResponse("Admin credentials are not configured.", {
-    status: 503,
-    headers: {
-      "Cache-Control": "no-store"
-    }
-  });
-}
-
-function parseBasicAuth(authorization: string | null): { username: string; password: string } | undefined {
-  if (!authorization?.startsWith("Basic ")) {
-    return undefined;
-  }
-
-  try {
-    const decodedCredentials = Buffer.from(authorization.slice("Basic ".length), "base64").toString("utf8");
-    const separatorIndex = decodedCredentials.indexOf(":");
-
-    if (separatorIndex === -1) {
-      return undefined;
-    }
-
-    return {
-      username: decodedCredentials.slice(0, separatorIndex),
-      password: decodedCredentials.slice(separatorIndex + 1)
-    };
-  } catch {
-    return undefined;
-  }
-}
-
-function constantTimeEqual(left: string, right: string): boolean {
-  if (left.length !== right.length) {
-    return false;
-  }
-
-  let diff = 0;
-
-  for (let index = 0; index < left.length; index += 1) {
-    diff |= left.charCodeAt(index) ^ right.charCodeAt(index);
-  }
-
-  return diff === 0;
-}
-
-function isAuthorized(request: NextRequest): boolean {
-  const adminUsername = process.env.ADMIN_USERNAME;
-  const adminPassword = process.env.ADMIN_PASSWORD;
-
-  if (!adminUsername || !adminPassword) {
-    return false;
-  }
-
-  const credentials = parseBasicAuth(request.headers.get("authorization"));
-
-  return Boolean(
-    credentials &&
-      constantTimeEqual(credentials.username, adminUsername) &&
-      constantTimeEqual(credentials.password, adminPassword)
-  );
-}
-
 function getAdminAsset(path: string): { body: string; contentType: string } | undefined {
   switch (path) {
     case "":
@@ -231,16 +159,8 @@ function getAdminAsset(path: string): { body: string; contentType: string } | un
 }
 
 export async function GET(request: NextRequest, context: AdminRouteContext): Promise<NextResponse> {
-  const adminUsername = process.env.ADMIN_USERNAME;
-  const adminPassword = process.env.ADMIN_PASSWORD;
-
-  if (!adminUsername || !adminPassword) {
-    return getMissingCredentialsResponse();
-  }
-
-  if (!isAuthorized(request)) {
-    return getUnauthorizedResponse();
-  }
+  const authFailure = adminAuthFailure(request.headers.get("authorization"));
+  if (authFailure) return authFailure;
 
   const params = await context.params;
   const asset = getAdminAsset((params.path ?? []).join("/"));

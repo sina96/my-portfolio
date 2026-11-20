@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Keep the inherited dark-mode appearance of this page after the XP split. */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+[data-theme="dark"] button {
+  background-color: #3d3d5c !important;
+  color: #fff !important;
+  box-shadow: inset -1px -1px #1a1a2e, inset 1px 1px #5a5a7a, inset -2px -2px #2d2d44, inset 2px 2px #4a4a6a !important;
+}
+[data-theme="dark"] button:active {
+  box-shadow: inset -1px -1px #5a5a7a, inset 1px 1px #1a1a2e, inset -2px -2px #4a4a6a, inset 2px 2px #2d2d44 !important;
+}
+[data-theme="dark"] a { color: lightskyblue !important; }
+[data-theme="dark"] a:visited { color: #b19cd9 !important; }
+[data-theme="dark"] h2 { color: #e0e0e0 !important; }

@@ -4,45 +4,35 @@ import {
   getMockAvailabilitySlots,
   normalizeWeekOffset,
 } from "../../(main)/data/availability";
-import { getIcsBusyBlocks, hasConfiguredIcsSources } from "./ics";
+import { getIcsBusyBlocks } from "./ics";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function parseWeekOffset(request: Request): number {
-  const { searchParams } = new URL(request.url);
-  const weekOffset = Number(searchParams.get("weekOffset") ?? "0");
+const AVAILABLE_CACHE = "public, s-maxage=300, stale-while-revalidate=600";
+const DEGRADED_CACHE = "public, s-maxage=60, must-revalidate";
 
-  return normalizeWeekOffset(weekOffset);
-}
-
-export async function GET(request: Request) {
+export async function GET(request: Request): Promise<Response> {
   const now = new Date();
-  const weekOffset = parseWeekOffset(request);
+  const { searchParams } = new URL(request.url);
+  const weekOffset = normalizeWeekOffset(Number(searchParams.get("weekOffset") ?? "0"));
   const weekRange = getAvailabilityWeekRange(weekOffset, now);
 
   try {
-    if (!hasConfiguredIcsSources()) {
-      throw new Error("No ICS availability sources configured.");
-    }
-
-    const busyBlocks = await getIcsBusyBlocks(weekRange.start, weekRange.end);
-    const slots = getAvailabilitySlotsFromBusyBlocks(busyBlocks, weekOffset, now);
-
+    const { busyBlocks, partial } = await getIcsBusyBlocks(weekRange.start, weekRange.end);
     return Response.json({
-      slots,
+      slots: getAvailabilitySlotsFromBusyBlocks(busyBlocks, weekOffset, now),
       source: "ics",
       weekOffset,
       generatedAt: now.toISOString(),
-    });
-  } catch (error) {
-    console.warn("[Availability] Falling back to mock availability:", error);
-
+    }, { headers: { "Cache-Control": partial ? DEGRADED_CACHE : AVAILABLE_CACHE } });
+  } catch {
+    // Failed sources are logged on cache fill, not on repeated public requests.
     return Response.json({
       slots: getMockAvailabilitySlots(weekOffset, now),
       source: "mock",
       weekOffset,
       generatedAt: now.toISOString(),
-    });
+    }, { headers: { "Cache-Control": DEGRADED_CACHE } });
   }
 }

@@ -1,0 +1,77 @@
+.hill-header {
+  --head: 42vh;
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: var(--head);
+}
+.hill-scene {
+  position: absolute;
+  inset: 0 0 auto;
+  height: var(--head);
+  background: linear-gradient(#1747b8, #cfe4f8);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+[data-theme="dark"] .hill-scene { background: linear-gradient(#03061a, #2a4677); }
+.hill-scene svg { display: block; width: 100%; height: 100%; }
+.hill-scene image { image-rendering: pixelated; }
+.hill-scene .hill-scenery-moon {
+  position: absolute;
+  top: 7%;
+  right: 12%;
+  width: clamp(64px, 19vmin, 180px);
+  height: auto;
+}
+.hill-hero {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  pointer-events: none;
+}
+.hill-hero :is(.xp-window, #xp-hero-icon) { pointer-events: auto; }
+.hill-hint { display: none; }
+.hill-drift { animation: hill-drift var(--duration) steps(var(--steps)) var(--delay) infinite; }
+.hill-blink { opacity: 0; animation: hill-blink var(--duration) steps(1) var(--delay) infinite; }
+.hill-twinkle { animation: hill-twinkle var(--duration) steps(1) var(--delay) infinite; }
+@keyframes hill-drift { from { transform: translateX(var(--from)); } to { transform: translateX(var(--to)); } }
+@keyframes hill-blink { 0%, 88%, 97%, 100% { opacity: 0; } 90% { opacity: 1; } 94% { opacity: .5; } }
+@keyframes hill-twinkle { 0%, 70%, 80%, 100% { opacity: 1; } 75% { opacity: .35; } 90% { opacity: .6; } }
+@keyframes hill-hint { 50% { translate: 0 6px; } }
+@media (min-width: 760px) and (prefers-reduced-motion: no-preference) {
+  .hill-header-intro { min-height: 100vh; }
+  .hill-header-intro .hill-scene {
+    position: fixed;
+    height: var(--hill-height, 100vh);
+    transform: translateY(var(--hill-shift, 0px));
+    mask-image: linear-gradient(to bottom, #000 calc(100% - var(--hill-fade, 0%)), transparent);
+  }
+  .hill-header-intro .hill-hero {
+    opacity: var(--hero-opacity, 1);
+    transform: translateY(var(--hero-shift, 0px));
+  }
+  .hill-header-intro .hill-hero:has(:focus-visible) { opacity: 1; transform: none; }
+  .xp-desktop .hill-hint {
+    display: block;
+    z-index: 2;
+    position: absolute;
+    bottom: calc(var(--taskbar-height, 36px) + 16px);
+    color: white;
+    background: #14204a;
+    padding: 4px 8px;
+    border: 1px solid #88a9ec;
+    min-width: 0;
+    min-height: 25px;
+    opacity: var(--hero-opacity, 1);
+    animation: hill-hint 1.6s steps(2) infinite;
+    font: 700 12px var(--mono);
+    letter-spacing: .18em;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hill-drift, .hill-blink, .hill-twinkle { animation: none; }
+}

@@ -1,0 +1,20 @@
+.availability-panel { padding: clamp(8px, 2vw, 20px); border: 1px solid var(--line); }
+.availability-panel .availability-note, .availability-empty {
+  color: var(--muted);
+  font-size: .85rem;
+  margin: 0 0 .4rem;
+}
+.availability-week-nav { display: flex; align-items: center; gap: 10px; justify-content: space-between; margin: 12px 0; }
+.availability-week-nav button { min-width: 32px; min-height: 32px; }
+.availability-day-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); gap: 8px; }
+.availability-day { padding: 8px; border: 1px solid var(--line); background: var(--inset); }
+.availability-day h3 { margin: 0 0 8px; text-align: center; font-size: .85rem; }
+.availability-slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
+.availability-slot {
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  background: var(--window-body);
+  font: .75rem/1.4 var(--mono);
+  white-space: nowrap;
+}
+.availability-slot-lunch-gym { border-style: dashed; color: var(--accent); }

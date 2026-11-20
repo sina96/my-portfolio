@@ -84,6 +84,7 @@ function Desktop({ children, year }: Readonly<XpWindowManagerProps>) {
   }, []);
   const contentWindows = windows.filter(({ desktopApp }) => !desktopApp);
   const allClosed = contentWindows.length > 0 && contentWindows.every(({ state }) => state === "closed");
+  const someClosed = !allClosed && contentWindows.some(({ state }) => state === "closed");
 
   const pathname = usePathname();
   const landing = pathname === "/";
@@ -152,7 +153,15 @@ function Desktop({ children, year }: Readonly<XpWindowManagerProps>) {
   return (
     <WindowContext.Provider value={{ windows, register, setState, scenery, homeRequest, goHome, sceneryEntering, finishSceneryEntry }}>
       {landing ? <DesktopNavigation year={year}>{content}</DesktopNavigation> : (
-        <div className="xp-subpage" data-scenery={scenery}>{content}</div>
+        <div className="xp-subpage" data-scenery={scenery}>
+          {content}
+          {/* Sub-pages have no task pane, so a partly closed page needs its own way back. */}
+          {someClosed && (
+            <div className="xp-partial-restore">
+              <button type="button" className="xp-quiet-action" onClick={restore}>restore closed windows ↺</button>
+            </div>
+          )}
+        </div>
       )}
     </WindowContext.Provider>
   );

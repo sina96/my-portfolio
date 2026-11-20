@@ -7,7 +7,7 @@ import {
   normalizeDateString,
 } from "@/app/(main)/data/blogPosts";
 import { sanitizeHtml } from "@/app/(main)/utils/sanitizeHtml";
-import { escapeXml, xmlCdata } from "@/lib/xml";
+import { absolutizeUrls, escapeXml, xmlCdata } from "@/lib/xml";
 
 test("normalizes dates and rejects impossible calendar dates", () => {
   expect(normalizeDateString("2026-02-30")).toBeUndefined();
@@ -55,4 +55,13 @@ test("escapes the five XML special characters for RSS", () => {
   expect(escapeXml(`<post title="A & B">It's here</post>`))
     .toBe("&lt;post title=&quot;A &amp; B&quot;&gt;It&apos;s here&lt;/post&gt;");
   expect(xmlCdata("before ]]> after")).toBe("<![CDATA[before ]]]]><![CDATA[> after]]>");
+});
+
+test("resolves relative RSS content URLs against the article and keeps absolute ones", () => {
+  const html = '<img src="/images/blog/a.png"><a href="notes">n</a><a href="#top">t</a>'
+    + '<a href="https://example.com/x">x</a><a href="mailto:a@b.se">m</a><img src="//cdn.example.com/b.png">';
+  expect(absolutizeUrls(html, "https://sinabastani.dev/blog/post")).toBe(
+    '<img src="https://sinabastani.dev/images/blog/a.png"><a href="https://sinabastani.dev/blog/notes">n</a>'
+    + '<a href="https://sinabastani.dev/blog/post#top">t</a><a href="https://example.com/x">x</a>'
+    + '<a href="mailto:a@b.se">m</a><img src="//cdn.example.com/b.png">');
 });

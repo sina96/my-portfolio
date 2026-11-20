@@ -23,8 +23,13 @@ const ibmPlexMono = IBM_Plex_Mono({ weight: ["400", "700"], subsets: ["latin"], 
 const themeInitializerScript = `
 (function () {
   if (window.location.pathname === "/") window.history.scrollRestoration = "manual";
+  var savedTheme = null;
   try {
-    var savedTheme = window.localStorage.getItem("theme");
+    savedTheme = window.localStorage.getItem("theme");
+  } catch (error) {
+    // Storage can be blocked; fall back to the system preference.
+  }
+  try {
     var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     var theme = savedTheme === "dark" || (savedTheme !== "light" && prefersDark) ? "dark" : "light";
     document.documentElement.setAttribute("data-theme", theme);

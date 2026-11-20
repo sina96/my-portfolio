@@ -60,7 +60,8 @@
 .blog-post-content .blog-spacer-lg { height: 2rem; }
 .blog-post-content .blog-table-scroll { overflow-x: auto; margin-block: 1rem; }
 .blog-post-content table { min-width: 100%; border-collapse: collapse; }
-.blog-post-content th, .blog-post-content td { padding: .5em .7em; border: 1px solid var(--line); text-align: start; }
+.blog-post-content th, .blog-post-content td { padding: .5em .7em; border: 1px solid var(--line); }
+.blog-post-content :is(th, td):not([align]) { text-align: start; }
 .blog-post-content th { background: var(--inset); }
 .blog-post-content .hljs {
   color: var(--syntax-text);

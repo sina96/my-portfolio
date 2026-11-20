@@ -127,3 +127,14 @@ test("keeps a Languages section with more than a plain list in the main column",
   expect(cv.languages).toBeUndefined();
   expect(cv.sections.at(-1)?.id).toBe("languages");
 });
+
+test("removes formatted national phone numbers from the body but keeps date ranges", () => {
+  const source = NEW_FORMAT.replace("Builds things.", "Builds things.\n\nPhone: 070-012 82 99\n\nOr call 08.123 456 78 any time.");
+  const cv = parseCV(source);
+  const output = `${JSON.stringify(cv.sections)}\n${cv.copyMarkdown}`;
+  expect(output).not.toMatch(/070-012|82 99|08\.123|456 78|Phone:/);
+  expect(output).toContain("Or call");
+  expect(output).toContain("06/2025 - *Present*");
+  expect(cv.sections[1].html).toContain("06/2025 - <em>Present</em>");
+  expect(cv.sections[2].html).toContain("Stockholm, SE | 2017 - 2020");
+});

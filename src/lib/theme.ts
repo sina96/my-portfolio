@@ -6,17 +6,19 @@ const KEY = "theme";
 const QUERY = "(prefers-color-scheme: dark)";
 const listeners = new Set<() => void>();
 let stopListening: (() => void) | undefined;
-let inMemoryTheme: Theme | null = null;
+// Explicit choice that couldn't be saved; wins over stale storage until the next save or cross-tab change.
+let unsavedTheme: Theme | null = null;
 
 function validTheme(value: unknown): Theme | null {
   return value === "light" || value === "dark" ? value : null;
 }
 
 function savedTheme(): Theme | null {
+  if (unsavedTheme) return unsavedTheme;
   try {
     return validTheme(window.localStorage.getItem(KEY));
   } catch {
-    return inMemoryTheme;
+    return null;
   }
 }
 
@@ -35,11 +37,12 @@ function applyTheme(theme: Theme): void {
 }
 
 export function setTheme(theme: Theme): void {
-  inMemoryTheme = theme;
   try {
     window.localStorage.setItem(KEY, theme);
+    unsavedTheme = null;
   } catch {
-    // The current page still works when storage is unavailable.
+    // The current page keeps the choice when storage is unavailable.
+    unsavedTheme = theme;
   }
   applyTheme(theme);
 }
@@ -50,7 +53,10 @@ export function subscribeToTheme(listener: () => void): () => void {
     const media = window.matchMedia(QUERY);
     const syncTheme = () => applyTheme(savedTheme() ?? (media.matches ? "dark" : "light"));
     const onStorage = (event: StorageEvent) => {
-      if (event.key === KEY || event.key === null) syncTheme();
+      if (event.key === KEY || event.key === null) {
+        unsavedTheme = null;
+        syncTheme();
+      }
     };
     media.addEventListener("change", syncTheme);
     window.addEventListener("storage", onStorage);

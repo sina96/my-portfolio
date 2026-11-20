@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const HERO_HINT = "xp-hero-tip-seen";
 export const MENU_HINT = "xp-menu-hint-seen";
@@ -37,6 +37,8 @@ interface HintBalloonProps {
 /** Mount only while the hint is eligible to show. */
 export function HintBalloon({ storageKey, delay, duration, title, message, atTop, onDismiss }: Readonly<HintBalloonProps>) {
   const [visible, setVisible] = useState(false);
+  const [expired, setExpired] = useState(false);
+  const balloon = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (hasSeenTip(storageKey)) return;
@@ -45,7 +47,7 @@ export function HintBalloon({ storageKey, delay, duration, title, message, atTop
       if ((atTop && window.scrollY > 4) || hasSeenTip(storageKey)) return;
       markHintSeen(storageKey);
       setVisible(true);
-      hide = window.setTimeout(() => setVisible(false), duration);
+      hide = window.setTimeout(() => setExpired(true), duration);
     }, delay);
     return () => {
       window.clearTimeout(show);
@@ -53,10 +55,17 @@ export function HintBalloon({ storageKey, delay, duration, title, message, atTop
     };
   }, [atTop, delay, duration, storageKey]);
 
+  // Expiry waits while keyboard focus is inside the balloon, so focus is never dropped with it.
+  useEffect(() => {
+    if (expired && visible && !balloon.current?.contains(document.activeElement)) setVisible(false);
+  }, [expired, visible]);
+
   if (!visible) return null;
 
   return (
-    <div className="xp-tray-balloon">
+    <div className="xp-tray-balloon" ref={balloon} onBlur={(event) => {
+      if (expired && !event.currentTarget.contains(event.relatedTarget as Node | null)) setVisible(false);
+    }}>
       <div role="status">{title && <strong>{title}</strong>}<p>{message}</p></div>
       <button type="button" onClick={() => {
         setVisible(false);

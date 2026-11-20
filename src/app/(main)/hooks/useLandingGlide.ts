@@ -16,6 +16,15 @@ export function getLandingStop(header: HTMLElement): number {
   return Math.max(1, Math.round((sentinel?.getBoundingClientRect().bottom ?? 0) + window.scrollY) + 1);
 }
 
+/** True when an element between the target and the page can still scroll in that direction. */
+function canScrollInside(target: EventTarget | null, direction: number): boolean {
+  for (let node = target instanceof Element ? target : null; node && node !== document.body; node = node.parentElement) {
+    if (node.scrollHeight <= node.clientHeight || !/(auto|scroll|overlay)/.test(getComputedStyle(node).overflowY)) continue;
+    if (direction > 0 ? node.scrollTop + node.clientHeight < node.scrollHeight - 1 : node.scrollTop > 0) return true;
+  }
+  return false;
+}
+
 /** Connects the desktop landing's scroll band to its two resting positions. */
 export function useLandingGlide(header: RefObject<HTMLElement | null>, enabled: boolean, homeRequest: number): void {
   const requestGlide = useRef<(() => void) | undefined>(undefined);
@@ -72,6 +81,7 @@ export function useLandingGlide(header: RefObject<HTMLElement | null>, enabled: 
 
     function onWheel(event: WheelEvent): void {
       if (event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY) || !event.deltaY) return;
+      if (!gliding && !unlocking && canScrollInside(event.target, event.deltaY)) return;
       intent(event.deltaY, event);
     }
 

@@ -1,7 +1,7 @@
 import { getAllBlogPosts, getBlogPost } from "../(main)/data/blogPosts";
 
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
-import { escapeXml, xmlCdata } from "@/lib/xml";
+import { absolutizeUrls, escapeXml, xmlCdata } from "@/lib/xml";
 
 export const dynamic = "force-static";
 
@@ -21,7 +21,7 @@ export function GET(): Response {
       <guid isPermaLink="true">${SITE_URL}/blog/${post.slug}</guid>
       <description>${escapeXml(post.excerpt)}</description>
       <dc:creator>${escapeXml(SITE_NAME)}</dc:creator>
-      <content:encoded>${xmlCdata(post.content)}</content:encoded>
+      <content:encoded>${xmlCdata(absolutizeUrls(post.content, `${SITE_URL}/blog/${post.slug}`))}</content:encoded>
       <pubDate>${formatRssDate(post.date)}</pubDate>
     </item>`
     )

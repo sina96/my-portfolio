@@ -31,6 +31,8 @@ export interface CVData {
 const CV_PATH = join(process.cwd(), "src/content/cv/sina-cv.md");
 const markdown = new Marked({ gfm: true, breaks: true });
 const PHONE = /(?:\(\s*\+\d{1,3}\s*\)|\+\d{1,3})[\t .-]*(?:\d[\t .-]*){7,14}\d|\b\d{9,15}\b/g;
+// National formats such as "070-012 82 99" or "08.123 456 78"; "/" is excluded so date ranges survive.
+const NATIONAL_PHONE = /(?:\b(?:phone|telephone|mobile|tel)\b\s*[:.]?\s*)?(?<![\w/])0\d(?:[ .-]?\d){6,12}(?![\w/])/gi;
 const PHONE_HEADER = /(?:tel:|(?:phone|telephone|mobile)\b|(?:\d[\s().+-]*){7,})/i;
 
 function cleanText(value: string): string {
@@ -116,7 +118,7 @@ export function parseCV(source: string): CVData {
     const body = content.replace(/<!--[\s\S]*?-->/g, "")
       .replace(/\[[^\]\n]*\]\(tel:[^\n)]*\)/gi, "")
       .replace(/^.*(?:href\s*=\s*["']tel:|data-icon\s*=\s*["'][^"']*phone).*$/gim, "")
-      .replace(PHONE, "").trim();
+      .replace(PHONE, "").replace(NATIONAL_PHONE, "").trim();
     const sections: CVSection[] = [];
     let skillsSection: CVSection | undefined;
     let skills: CVData["skills"] = [];

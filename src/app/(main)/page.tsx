@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import memojiImage from "@/assets/images/sina-pc-memoji.png";
 import { JsonLd } from "@/lib/jsonLd";
+import { SHARE_IMAGE_SIZE } from "@/lib/shareImage";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_STATUS, SITE_TAGLINE, SITE_URL, SOCIAL_LINKS, siteAlternates } from "@/lib/site";
 import { BlogList } from "./components/BlogList";
 import { HomeHero } from "./components/HomeHero";
@@ -14,6 +15,16 @@ export const metadata: Metadata = {
   title: { absolute: SITE_NAME },
   description: SITE_DESCRIPTION,
   alternates: siteAlternates("/"),
+  // Only the homepage sets og:url to the site root; other routes keep their own. A page-level openGraph
+  // replaces the root one (including the file-based image), so the share image is listed again here.
+  openGraph: {
+    type: "website",
+    url: "/",
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    siteName: SITE_NAME,
+    images: [{ url: "/opengraph-image", ...SHARE_IMAGE_SIZE, type: "image/png", alt: `${SITE_NAME} — ${SITE_TAGLINE}` }],
+  },
 };
 
 export default function Home() {

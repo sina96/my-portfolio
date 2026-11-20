@@ -49,3 +49,14 @@ html:has([data-scenery="true"]), body:has([data-scenery="true"]) { overflow: hid
 .xp-subpage > :is(.xp-content, .xp-closed-card) { grid-area: 2 / 1; }
 .xp-subpage > .xp-closed-card { align-self: start; margin-top: calc(-1 * var(--hill-overlap)); }
 .xp-closed-card .xp-actions { margin-top: 0; }
+.xp-subpage > .xp-partial-restore { grid-area: 3 / 1; justify-self: center; margin: 4px 0 24px; }
+.xp-desktop .xp-partial-restore .xp-quiet-action {
+  min-height: 32px;
+  padding: 4px 8px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  font: 600 .85rem var(--chrome);
+  color: var(--link);
+  text-decoration: underline;
+}

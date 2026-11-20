@@ -340,8 +340,8 @@ export async function getIcsBusyBlocks(rangeStart: Date, rangeEnd: Date): Promis
         if (blocksByRange.size >= 3) blocksByRange.clear();
         blocksByRange.set(rangeKey, blocks);
       }
+      for (const block of blocks) busyBlocks.push(block);
       loaded += 1;
-      busyBlocks.push(...blocks);
     } catch {
       console.warn("[Availability] Ignoring a calendar that could not be expanded.");
     }

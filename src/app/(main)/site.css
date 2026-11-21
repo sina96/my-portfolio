@@ -1,5 +1,6 @@
 .xp-desktop {
   --page: #e8f1fb;
+  --wallpaper-dim: #e8f1fb;
   --ink: #14204a;
   --muted: #4a5880;
   --accent: #825900;
@@ -17,13 +18,13 @@
   min-height: 100vh;
   padding-bottom: 24px;
   --hill-overlap: 24vh;
-  background: var(--page);
   color: var(--ink);
   isolation: isolate;
   font: 15px/1.6 var(--chrome);
 }
 [data-theme="dark"] .xp-desktop {
   --page: #0b1030;
+  --wallpaper-dim: #0b1030;
   --ink: #ecebff;
   --muted: #aeabdc;
   --accent: #ffd36b;
@@ -64,7 +65,6 @@
 }
 .xp-post { max-width: 780px; }
 .xp-cv { max-width: 980px; }
-.xp-home-content { max-width: 760px; }
 .xp-subpage > .xp-content { margin-top: calc(-1 * var(--hill-overlap)); }
 .xp-desktop .window { min-width: 0; overflow-wrap: anywhere; background: var(--window-body); color: var(--ink); font: inherit; }
 .xp-desktop .window-body { font: inherit; }
@@ -76,6 +76,13 @@
   background: linear-gradient(#1555bd 0%, #1b61cd 8%, #124cad 55%, #0c3f9e 100%);
 }
 [data-theme="dark"] .xp-desktop .title-bar { background: linear-gradient(#2456ac, #102764); }
+@media screen and (width < 760px) {
+  .xp-window:not(.xp-hero-window) > .title-bar {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 2;
+  }
+}
 .xp-window .title-bar-text { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .xp-window .title-bar-controls { flex-shrink: 0; }
 .xp-window .window-body, .xp-closed-card .window-body { margin: 0; padding: clamp(12px, 3vw, 24px); }
@@ -88,10 +95,13 @@
   color: var(--ink);
 }
 .xp-hero-window { box-shadow: 8px 8px 0 #06132a55; }
-.xp-intro h1 { margin: 0 0 .15em; }
 .xp-intro p { margin: 0; }
-.xp-intro { display: flex; align-items: center; gap: 14px; }
-.xp-intro img { width: 100px; height: 100px; object-fit: contain; }
+.xp-intro { display: flex; align-items: center; gap: 12px; }
+.xp-intro img { width: 56px; height: 56px; flex: none; object-fit: contain; }
+.xp-now { display: grid; gap: 4px; margin: 0; font-size: .88em; }
+.xp-now > div { display: flex; flex-wrap: wrap; gap: 0 6px; align-items: baseline; }
+.xp-now dt { color: var(--muted); font-family: var(--mono); }
+.xp-now dd { margin: 0; }
 .xp-status { display: flex; align-items: center; gap: .6em; color: var(--muted); }
 .xp-status span { width: 9px; height: 9px; flex: 0 0 9px; border-radius: 50%; background: #b52636; position: relative; }
 .xp-status[data-status="available"] span { background: #36823d; }
@@ -114,12 +124,17 @@
 }
 .xp-desktop .xp-button-link:hover { border-color: var(--link); box-shadow: inset 0 0 0 1px var(--link); }
 [data-theme="dark"] .xp-desktop .xp-button-link { color: var(--ink); background: linear-gradient(#374165, #252e4c); border-color: #6e7baa; }
-.xp-actions, .xp-socials { display: flex; flex-wrap: wrap; gap: 8px 12px; }
+.xp-desktop .xp-nav-link { gap: 6px; border-radius: 6px; }
+.xp-nav-link svg { flex: none; }
+.xp-desktop .xp-nav-link:hover { box-shadow: inset 0 0 0 1px #7db5ff, 0 0 5px #437fce88; }
+.xp-nav-link:active { transform: translateY(1px); }
+@media (width < 760px) {
+  .xp-desktop .xp-nav-link { min-height: 44px; }
+}
+.xp-actions { display: flex; flex-wrap: wrap; gap: 8px 12px; }
 .xp-actions { margin-top: 20px; justify-content: center; }
 .xp-contact-window .window-body { text-align: center; }
-.xp-contact-window .xp-socials { justify-content: center; }
 #contact-availability { scroll-margin-top: 12px; }
-.xp-socials { padding: 0; list-style: none; }
 .xp-sr-only {
   position: absolute;
   width: 1px;
@@ -133,8 +148,6 @@
 .xp-error-content { max-width: 560px; }
 .xp-error-body { display: flex; gap: 16px; align-items: flex-start; }
 .xp-error-icon { background: #b2211f; color: #fff; border-radius: 50%; padding: 0 11px; font-size: 1.6rem; }
-.xp-rss { display: flex; justify-content: flex-end; }
-.xp-rss a { display: grid; place-items: center; width: 32px; height: 32px; }
 .xp-meta { color: var(--muted); font-size: .76rem; letter-spacing: .055em; text-transform: uppercase; }
 .xp-post-list { padding: 0; list-style: none; margin: 0 0 16px; }
 .xp-post-list li { padding: .58em 0; border-bottom: 1px solid var(--line); }
@@ -155,6 +168,12 @@
   color: #fff;
   font: 600 13px var(--chrome);
 }
+.xp-subpage { padding-bottom: var(--taskbar-space); }
+.xp-subpage .xp-taskbar[data-reading-hidden] { transform: translateY(100%); }
+.xp-taskbar-bridge { position: fixed; inset: auto auto 0 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .xp-subpage .xp-taskbar { transition: transform 150ms steps(5, end); }
+}
 .xp-start-area, .xp-task-buttons, .xp-tray { display: flex; align-items: center; }
 .xp-start-area { position: relative; }
 .xp-desktop .xp-start-button {
@@ -170,7 +189,8 @@
 .xp-start-logo i:nth-child(4) { background: #ffdd6e; }
 .xp-start-menu {
   position: absolute; bottom: 100%; left: 3px; width: min(265px, calc(100vw - 6px));
-  max-height: calc(100vh - var(--taskbar-space)); overflow: auto;
+  max-height: calc(100vh - var(--taskbar-space));
+  max-height: calc(100dvh - var(--taskbar-space)); overflow: auto;
   background: var(--window-body); color: var(--ink); border: 2px solid #1853b6;
   border-radius: 7px 7px 0 0; box-shadow: 4px 4px 0 #081a4544;
 }
@@ -178,13 +198,16 @@
 .xp-desktop .xp-start-menu a { display: block; padding: 8px 12px; color: var(--ink); text-decoration: none; }
 .xp-desktop .xp-start-menu a:hover, .xp-desktop .xp-start-menu a[aria-current="page"] { background: var(--inset); color: var(--link); text-decoration: underline; }
 .xp-start-menu small { display: block; padding: 8px 12px; border-top: 1px solid var(--line); color: var(--muted); }
-.xp-start-restore { display: none; }
+.xp-desktop .xp-start-restore { display: block; width: calc(100% - 16px); margin: 6px 8px; }
 .xp-task-buttons { flex: 1; min-width: 0; gap: 4px; padding: 0 8px; }
 .xp-desktop .xp-task-buttons button {
-  min-width: 0; max-width: 180px; min-height: 30px; padding: 0 10px; overflow: hidden;
-  text-overflow: ellipsis; white-space: nowrap; color: #fff; background: #2456aa;
+  display: flex; align-items: center; gap: 6px;
+  min-width: 0; max-width: 180px; min-height: 30px; padding: 0 10px;
+  color: #fff; background: #2456aa;
   border: 1px solid #1a3c85; font: 600 12px var(--chrome); text-align: left;
 }
+.xp-task-buttons svg { flex: none; }
+.xp-task-buttons span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .xp-desktop .xp-task-buttons button[aria-pressed="true"] { background: #123781; }
 .xp-tray { position: relative; gap: 8px; margin-left: auto; padding: 0 10px; background: linear-gradient(#1765b0, #105092 55%, #10477b); border-left: 1px solid #3867b6; }
 .xp-desktop .xp-tray button {
@@ -196,9 +219,11 @@
 [data-theme="dark"] .xp-theme-night { display: inline; }
 @media (width < 760px) {
   .xp-desktop { --hill-overlap: 20vh; }
-  .xp-task-buttons { display: none; }
-  .xp-start-restore:not(:empty) { display: grid; gap: 4px; padding: 8px; border-top: 1px solid var(--line); }
-  .xp-start-restore button { white-space: normal; }
+  .xp-desktop .xp-start-button { min-width: 78px; }
+  .xp-task-buttons { padding-inline: 4px; }
+  .xp-desktop .xp-task-buttons button { width: 40px; justify-content: center; padding: 0 2px; }
+  .xp-task-buttons span { display: none; }
+  .xp-tray { gap: 5px; padding-inline: 6px; }
 }
 @media (prefers-reduced-motion: no-preference) {
   html:has(.xp-desktop) { scroll-behavior: smooth; }

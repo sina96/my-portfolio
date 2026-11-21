@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { JsonLd } from "@/lib/jsonLd";
 import { SITE_NAME, SITE_URL, siteAlternates } from "@/lib/site";
 import { BlogDate } from "../../components/BlogList";
 import { HillScene } from "../../components/HillScene";
+import { XpNavLink } from "../../components/XpNavLink";
 import { XpWindow } from "../../components/XpWindow";
 import { getAllBlogPosts, getBlogPost } from "../../data/blogPosts";
+import { MailToolbar } from "../MailToolbar";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -56,13 +57,18 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       }} />
       <HillScene mode="header" />
       <main id="main" className="xp-content xp-post" tabIndex={-1}>
-        <XpWindow id="post-article" title={post.title}>
-          <BlogDate date={post.date} />
-          <h1>{post.title}</h1>
+        <XpWindow id="post-article" icon="blog" title={`${post.title} - Message`} className="xp-mail-window">
+          <MailToolbar post={{ slug: post.slug, title: post.title }} />
+          <dl className="xp-mail-fields xp-message-header">
+            <dt>From:</dt><dd>{SITE_NAME}</dd>
+            <dt>To:</dt><dd>you</dd>
+            <dt>Date:</dt><dd><BlogDate date={post.date} /></dd>
+            <dt>Subject:</dt><dd><h1>{post.title}</h1></dd>
+          </dl>
           <div className="blog-post-content" dangerouslySetInnerHTML={{ __html: post.content }} />
           <div className="xp-actions">
-            <Link href="/blog" className="xp-button-link">← All posts</Link>
-            <Link href="/" className="xp-button-link">Home</Link>
+            <XpNavLink href="/blog" label="Inbox" icon="back" />
+            <XpNavLink href="/" label="Home" icon="home" />
           </div>
         </XpWindow>
       </main>

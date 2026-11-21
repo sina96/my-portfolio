@@ -3,8 +3,10 @@
 import { useEffect, useRef } from "react";
 import type { RefObject } from "react";
 
-const GLIDE_MS = 600;
-const MOMENTUM_MS = 250;
+const GLIDE_MS = 475;
+const WHEEL_GAP_MS = 120;
+const MAX_WHEEL_STREAM_MS = 1200;
+const UPWARD_DELTA = 50;
 const SETTLE_MS = 150;
 const TOUCH_SLOP = 12;
 const EDGE = 1;
@@ -37,13 +39,16 @@ export function useLandingGlide(header: RefObject<HTMLElement | null>, enabled: 
     let end = 0;
     let frame = 0;
     let settling = 0;
-    let unlocking = 0;
+    let wheelTimer = 0;
+    let wheelStarted = -Infinity;
+    let lastWheel = -Infinity;
+    let upwardDelta = 0;
     let bound = false;
     let gliding = false;
     let touch: { x: number; y: number } | undefined;
 
     function glide(destination: number, focusContent = false): void {
-      if (gliding || unlocking) return;
+      if (gliding) return;
       window.clearTimeout(settling);
       gliding = true;
       syncInput();
@@ -51,24 +56,21 @@ export function useLandingGlide(header: RefObject<HTMLElement | null>, enabled: 
       const started = performance.now();
       function tick(now: number): void {
         const t = Math.min((now - started) / GLIDE_MS, 1);
-        const eased = t < .5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2;
+        const eased = 1 - (1 - t) ** 3;
         window.scrollTo({ top: from + (destination - from) * eased, behavior: "instant" });
         if (t < 1) frame = requestAnimationFrame(tick);
         else {
           frame = 0;
           gliding = false;
           if (focusContent) document.getElementById("main")?.focus({ preventScroll: true });
-          unlocking = window.setTimeout(() => {
-            unlocking = 0;
-            onScroll();
-          }, MOMENTUM_MS);
+          onScroll();
         }
       }
       frame = requestAnimationFrame(tick);
     }
 
     function intent(direction: number, event: Event): void {
-      if (gliding || unlocking) {
+      if (gliding) {
         event.preventDefault();
         return;
       }
@@ -81,8 +83,45 @@ export function useLandingGlide(header: RefObject<HTMLElement | null>, enabled: 
 
     function onWheel(event: WheelEvent): void {
       if (event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY) || !event.deltaY) return;
-      if (!gliding && !unlocking && canScrollInside(event.target, event.deltaY)) return;
-      intent(event.deltaY, event);
+      const now = performance.now();
+      if (now - lastWheel >= WHEEL_GAP_MS) {
+        upwardDelta = 0;
+        wheelStarted = -Infinity;
+      }
+      lastWheel = now;
+
+      function holdWheelStream(): void {
+        window.clearTimeout(wheelTimer);
+        wheelTimer = window.setTimeout(() => {
+          wheelTimer = 0;
+          syncInput();
+        }, Math.min(WHEEL_GAP_MS, Math.max(0, wheelStarted + MAX_WHEEL_STREAM_MS - now)));
+      }
+
+      if (now - wheelStarted < MAX_WHEEL_STREAM_MS) {
+        event.preventDefault();
+        holdWheelStream();
+        return;
+      }
+      if (gliding) { event.preventDefault(); return; }
+      if (canScrollInside(event.target, event.deltaY)) return;
+
+      const y = window.scrollY;
+      if (event.deltaY < 0 && y > EDGE && y <= end + EDGE) {
+        event.preventDefault();
+        const factor = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1;
+        upwardDelta += -event.deltaY * factor;
+        if (upwardDelta < UPWARD_DELTA) return;
+      } else {
+        upwardDelta = 0;
+        if (!(event.deltaY > 0 && y < end - EDGE)) return;
+      }
+
+      // The glide owns this scroll; don't let the native wheel step move the page as well.
+      event.preventDefault();
+      wheelStarted = now;
+      holdWheelStream();
+      glide(event.deltaY > 0 ? end : 0);
     }
 
     function onTouchStart(event: TouchEvent): void {
@@ -92,7 +131,7 @@ export function useLandingGlide(header: RefObject<HTMLElement | null>, enabled: 
 
     function onTouchMove(event: TouchEvent): void {
       if (event.touches.length !== 1) return;
-      if (gliding || unlocking) {
+      if (gliding) {
         event.preventDefault();
         return;
       }
@@ -133,13 +172,13 @@ export function useLandingGlide(header: RefObject<HTMLElement | null>, enabled: 
     }
 
     function syncInput(): void {
-      setInput(media.matches && (gliding || !!unlocking || window.scrollY <= end + EDGE));
+      setInput(media.matches && (gliding || !!wheelTimer || window.scrollY <= end + EDGE));
     }
 
     function onScroll(): void {
       syncInput();
       window.clearTimeout(settling);
-      if (!media.matches || gliding || unlocking) return;
+      if (!media.matches || gliding) return;
       const y = window.scrollY;
       if (y > EDGE && y < end - EDGE) {
         settling = window.setTimeout(() => {
@@ -151,9 +190,11 @@ export function useLandingGlide(header: RefObject<HTMLElement | null>, enabled: 
 
     function updateBand(): void {
       cancelAnimationFrame(frame);
-      window.clearTimeout(unlocking);
+      window.clearTimeout(wheelTimer);
       frame = 0;
-      unlocking = 0;
+      wheelTimer = 0;
+      wheelStarted = -Infinity;
+      upwardDelta = 0;
       gliding = false;
       if (!hill) return;
       const wasAtStop = end > 0 && Math.abs(window.scrollY - end) <= EDGE;
@@ -164,7 +205,8 @@ export function useLandingGlide(header: RefObject<HTMLElement | null>, enabled: 
 
     function onFocus(event: FocusEvent): void {
       if (!media.matches || window.scrollY >= end - EDGE) return;
-      if (event.target instanceof Element && event.target.closest("#main")) glide(end);
+      // Focusing the main container as a restore/close fallback should not navigate.
+      if (event.target instanceof Element && event.target.matches("#main *")) glide(end);
     }
 
     requestGlide.current = () => {
@@ -172,8 +214,6 @@ export function useLandingGlide(header: RefObject<HTMLElement | null>, enabled: 
       if (!main) return;
       if (media.matches && Math.abs(window.scrollY - end) > EDGE) {
         cancelAnimationFrame(frame);
-        window.clearTimeout(unlocking);
-        unlocking = 0;
         gliding = false;
         glide(end, true);
       } else {
@@ -201,7 +241,7 @@ export function useLandingGlide(header: RefObject<HTMLElement | null>, enabled: 
       window.removeEventListener("pageshow", onScroll);
       document.removeEventListener("focusin", onFocus);
       cancelAnimationFrame(frame);
-      window.clearTimeout(unlocking);
+      window.clearTimeout(wheelTimer);
       window.clearTimeout(settling);
       setInput(false);
     };

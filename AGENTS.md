@@ -28,7 +28,7 @@ Run all four before calling a task done. Renovate opens dependency PRs on Monday
 src/
   proxy.ts                    # Next 16 "middleware": /admin Basic Auth + 308s for legacy /?tab=
   lib/
-    site.ts                   # SITE_URL, social links, CONTACT_URL, SITE_STATUS (busy/available dot)
+    site.ts                   # SITE_URL, social links, CONTACT_URL, SITE_STATUS, SITE_ROLE_LINE, SITE_NOW
     theme.ts                  # theme store (useSyncExternalStore) used by useTheme()
     basicAuth.ts              # constant-time admin credential check
     jsonLd.tsx, shareImage.tsx, xml.ts
@@ -41,17 +41,17 @@ src/
     anita/                    # private page, Tailwind, must stay visually unchanged
     (main)/                   # the XP desktop
       XpShell.tsx, layout.tsx # shell + window manager for all public pages
-      page.tsx                # landing: hi.exe over the hill, About me, Latest posts
-      blog/, cv/, contact/, availability/
+      page.tsx                # landing: sina.exe over the hill, Latest posts, About me
+      blog/, cv/, contact/ (CardTable mascot and slots), availability/
       components/             # HillScene, XpWindow(+Manager), Taskbar, TaskPane, DesktopNavigation,
-                              # HomeHero, TrayBalloon, PixelDesk, BlogList, AvailabilityWidget, navPlaces
-      hooks/                  # useLandingGlide (desktop two-state glide), useLandingVisit, useTheme
+                              # HomeHero, DesktopIcon, XpNavLink, TrayBalloon, PixelDesk (parked), BlogList, AvailabilityWidget, navPlaces
+      hooks/                  # useLandingGlide, useLandingVisit, useWallpaperScroll, useReadingTaskbar, useTheme
       utils/                  # hillScene.ts, pixelDesk.ts (pure, seeded generators), sanitizeHtml.ts
       data/                   # blogPosts.ts, cv.ts, availability.ts (server-side loaders)
       *.css                   # site (tokens), hills, scenery, hero, navigation, panels, blog, pixelDesk
   content/blog/*.md           # posts (CMS writes here)
   content/cv/                 # sina-cv.md (source) + sina-cv-pdf.pdf
-tests/                        # content, cv, hillScene, pixelDesk, basicAuth, availabilityCache
+tests/                        # content, cv, hillScene, pixelDesk, blogMail, basicAuth, availabilityCache
 docs/specs/xp-hills/          # SPEC.md (current design) + sketch.html (scene technique reference)
 docs/howto/, docs/changelogs/, docs/archive/   # how-tos, dated change notes, history
 ```
@@ -61,20 +61,27 @@ docs/howto/, docs/changelogs/, docs/archive/   # how-tos, dated change notes, hi
 These cost time during the redesign. Don't regress them.
 
 **Layout and navigation**
-- Only `/` renders the taskbar, task pane, mobile drawer and balloons. Sub-pages have no nav chrome and
-  no theme toggle. Their navigation is a centred button row inside the main window.
-- The landing has two resting states on desktop (hill view / content view) driven by
-  `useLandingGlide`. Never let it rest in between. Mobile and reduced motion are static.
+- All XP pages share the Primary taskbar and tray theme toggle. It's always visible on `/`; on
+  sub-pages `useReadingTaskbar` auto-hides it while reading, with keyboard bridges around the inert
+  bar. Only the desktop landing content view has a Places pane. Keep sub-page in-window nav rows.
+- Every XP page has a fixed viewport-grid wallpaper behind its windows (sub-pages: static 30% veil, no
+  transition). On the landing, `useWallpaperScroll` drives the half-screen visual transition and pauses ambient motion at full dim.
+  `useLandingGlide` keeps the desktop hill/content stops; mobile scrolls natively and only snaps
+  before the first-window stop (12px from the top) when no touch is active. Reduced motion has no
+  parallax, glide or snap.
 - `/` without a hash always opens at the hill view (manual scroll restoration on the landing only).
   Other pages keep native restoration.
-- Home on `/` restores content windows first (scenery / closed-all dialog), then glides (desktop) or
+- Home on `/` restores all windows first, then glides (desktop) or
   scrolls to the top (mobile, reduced motion). Logic lives in the window manager, not in the nav components.
 
 **Windows**
 - Every `XpWindow` needs a stable, explicit `id`. State resets per route.
-- `hi.exe` is a `desktopApp`. It's never counted in "all windows closed" and never listed in the pane.
-- Closing all content windows → "Desktop" dialog → scenery mode. `XpWindowManager` owns it. The
-  reveal animation is one-shot (`data-entering`). Don't tie animations to media queries, or they replay on resize.
+- Minimize hides the whole window after a stepped taskbar outline (instant with reduced motion).
+  Close also removes its task button. Maximize is decorative.
+- `desktopApp` excludes the hero from the closed-all count, but Restore all and Home reopen it too.
+  One closed content window gets a partial restore link; all closed content windows show the shared
+  “Desktop” dialog. Scenery starts only from “Show me the hills”; its reveal is one-shot.
+- Mobile window title bars stick inside the window, except the hero and in print.
 
 **Hill scene and pixel art**
 - Generators are pure and seeded (`mulberry(1987)`). The determinism tests in `tests/` must keep passing.
@@ -88,6 +95,8 @@ These cost time during the redesign. Don't regress them.
   loading, confirm `/anita` is pixel-identical (it has its own Tailwind in `anita/anita.css`).
 - Use the tokens in `site.css` (`--page`, `--ink`, `--muted`, `--accent`, `--link`, `--line`,
   `--window-body`, `--heading`, `--chrome`, `--mono`). Keep AA contrast in both themes.
+- `xp.css` also paints `[role="tabpanel"]` (and other widgets) with fixed light gradients. When you
+  use ARIA widget roles inside themed windows, override their background or dark mode breaks.
 - Fonts are system first (Trebuchet / Verdana / Lucida Console), with `next/font` fallbacks (Fira Sans,
   PT Sans, IBM Plex Mono) that are **not preloaded**.
 - `<html>` has `data-scroll-behavior="smooth"`. Keep it, or Next warns on route changes.
@@ -107,7 +116,10 @@ These cost time during the redesign. Don't regress them.
   invalid date or `hidden: true` are excluded everywhere (lists, routes, static params, RSS, sitemap).
 - Rendering goes through `renderBlogMarkdown()`: sanitized HTML, highlight.js, tables wrapped in
   `.blog-table-scroll`, CMS spacer markers. Keep typography scoped to `.blog-post-content` (`blog.css`).
-- Posts are static (`generateStaticParams`, `dynamicParams = false`). RSS stays static.
+- Posts and the `inbox.exe` archive are static (`generateStaticParams`, `dynamicParams = false`).
+  `blog/mailState.ts` groups published dates into years and keeps up to 200 read slugs in browser
+  storage after hydration. No frontmatter changes. Keep article styles scoped independently of
+  inbox/message chrome; RSS stays static.
 - Authoring and CMS guide: `docs/howto/ADDING_BLOG_POSTS.md`. Uploaded images go to `public/images/blog/`.
 - Showcase posts exist for manual validation. Don't treat them as product content.
 

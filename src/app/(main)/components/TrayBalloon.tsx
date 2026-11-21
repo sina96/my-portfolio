@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 const HERO_HINT = "xp-hero-tip-seen";
-export const MENU_HINT = "xp-menu-hint-seen";
+export const SCENERY_HINT = "xp-scenery-tip-seen";
 const seenThisPage = new Set<string>();
 
 function hasSeenTip(key: string): boolean {
@@ -15,7 +15,7 @@ function hasSeenTip(key: string): boolean {
   }
 }
 
-export function markHintSeen(key: string): void {
+function markHintSeen(key: string): void {
   seenThisPage.add(key);
   try {
     localStorage.setItem(key, "1");
@@ -75,7 +75,7 @@ export function HintBalloon({ storageKey, delay, duration, title, message, atTop
   );
 }
 
-export function TrayBalloon({ eligible }: Readonly<{ eligible: boolean }>) {
+export function TrayBalloon({ eligible, onDismiss }: Readonly<{ eligible: boolean; onDismiss: () => void }>) {
   return eligible && <HintBalloon storageKey={HERO_HINT} delay={4000} duration={10_000}
-    title="psst…" message="try closing the window, the view is nicer" atTop />;
+    title="psst…" message="try closing the window, the view is nicer" atTop onDismiss={onDismiss} />;
 }

@@ -139,3 +139,237 @@
 .blog-post-content .hljs-strong {
   font-weight: bold;
 }
+
+/* Original XP-era mail chrome; article typography remains independent. */
+.xp-mail-window .window-body {
+  --mail-padding: clamp(12px, 3vw, 24px);
+  --mail-selection: #d4e5ff;
+  --mail-surface: #f9faff;
+  padding-top: 0;
+}
+[data-theme="dark"] .xp-mail-window .window-body {
+  --mail-selection: #354973;
+  --mail-surface: #171f3a;
+}
+.xp-mail-toolbar, .xp-mail-layout, .xp-mobile-inbox-heading {
+  margin-inline: calc(-1 * var(--mail-padding));
+}
+.xp-mail-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(var(--inset), var(--window-body));
+}
+.xp-desktop .xp-mail-window .xp-mail-tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 3px 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--ink);
+  font: 600 .82rem var(--chrome);
+  text-decoration: none;
+}
+.xp-desktop .xp-mail-window .xp-mail-tool:is(:hover, :focus-visible):not(:disabled) {
+  border-color: var(--link);
+  background: var(--mail-selection);
+}
+.xp-mail-copy { position: relative; }
+.xp-mail-tip:not(:empty) {
+  position: absolute;
+  z-index: 4;
+  top: 100%;
+  left: 0;
+  padding: 3px 6px;
+  border: 1px solid #625120;
+  box-shadow: 2px 2px #14204a38;
+  background: #fff6c7;
+  color: #362d13;
+  white-space: nowrap;
+  font: .8rem var(--chrome);
+}
+.xp-mail-layout { display: grid; grid-template-columns: 155px minmax(0, 1fr); }
+.xp-mail-folders {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 8px;
+  background: var(--inset);
+  border-inline-end: 1px solid var(--line);
+}
+.xp-desktop .xp-mail-folders button {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  min-width: 0;
+  padding: 4px 6px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--ink);
+  text-align: start;
+  font: .84rem var(--chrome);
+}
+.xp-desktop .xp-mail-folders button:is([aria-pressed="true"], :hover) {
+  background: var(--mail-selection);
+  border-color: var(--line);
+}
+.xp-mail-folders small { color: var(--muted); font: .78rem var(--mono); }
+.xp-mobile-inbox-heading, .xp-mail-tabs, .xp-mail-sender, .xp-mail-excerpt { display: none; }
+@media (min-width: 760px) {
+  .xp-mail-layout {
+    /* Reserve room for the title, toolbar, inset status and clearance. */
+    height: clamp(420px, calc(100dvh - (42vh - var(--hill-overlap)) - var(--taskbar-space) - 128px), 720px);
+    grid-template-rows: minmax(0, 1fr);
+  }
+  #blog-archive .window-body { padding-bottom: 2px; }
+  #blog-archive .xp-mail-toolbar { padding-block: 3px; }
+  .xp-mail-folders, .xp-mail-list, .xp-mail-preview { overflow-y: auto; overscroll-behavior-y: contain; }
+  .xp-mail-messages { display: grid; grid-template-rows: minmax(0, 1fr) 180px; }
+  .xp-mail-columns { position: sticky; top: 0; z-index: 2; }
+  .xp-mail-list { scroll-padding-top: 32px; }
+  .xp-mail-preview { border-top: 1px solid var(--line); }
+}
+.xp-mail-messages { min-width: 0; background: var(--mail-surface); }
+/* xp.css paints every tab panel with a fixed light gradient; the mail list follows the theme instead. */
+.xp-desktop .xp-mail-list[role="tabpanel"] {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: var(--mail-surface);
+}
+.xp-mail-messages ul { margin: 0; padding: 0; list-style: none; }
+.xp-mail-columns, .xp-desktop .xp-mail-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: 12px;
+  padding: 5px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.xp-mail-columns { background: var(--inset); color: var(--muted); font: 600 .78rem/1.7 var(--mono); }
+.xp-desktop .xp-mail-row { min-height: 44px; color: var(--ink); font-size: 1rem; text-decoration: none; }
+.xp-mail-row[data-selected], .xp-mail-row:hover { background: var(--mail-selection); }
+.xp-mail-row:focus-visible { position: relative; z-index: 1; outline-offset: -3px; box-shadow: none; }
+.xp-mail-row[data-unread] .xp-mail-subject { font-weight: 700; }
+.xp-mail-subject { position: relative; padding-inline-start: 15px; }
+.xp-mail-subject i { position: absolute; top: .55em; left: 0; width: 7px; height: 7px; border-radius: 50%; }
+.xp-mail-row[data-unread] i { background: var(--link); }
+.xp-mail-row time { font-size: .82rem; white-space: nowrap; text-transform: none; }
+.xp-mail-preview { padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.xp-mail-preview p { margin: 12px 0; }
+.xp-mail-fields {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 3px 10px;
+  align-items: baseline;
+  margin: 0;
+}
+.xp-mail-fields dt { color: var(--muted); font: .82rem var(--mono); }
+.xp-mail-fields dd { margin: 0; min-width: 0; }
+.xp-message-header {
+  margin: 0 calc(-1 * var(--mail-padding)) 1.3rem;
+  padding: 12px var(--mail-padding);
+  border-bottom: 1px solid var(--line);
+  background: var(--mail-surface);
+}
+.xp-desktop .xp-message-header h1 { margin: 0; font-size: clamp(1.25rem, 4vw, 1.75rem); }
+.xp-mail-status.status-bar {
+  margin: 8px 0 0;
+  background: var(--inset);
+  border: 1px solid var(--line);
+  box-shadow: inset 1px 1px var(--line), inset -1px -1px var(--window-body);
+}
+.xp-mail-status .status-bar-field { margin: 0; padding: 3px 8px; font: .82rem/1.2 var(--chrome); }
+.xp-mail-empty { padding-inline: 12px; }
+@media (width < 760px) {
+  .xp-desktop .xp-mail-window .xp-mail-tool {
+    flex-direction: column;
+    gap: 2px;
+    min-height: 44px;
+    min-width: 44px;
+    font-size: .75rem;
+  }
+  .xp-mail-long-label { display: none; }
+  .xp-desktop .xp-mail-window .xp-mail-tool[aria-label="RSS feed"] { align-self: stretch; justify-content: center; }
+  .xp-mobile-inbox-heading {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 12px;
+    background: var(--inset);
+  }
+  .xp-mobile-inbox-heading span { margin-inline-start: auto; color: var(--muted); font: .82rem var(--mono); }
+  .xp-mail-layout { display: block; }
+  .xp-mail-folders, .xp-mail-preview, .xp-mail-columns, .xp-mail-status.status-bar { display: none; }
+  .xp-mail-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 4px 8px 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    background: var(--inset);
+    border-bottom: 1px solid var(--line);
+  }
+  .xp-desktop .xp-mail-window .xp-mail-tabs button {
+    flex: none;
+    min-width: 0;
+    min-height: 36px;
+    padding: 4px 10px;
+    border: 1px solid var(--link);
+    border-radius: 5px 5px 0 0;
+    box-shadow: none;
+    color: var(--ink);
+    background: var(--window-body);
+    font: .82rem var(--chrome);
+  }
+  .xp-desktop .xp-mail-window .xp-mail-tabs button[aria-selected="true"] {
+    background: var(--mail-surface);
+    font-weight: 700;
+    box-shadow: inset 0 3px var(--link);
+    border-bottom-color: var(--mail-surface);
+  }
+  .xp-mail-tabs button:focus-visible { outline-offset: -3px; }
+  .xp-desktop .xp-mail-row {
+    grid-template-columns: minmax(0, 1fr) max-content;
+    gap: 0 8px;
+    min-height: 56px;
+    padding: 6px 12px;
+    font-size: .95rem;
+  }
+  .xp-mail-sender { display: flex; gap: 6px; align-items: center; color: var(--muted); font-size: .82rem; }
+  .xp-mail-row time { grid-area: 1 / 2; text-align: end; }
+  .xp-mail-subject, .xp-mail-excerpt { grid-column: 1 / -1; padding: 0; }
+  .xp-mail-subject i { display: none; }
+  .xp-mail-excerpt { display: block; font-size: .88rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .xp-mail-row[data-selected]:not(:hover, :focus-visible) { background: transparent; }
+  #home-posts .xp-post-row { display: block; }
+  #home-posts .xp-post-row a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    width: fit-content;
+    font-size: .95rem;
+  }
+  #home-posts .xp-post-row time { display: block; font-size: .82rem; }
+  #home-posts .xp-post-list p {
+    font-size: .88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #home-intro .window-body, #home-intro .xp-now { font-size: .88rem; }
+}

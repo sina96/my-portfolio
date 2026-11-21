@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { SITE_NAME, siteAlternates } from "@/lib/site";
 import { HillScene } from "../components/HillScene";
+import { XpNavLink } from "../components/XpNavLink";
 import { XpWindow } from "../components/XpWindow";
 import { getCVContent } from "../data/cv";
 import type { CVLink } from "../data/cv";
@@ -44,7 +44,7 @@ export default function CVPage() {
     <>
       <HillScene mode="header" />
       <main id="main" className="xp-content xp-cv" tabIndex={-1}>
-        <XpWindow id="cv-main" title="cv.doc - WordPad" className="cv-wordpad"
+        <XpWindow id="cv-main" icon="cv" title="cv.doc - WordPad" className="cv-wordpad"
           statusBar={<div className="status-bar cv-status">
             <p className="status-bar-field">Page 1</p>
             {lastUpdated && <p className="status-bar-field">Last updated {lastUpdated}</p>}
@@ -99,7 +99,7 @@ export default function CVPage() {
               </div>
             </article>
           </div>
-          <div className="xp-actions cv-home"><Link href="/" className="xp-button-link">Home</Link></div>
+          <div className="xp-actions cv-home"><XpNavLink href="/" label="Home" icon="home" /></div>
         </XpWindow>
       </main>
     </>

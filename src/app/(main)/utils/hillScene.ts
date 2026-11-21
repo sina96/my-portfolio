@@ -49,11 +49,42 @@ export interface Raster {
   pixels: Uint8ClampedArray<ArrayBuffer>;
 }
 
+interface Grid {
+  width: number;
+  height: number;
+}
+
+export interface ViewportHillGrid extends Grid {
+  cellPx: number;
+  compact: boolean;
+  moonBox: { x: number; y: number; size: number };
+}
+
+/** Top-right sun/moon box in scene units for a grid `width` cells wide drawn at the given CSS size. */
+function moonBoxFor(viewWidth: number, viewHeight: number, width: number): ViewportHillGrid["moonBox"] {
+  const units = width * S / viewWidth;
+  const moonSize = clamp(.16 * Math.min(viewWidth, viewHeight), 56, 180);
+  return {
+    x: Math.floor((viewWidth * .92 - moonSize) * units / S) * S,
+    y: Math.ceil(viewHeight * .06 * units / S) * S,
+    size: moonSize * units,
+  };
+}
+
+/** Choose raster resolution and anchor the moon within the visible viewport. */
+export function getViewportHillGrid(viewWidth: number, viewHeight: number, compact: boolean): ViewportHillGrid {
+  const cellSize = Math.max(compact ? 7 : 5, viewWidth / 420, viewHeight / 300);
+  const width = Math.max(1, Math.round(viewWidth / cellSize));
+  const height = Math.max(1, Math.round(viewHeight / cellSize));
+  return { width, height, cellPx: viewWidth / width, compact, moonBox: moonBoxFor(viewWidth, viewHeight, width) };
+}
+
 interface Drift {
   from: number;
   steps: number;
   duration: string;
   delay: string;
+  start?: number;
 }
 
 interface Cloud {
@@ -66,6 +97,7 @@ interface Light {
   x: number;
   y: number;
   fill: string;
+  shape?: "single" | "double" | "plus";
   duration?: string;
   delay?: string;
 }
@@ -83,10 +115,14 @@ function paint(width: number, height: number, pixel: (x: number, y: number) => P
   return { width, height, pixels };
 }
 
-function drift(width: number, speed: number, rng: () => number, sceneWidth: number): Drift {
+function drift(width: number, speed: number, rng: () => number, sceneWidth: number, start?: number): Drift {
   const distance = sceneWidth + width;
   const duration = distance / speed;
-  return { from: -width, steps: Math.round(distance / S), duration: `${duration.toFixed(1)}s`, delay: `${(-rng() * duration).toFixed(1)}s` };
+  return {
+    from: -width, steps: Math.round(distance / S), duration: `${duration.toFixed(1)}s`,
+    delay: start === undefined ? `${(-rng() * duration).toFixed(1)}s` : `${(-(start + width) / speed).toFixed(3)}s`,
+    ...(start === undefined ? {} : { start }),
+  };
 }
 
 function cloudImage(T: Palette, rng: () => number, cw: number, ch: number): Raster {
@@ -108,14 +144,87 @@ function cloudImage(T: Palette, rng: () => number, cw: number, ch: number): Rast
 }
 
 
+function viewportStars(width: number, height: number, skyline: (x: number) => number, moonBox: ViewportHillGrid["moonBox"], rng: () => number, cellPx: number, phonePortrait: boolean): Light[] {
+  const skyCells = Array.from({ length: width }, (_, x) => Math.floor(skyline(x)))
+    .reduce((sum, cells) => sum + cells, 0);
+  const total = Math.max(phonePortrait ? 10 : 0, Math.round(skyCells * cellPx ** 2 / 17_500));
+  if (total === 0) return [];
+  const skyHeight = Math.floor(skyCells / width);
+  // The portrait hero occupies most of the middle sky. Give the unobstructed top
+  // strip its own strata, leaving a few spots near the outside edges and lower sky.
+  const samplingHeight = phonePortrait ? Math.floor(height * .17) : skyHeight;
+  const columns = Math.min(total, Math.max(1, Math.round(Math.sqrt(total * width / Math.max(1, samplingHeight)))));
+  const rows = Math.ceil(total / columns);
+  const stars: Light[] = [];
+
+  // Jitter within strata, then reject occupied or clipped positions. Try other strata if needed.
+  for (let attempt = 0; stars.length < total && attempt < rows * columns * 10; attempt++) {
+    const stratum = attempt % (rows * columns);
+    const x = Math.floor((stratum % columns + .1 + .8 * rng()) * width / columns);
+    const row = Math.floor(stratum / columns);
+    const sample = (row + .1 + (row === 0 ? .65 : .8) * rng()) / rows;
+    const upper = phonePortrait && attempt < rows * columns * 5 && stratum < Math.ceil(total * .8);
+    const y = Math.floor(sample * (upper ? samplingHeight : skyHeight));
+    if (phonePortrait && attempt < rows * columns * 7 && y >= samplingHeight && y < height * .55 &&
+        x > 2 && x < width - 3) continue;
+    if (x < 1 || x + 2 >= width || y < 1 || y + 2 >= height ||
+        y + 2 >= Math.min(skyline(x - 1), skyline(x), skyline(x + 1))) continue;
+    if ((x + 2) * S > moonBox.x && (x - 1) * S < moonBox.x + moonBox.size &&
+        (y + 2) * S > moonBox.y && (y - 1) * S < moonBox.y + moonBox.size) continue;
+    if (stars.some((star) => Math.hypot(star.x / S - x, star.y / S - y) < 6)) continue;
+    stars.push({ x: x * S, y: y * S, fill: rng() < .5 ? "#c9d6ff" : "#a3b7ea", shape: "single" });
+  }
+
+  // Shuffle styling separately so larger stars and twinkles don't gather in the first row.
+  const order = stars.map((_, index) => index);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  const plusCount = phonePortrait ? Math.min(3, Math.round(stars.length / 5)) : Math.min(5, Math.round(stars.length / 9));
+  const inIconClearance = ({ x, y }: Light) => (x / S - 1) * cellPx < 120 && (y / S - 1) * cellPx < 130;
+  // Keep bright crosses away from the closed hero's top-left shortcut.
+  order.sort((a, b) => Number(inIconClearance(stars[a])) - Number(inIconClearance(stars[b])) ||
+    (phonePortrait ? Number(stars[a].y >= samplingHeight * S) - Number(stars[b].y >= samplingHeight * S) : 0));
+  const doubleCount = Math.round(stars.length * .18);
+  order.forEach((index, i) => {
+    const star = stars[index];
+    if (i < plusCount && !inIconClearance(star)) {
+      star.shape = "plus";
+      star.fill = "#fff7d6";
+    } else if (i < plusCount + doubleCount) {
+      star.shape = "double";
+    }
+    if (i < Math.round(stars.length * .18)) {
+      star.duration = `${(3 + rng() * 6).toFixed(1)}s`;
+      star.delay = `${(-rng() * 9).toFixed(1)}s`;
+    }
+  });
+  return stars;
+}
+
 /** Generates pixel layers and animation descriptors without DOM or canvas dependencies. */
-export function generateHillScene(name: HillPalette, seed = 1987, sceneryGrid?: { width: number; height: number }) {
+export function generateHillScene(name: HillPalette, seed = 1987, sceneryGrid?: Grid & Partial<ViewportHillGrid>) {
   const width = sceneryGrid?.width ?? W;
   const height = sceneryGrid?.height ?? H;
   const worldWidth = width * S;
   const terrainX = (x: number) => x * W / width;
-  const front = (x: number) => sceneryGrid ? height * (.57 + (frontY(terrainX(x)) - 66) * .0035) : frontY(x);
-  const back = (x: number) => sceneryGrid ? height * (.59 + (backY(terrainX(x)) - 68) * .004) : backY(x);
+  const portrait = Boolean(sceneryGrid) && height > width;
+  const phonePortrait = portrait && Boolean(sceneryGrid?.compact);
+  const peak = (x: number, center: number, spread: number) => Math.exp(-(((x / width - center) / spread) ** 2));
+  const front = (x: number) => portrait
+    ? height * (.81 - .22 * peak(x, .28, .43))
+    : sceneryGrid ? height * (.57 + (frontY(terrainX(x)) - 66) * .0035) : frontY(x);
+  const back = (x: number) => portrait
+    ? height * (.70 - .145 * peak(x, .82, .40))
+    : sceneryGrid ? height * (.59 + (backY(terrainX(x)) - 68) * .004) : backY(x);
+  const far = (x: number) => portrait ? height * (.626 - .135 * peak(x, .52, .39)) : height;
+  const farPalette = name === "day" ? ["#9ac9d4", "#89b9c4", "#77a9b2"] : ["#243a63", "#203355", "#192943"];
+  // Without a supplied box, derive it from this grid's own size and cell scale (not a re-picked grid).
+  const cellPx = sceneryGrid?.cellPx ?? 5;
+  const moonBox = sceneryGrid?.moonBox ?? (sceneryGrid
+    ? moonBoxFor(width * cellPx, height * cellPx, width)
+    : { x: 1120, y: 64, size: 200 });
   const T = THEMES[name];
   const rng = mulberry(seed);
   const horizon = sceneryGrid ? height * .68 : 92;
@@ -129,15 +238,24 @@ export function generateHillScene(name: HillPalette, seed = 1987, sceneryGrid?: 
       return pick(T.hill, t, x, y);
     }
     if (y >= by) return pick(T.back, (y - by) / 14 + clamp((tx - 120) / 160) * 0.3, x, y);
+    const ridge = far(x);
+    if (y >= ridge) return pick(farPalette, (y - ridge) / (height * .16), x, y);
     return pick(T.sky, y / horizon, x, y);
   });
 
+  const skyPath = sceneryGrid ? `M0 ${-height * S}H${worldWidth}${Array.from({ length: width }, (_, i) => {
+    const x = width - 1 - i;
+    return `V${Math.ceil(Math.min(front(x), back(x), far(x))) * S}h-${S}`;
+  }).join("")}Z` : "";
   const hillMask = paint(width, height, (x, y) => y >= front(x) ? "#ffffff" : null);
   const stars: Light[] = [];
   let moon: Raster | undefined;
 
   if (T.stars) {
-    for (let i = 0; i < T.stars; i += 1) {
+    if (sceneryGrid) {
+      stars.push(...viewportStars(width, height, (x) => Math.min(front(x), back(x), far(x)), moonBox, mulberry(seed ^ 0x73746172), cellPx, phonePortrait));
+    }
+    for (let i = 0; !sceneryGrid && i < T.stars; i += 1) {
       const x = rng() * width | 0, y = rng() * (sceneryGrid ? height * .57 : 80) | 0;
       if (y >= Math.min(front(x), back(x)) - 2) continue;
       const big = rng() < 0.12;
@@ -163,12 +281,17 @@ export function generateHillScene(name: HillPalette, seed = 1987, sceneryGrid?: 
   const cloudSpecs = name === "day"
     ? [[8, 24, 30, 6], [14, 30, 36, 7], [5, 40, 44, 9], [22, 34, 40, 8], [11, 52, 48, 11], [30, 46, 46, 10], [18, 60, 50, 13]]
     : [[10, 30, 36, 5], [22, 44, 44, 7], [6, 56, 50, 9]];
-  const clouds: Cloud[] = cloudSpecs.map(([cy, cw, chPct, speed]) => {
-    const cloudWidth = sceneryGrid ? Math.max(12, Math.round(cw * Math.min(width / 110, 1.2))) : cw;
+  const cloudCount = phonePortrait && name === "day" ? 3 : sceneryGrid
+    ? Math.min(name === "day" ? 7 : 5, Math.max(2, Math.round(width / (name === "day" ? 36 : 55)) + 1))
+    : cloudSpecs.length;
+  const clouds: Cloud[] = Array.from({ length: cloudCount }, (_, i) => {
+    const [cy, cw, chPct, speed] = cloudSpecs[i % cloudSpecs.length];
+    const cloudWidth = phonePortrait && name === "day" ? [12, 15, 10][i] : sceneryGrid ? Math.max(1, Math.round(cw * Math.min(width / 150, 1.2))) : cw;
+    const start = phonePortrait && name === "day" ? Math.round(width * [.08, .52, .76][i]) * S : sceneryGrid ? Math.round(((i + .32) * width / cloudCount) - cloudWidth / 2) * S : undefined;
     return {
       raster: cloudImage(T, rng, cloudWidth, Math.round(cloudWidth * chPct / 100)),
-      y: Math.round(sceneryGrid ? height * (cy / H + .065) : cy) * S,
-      drift: drift(cloudWidth * S, speed, rng, worldWidth),
+      y: Math.round(phonePortrait && name === "day" ? height * [.055, .105, .035][i] : sceneryGrid ? height * (cy / H + .065) : cy) * S,
+      drift: drift(cloudWidth * S, speed, rng, worldWidth, start),
     };
   });
 
@@ -184,7 +307,9 @@ export function generateHillScene(name: HillPalette, seed = 1987, sceneryGrid?: 
   });
 
   const glints: Light[] = [];
-  for (let i = 0; i < (name === "day" ? 70 : 45); i += 1) {
+  const referenceGlints = name === "day" ? 70 : 45;
+  const glintCount = sceneryGrid ? Math.min(referenceGlints, Math.ceil(referenceGlints * width * height / (W * H))) : referenceGlints;
+  for (let i = 0; i < glintCount; i += 1) {
     const x = rng() * width | 0;
     const y = Math.ceil(front(x)) + 2 + (rng() * (height - front(x) - 2) | 0);
     if (y >= height) continue;
@@ -195,5 +320,53 @@ export function generateHillScene(name: HillPalette, seed = 1987, sceneryGrid?: 
     });
   }
 
-  return { width: worldWidth, height: height * S, land, hillMask, stars, moon, clouds, shadows, glints };
+  return { width: worldWidth, height: height * S, land, hillMask, stars, moon, moonBox, clouds, shadows, glints, skyPath };
+}
+
+/** Original pixel sun with a seeded, dithered outer glow. */
+export function generateSun(seed = 1987, frame: 0 | 1 = 0): Raster {
+  const next = mulberry(seed);
+  return paint(25, 25, (x, y) => {
+    const d = Math.hypot(x - 12, y - 12);
+    if (d <= 7) return d > 6 ? "#fff5bf" : "#ffd478";
+    const dx = Math.abs(x - 12), dy = Math.abs(y - 12);
+    if ((Math.min(dx, dy) === 0 && d >= 9 && d <= 10 + frame) || (dx === dy && dx === 7 + frame)) return "#ffdc82";
+    const glow = next();
+    if (d < 12 && glow < (12 - d) / 9) return [255, 194, 91, 95];
+    return null;
+  });
+}
+
+/** Position a body on the right-hand arc; zero is exactly the shared resting box. */
+export function getCelestialPosition(grid: ViewportHillGrid, descent: number) {
+  const { moonBox: box, width, height, cellPx } = grid;
+  const worldWidth = width * S;
+  const worldHeight = height * S;
+  const phonePortrait = grid.compact && height > width;
+  const snap = (offset: number) => Math.round(offset / S) * S;
+  // On narrow portraits, move toward the outer edge while still above the hero.
+  const sideways = phonePortrait ? Math.max(0, worldWidth - 12 * S / cellPx - box.x) : worldWidth * .055;
+  return {
+    ...box,
+    x: box.x + snap(sideways * Math.min(1, descent * (phonePortrait ? 5 : 1))),
+    y: box.y + snap(worldHeight * .83 * descent ** (phonePortrait ? 2.15 : 1.7)),
+  };
+}
+
+const TWILIGHT = [
+  ["#ffc27d", 0], ["#ffc079", .37], ["#ff995e", .63], ["#ec7688", .71], ["#bc699e", .67],
+  ["#8264b5", .58], ["#524b9e", .48], ["#343877", .30], ["#292e64", .15], ["#151c42", 0],
+] as const;
+
+/** Ten reversible frames shared by dawn and dusk. */
+export function getTwilightFrame(step: number) {
+  const index = Math.round(clamp(step, 0, 9));
+  const [tint, tintOpacity] = TWILIGHT[index];
+  return {
+    tint, tintOpacity,
+    night: index / 9,
+    stars: clamp((index - 3) / 5),
+    sun: Math.min(1, index / 5),
+    moon: Math.min(1, (9 - index) / 5),
+  };
 }

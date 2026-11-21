@@ -18,3 +18,134 @@
   white-space: nowrap;
 }
 .availability-slot-lunch-gym { border-style: dashed; color: var(--accent); }
+
+.xp-contact-page { max-width: 680px; }
+.xp-contact-window .window-body {
+  --contact-inset: clamp(12px, 3vw, 24px);
+  --felt: #12603b;
+  --felt-ink: #fffbe8;
+  --felt-link: #ffe995;
+  padding-top: 0;
+  background: var(--felt);
+  color: var(--felt-ink);
+  text-shadow: 0 1px #062a19;
+}
+.xp-card-menu {
+  display: flex;
+  gap: 16px;
+  margin-inline: calc(-1 * var(--contact-inset));
+  padding: 5px 10px;
+  text-align: left;
+  border-bottom: 1px solid #61a875;
+  font: 12px/1.4 var(--chrome);
+}
+.xp-card-table {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(4px, 1.4vw, 16px);
+  margin: 12px auto 0;
+  padding-bottom: 16px;
+}
+.xp-card-slots {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(3px, 1vw, 8px);
+  width: min(228px, 100%);
+  min-width: 0;
+}
+.xp-card-slot {
+  aspect-ratio: 2 / 3;
+  border: 1px solid #65b97e;
+  border-radius: 3px;
+}
+.xp-card-slot:has(> svg) { border-color: transparent; }
+.xp-card-slot svg { display: block; width: 100%; height: auto; }
+@media (width < 760px) {
+  .xp-card-slots { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .xp-card-slot:last-child, .xp-card-slot:nth-child(3) > svg { display: none; }
+  .xp-card-slot:nth-child(3) { border-color: #65b97e; }
+}
+@media (width < 330px) {
+  .xp-card-slots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .xp-card-slot:nth-child(3) { display: none; }
+}
+.xp-card-emblem { position: relative; flex: none; }
+.xp-desktop .xp-contact-window .window-body .xp-mini-sina {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  min-width: 0;
+  padding: 0;
+  border: 1px solid #9bd5a2;
+  border-radius: 3px;
+  background: #29784f;
+  box-shadow: inset 0 0 0 2px #0c462d;
+}
+.xp-mini-sina svg { display: block; width: 40px; height: 40px; }
+@media (width < 760px) {
+  .xp-desktop .xp-contact-window .window-body .xp-mini-sina { width: 64px; height: 64px; }
+  .xp-mini-sina svg { width: 56px; height: 56px; }
+}
+.xp-card-greeting:not(:empty) {
+  position: absolute;
+  z-index: 1;
+  top: calc(100% + 3px);
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 2px 6px;
+  border: 1px solid #153b27;
+  border-radius: 4px;
+  background: var(--felt-ink);
+  color: #173826;
+  text-shadow: none;
+  font: 12px/1.3 var(--mono);
+}
+.xp-mini-wave { visibility: hidden; }
+@media (prefers-reduced-motion: no-preference) {
+  .xp-mini-face:has(+ .xp-mini-wave) { animation: xp-mini-pop 600ms steps(1); }
+  .xp-mini-wave { animation: xp-mini-wave 600ms steps(1); }
+}
+@keyframes xp-mini-pop {
+  0%, 75% { transform: translateY(-2px); }
+  100% { transform: none; }
+}
+@keyframes xp-mini-wave {
+  0% { visibility: visible; transform: translate(-1px, 0); }
+  25% { transform: translate(0, -2px); }
+  50% { transform: translate(-1px, 0); }
+  75% { transform: translate(0, -2px); }
+  100% { visibility: hidden; }
+}
+.xp-contact-window .xp-felt-link { color: var(--felt-link); text-decoration: underline; }
+.xp-contact-window :is(.xp-button-link, .xp-mini-sina) { text-shadow: none; }
+.xp-contact-copy { margin: 18px auto 0; max-width: 64ch; }
+.xp-contact-shortcuts {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 8px 0 16px;
+  padding: 0;
+  list-style: none;
+}
+@media (width < 760px) {
+  .xp-contact-shortcuts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .xp-desktop .xp-contact-shortcuts .xp-shortcut-window {
+    width: 100%;
+    min-width: 44px;
+    min-height: 56px;
+    font-size: 12px;
+  }
+  .xp-contact-shortcuts .xp-shortcut-window svg { width: 32px; height: 32px; }
+  .xp-contact-shortcuts .xp-shortcut-window > span { padding-inline: 1px; }
+}
+@media (width < 340px) {
+  .xp-contact-shortcuts { grid-template-columns: repeat(2, minmax(0, 88px)); }
+}
+.xp-desktop .xp-desktop-shortcut.xp-shortcut-window { color: var(--ink); text-shadow: none; }
+.xp-desktop .xp-contact-window .xp-desktop-shortcut.xp-shortcut-window { color: var(--felt-ink); text-shadow: inherit; }
+.xp-desktop .xp-shortcut-window:is(:hover, :focus-visible) > span { color: white; }

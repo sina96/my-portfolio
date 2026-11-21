@@ -1,5 +1,5 @@
 ---
-title: 'Opus 5.5 era: deslop everything'
+title: 'post Opus 5.5 era: deslop everything'
 date: 2026-11-21
 excerpt: Slop is everywhere, and your Evals can't fix them alone.
 hidden: false

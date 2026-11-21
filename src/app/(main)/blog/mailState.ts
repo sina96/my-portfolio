@@ -32,7 +32,12 @@ export function addBlogRead(raw: string, slug: string): string {
   return JSON.stringify([slug, ...before].slice(0, READ_LIMIT));
 }
 
+// A failed write makes stored read state unreliable (the opened post would still look unread), so the
+// inbox stays neutral, like blocked storage, until a later write succeeds.
+let writeFailed = false;
+
 export function readBlogSnapshot(): string | null {
+  if (writeFailed) return null;
   try { return localStorage.getItem(BLOG_READ_KEY) ?? "[]"; } catch { return null; }
 }
 
@@ -51,7 +56,12 @@ export function subscribeToBlogRead(listener: () => void): () => void {
 }
 
 export function markBlogRead(slug: string): void {
-  const raw = readBlogSnapshot();
-  if (raw === null) return;
-  try { localStorage.setItem(BLOG_READ_KEY, addBlogRead(raw, slug)); } catch { /* Storage may be disabled. */ }
+  let raw: string;
+  try { raw = localStorage.getItem(BLOG_READ_KEY) ?? "[]"; } catch { return; }
+  try {
+    localStorage.setItem(BLOG_READ_KEY, addBlogRead(raw, slug));
+    writeFailed = false;
+  } catch {
+    writeFailed = true;
+  }
 }

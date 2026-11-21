@@ -135,3 +135,10 @@ test("phone skies have visible stars at comparable CSS-pixel density to desktop"
     expect(day.clouds.every(({ raster, y }) => raster.width * grid.cellPx >= 65 && y < day.height * .17)).toBe(true);
   }
 });
+
+test("a grid without a moon box gets the same box its own size and cell scale would", () => {
+  const full = getViewportHillGrid(1500, 1000, false);
+  expect(full.cellPx).toBe(5);
+  const scene = generateHillScene("night", 1987, { width: full.width, height: full.height });
+  expect(scene.moonBox).toEqual(full.moonBox);
+});

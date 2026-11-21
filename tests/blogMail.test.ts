@@ -35,3 +35,22 @@ test("blocked storage keeps the read-neutral view and never breaks opening a mes
   expect(() => markBlogRead("hello")).not.toThrow();
   expect(localStorage.setItem).not.toHaveBeenCalled();
 });
+
+test("a failed write keeps the inbox neutral until a later write succeeds", () => {
+  const store = new Map<string, string>([["blog-read", '["older"]']]);
+  let failWrites = true;
+  vi.stubGlobal("localStorage", {
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      if (failWrites) throw new Error("quota");
+      store.set(key, value);
+    },
+  });
+  expect(readBlogSnapshot()).toBe('["older"]');
+  expect(() => markBlogRead("hello")).not.toThrow();
+  expect(readBlogSnapshot()).toBeNull();
+
+  failWrites = false;
+  markBlogRead("hello");
+  expect(parseBlogRead(readBlogSnapshot() ?? "")).toEqual(["hello", "older"]);
+});

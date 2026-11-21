@@ -60,18 +60,23 @@ export interface ViewportHillGrid extends Grid {
   moonBox: { x: number; y: number; size: number };
 }
 
+/** Top-right sun/moon box in scene units for a grid `width` cells wide drawn at the given CSS size. */
+function moonBoxFor(viewWidth: number, viewHeight: number, width: number): ViewportHillGrid["moonBox"] {
+  const units = width * S / viewWidth;
+  const moonSize = clamp(.16 * Math.min(viewWidth, viewHeight), 56, 180);
+  return {
+    x: Math.floor((viewWidth * .92 - moonSize) * units / S) * S,
+    y: Math.ceil(viewHeight * .06 * units / S) * S,
+    size: moonSize * units,
+  };
+}
+
 /** Choose raster resolution and anchor the moon within the visible viewport. */
 export function getViewportHillGrid(viewWidth: number, viewHeight: number, compact: boolean): ViewportHillGrid {
   const cellSize = Math.max(compact ? 7 : 5, viewWidth / 420, viewHeight / 300);
   const width = Math.max(1, Math.round(viewWidth / cellSize));
   const height = Math.max(1, Math.round(viewHeight / cellSize));
-  const units = width * S / viewWidth;
-  const moonSize = clamp(.16 * Math.min(viewWidth, viewHeight), 56, 180);
-  return { width, height, cellPx: viewWidth / width, compact, moonBox: {
-    x: Math.floor((viewWidth * .92 - moonSize) * units / S) * S,
-    y: Math.ceil(viewHeight * .06 * units / S) * S,
-    size: moonSize * units,
-  } };
+  return { width, height, cellPx: viewWidth / width, compact, moonBox: moonBoxFor(viewWidth, viewHeight, width) };
 }
 
 interface Drift {
@@ -215,8 +220,10 @@ export function generateHillScene(name: HillPalette, seed = 1987, sceneryGrid?: 
     : sceneryGrid ? height * (.59 + (backY(terrainX(x)) - 68) * .004) : backY(x);
   const far = (x: number) => portrait ? height * (.626 - .135 * peak(x, .52, .39)) : height;
   const farPalette = name === "day" ? ["#9ac9d4", "#89b9c4", "#77a9b2"] : ["#243a63", "#203355", "#192943"];
+  // Without a supplied box, derive it from this grid's own size and cell scale (not a re-picked grid).
+  const cellPx = sceneryGrid?.cellPx ?? 5;
   const moonBox = sceneryGrid?.moonBox ?? (sceneryGrid
-    ? getViewportHillGrid(width * S, height * S, false).moonBox
+    ? moonBoxFor(width * cellPx, height * cellPx, width)
     : { x: 1120, y: 64, size: 200 });
   const T = THEMES[name];
   const rng = mulberry(seed);
@@ -246,7 +253,7 @@ export function generateHillScene(name: HillPalette, seed = 1987, sceneryGrid?: 
 
   if (T.stars) {
     if (sceneryGrid) {
-      stars.push(...viewportStars(width, height, (x) => Math.min(front(x), back(x), far(x)), moonBox, mulberry(seed ^ 0x73746172), sceneryGrid.cellPx ?? 5, phonePortrait));
+      stars.push(...viewportStars(width, height, (x) => Math.min(front(x), back(x), far(x)), moonBox, mulberry(seed ^ 0x73746172), cellPx, phonePortrait));
     }
     for (let i = 0; !sceneryGrid && i < T.stars; i += 1) {
       const x = rng() * width | 0, y = rng() * (sceneryGrid ? height * .57 : 80) | 0;

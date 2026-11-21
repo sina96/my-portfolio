@@ -82,12 +82,16 @@ function Desktop({ children, year }: Readonly<XpWindowManagerProps>) {
   const primary = useRef<HTMLButtonElement>(null);
   const sceneryRestore = useRef<HTMLButtonElement>(null);
   const [windows, setWindows] = useState<WindowEntry[]>([]);
-  const register = useCallback((id: string, title: string, desktopApp: boolean, icon?: DesktopIconName) => {
-    setWindows((current) => [...current.filter((window) => window.id !== id), { id, title, desktopApp, icon, state: "open" }]);
-    return () => setWindows((current) => current.filter((window) => window.id !== id));
-  }, []);
   const [minimizing, setMinimizing] = useState(false);
   const pending = useRef<{ id: string; finish: (commit: boolean) => void }>(null);
+  const register = useCallback((id: string, title: string, desktopApp: boolean, icon?: DesktopIconName) => {
+    setWindows((current) => [...current.filter((window) => window.id !== id), { id, title, desktopApp, icon, state: "open" }]);
+    return () => {
+      // A window that goes away mid-minimize must not commit or move focus afterwards.
+      if (pending.current?.id === id) pending.current.finish(false);
+      setWindows((current) => current.filter((window) => window.id !== id));
+    };
+  }, []);
   useEffect(() => () => pending.current?.finish(false), []);
 
   const setState = useCallback((id: string, state: WindowState) => {

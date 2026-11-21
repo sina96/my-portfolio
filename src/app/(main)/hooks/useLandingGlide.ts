@@ -117,6 +117,8 @@ export function useLandingGlide(header: RefObject<HTMLElement | null>, enabled: 
         if (!(event.deltaY > 0 && y < end - EDGE)) return;
       }
 
+      // The glide owns this scroll; don't let the native wheel step move the page as well.
+      event.preventDefault();
       wheelStarted = now;
       holdWheelStream();
       glide(event.deltaY > 0 ? end : 0);

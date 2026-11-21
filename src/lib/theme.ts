@@ -14,6 +14,14 @@ export function themeFrameAt({ started, from, to }: ThemeTransition, now: number
 let transition: ThemeTransition | null = null;
 let midpoint: number | undefined;
 let end: number | undefined;
+// The frame HillScene last painted. It can lag the clock by up to one frame, and a reversal must start
+// from what's on screen, not from where the clock says the sequence is.
+let drawn: { started: number; step: number } | null = null;
+
+/** Called by the landing scene after it paints a dusk/dawn frame of the current transition. */
+export function reportThemeFrame(started: number, step: number): void {
+  drawn = { started, step };
+}
 
 export const getThemeTransition = () => transition;
 export const getThemeTarget = () => transition?.target ?? getTheme();
@@ -57,6 +65,7 @@ export function finishThemeTransition(theme: Theme | null = transition?.target ?
     window.clearTimeout(midpoint);
     window.clearTimeout(end);
     transition = null;
+    drawn = null;
     if (theme) document.documentElement.dataset.theme = theme;
     listeners.forEach((listener) => listener());
   } else if (theme) applyTheme(theme);
@@ -75,7 +84,10 @@ export function setTheme(theme: Theme, animate = false): void {
     return;
   }
   const started = performance.now();
-  const from = transition ? themeFrameAt(transition, started) : getTheme() === "dark" ? 9 : 0;
+  // Until the scene reports a frame for this transition, it is still showing the starting frame.
+  const from = transition
+    ? drawn?.started === transition.started ? drawn.step : transition.from
+    : getTheme() === "dark" ? 9 : 0;
   const to = theme === "dark" ? 9 : 0;
   window.clearTimeout(midpoint);
   window.clearTimeout(end);

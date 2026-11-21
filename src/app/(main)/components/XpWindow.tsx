@@ -30,7 +30,9 @@ export function XpWindow({ id, title, children, className = "", statusBar, deskt
       const task = document.getElementById(`task-${id}`);
       const popup = document.querySelector<HTMLElement>(".xp-closed-card .default");
       const partial = document.querySelector<HTMLElement>(".xp-partial-restore button");
-      (task ?? popup ?? partial ?? document.getElementById("main"))?.focus({ preventScroll: true });
+      // A closed hero has no task button or restore link; its reopen icon is the nearest target.
+      const heroIcon = document.getElementById("xp-hero-icon");
+      (task ?? popup ?? partial ?? heroIcon ?? document.getElementById("main"))?.focus({ preventScroll: true });
       if (!task && !popup) partial?.scrollIntoView({ block: "nearest", behavior: "instant" });
     });
   }

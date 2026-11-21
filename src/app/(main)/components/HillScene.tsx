@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import type { CSSProperties, ReactNode } from "react";
-import { finishThemeTransition, getThemeTransition, subscribeToTheme, themeFrameAt } from "@/lib/theme";
+import { finishThemeTransition, getThemeTransition, reportThemeFrame, subscribeToTheme, themeFrameAt } from "@/lib/theme";
 import { useLandingVisit } from "../hooks/useLandingVisit";
 import { getLandingStop, useLandingGlide } from "../hooks/useLandingGlide";
 import { useWallpaperScroll } from "../hooks/useWallpaperScroll";
@@ -56,7 +56,7 @@ function encodeScene(palette: HillPalette, grid: ViewportHillGrid) {
 }
 
 export function HillScene({ mode, children }: Readonly<HillSceneProps>) {
-  const { scenery, sceneryEntering, finishSceneryEntry, homeRequest, goHome } = useXpWindows();
+  const { windows, restore, scenery, sceneryEntering, finishSceneryEntry, homeRequest, goHome } = useXpWindows();
   const { theme } = useTheme();
   const palette = theme === "dark" ? "night" : theme === "light" ? "day" : null;
   const [scenes, setScenes] = useState<Partial<Record<HillPalette, ReturnType<typeof encodeScene>>>>({});
@@ -137,6 +137,10 @@ export function HillScene({ mode, children }: Readonly<HillSceneProps>) {
     frame = requestAnimationFrame(advance);
     return () => cancelAnimationFrame(frame);
   }, [landing, transition]);
+  useEffect(() => {
+    // Runs after the frame is committed, so the theme store reverses from what is actually on screen.
+    if (tick) reportThemeFrame(tick.started, tick.step);
+  }, [tick]);
   useEffect(() => {
     if (landing) return () => finishThemeTransition();
   }, [landing]);
@@ -228,8 +232,15 @@ export function HillScene({ mode, children }: Readonly<HillSceneProps>) {
             goHome();
             return;
           }
-          document.getElementById("main")?.focus({ preventScroll: true });
-          window.scrollTo({ top: getLandingStop(header), behavior: reduce ? "instant" : "smooth" });
+          const scrollToContent = () => {
+            document.getElementById("main")?.focus({ preventScroll: true });
+            window.scrollTo({ top: getLandingStop(header), behavior: reduce ? "instant" : "smooth" });
+          };
+          if (!windows.some(({ state }) => state !== "open")) return scrollToContent();
+          // Like the desktop glide (via goHome), reopen windows first; wait for the restored layout and
+          // run after restore's own focus handoff so focus still lands on the content.
+          restore();
+          requestAnimationFrame(() => requestAnimationFrame(scrollToContent));
         }}>▼ SCROLL</button>
       )}
       {mode === "intro" && <span className="hill-nav-sentinel" aria-hidden="true" />}

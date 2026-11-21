@@ -1,11 +1,11 @@
 ---
 title: 'post Opus 5.5 era: deslop everything'
 date: 2026-11-21
-excerpt: Slop is everywhere, and your Evals can't fix them alone.
+excerpt: Slop is everywhere, and your evals are not the solution.
 hidden: false
 ---
 
-Hello fellow _bottlenecks_! We are in opus 5.5 era. Math hypothesis are getting proven  and guess what? We still have slop. Everywhere. and I don't mean the code we get from AI.
+Hello fellow _bottlenecks_! We are in post opus 5.5 era. Math hypotheses are getting proven and guess what? We are still dealing with slop. Everywhere. and I don't mean the code we get from AI.
 
 ![](/images/blog/IMG_5668.jpg)
 

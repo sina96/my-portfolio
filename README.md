@@ -45,6 +45,7 @@ Project docs are organized by purpose:
 - [XP Hills design spec](./docs/specs/xp-hills/SPEC.md) - how the site looks and behaves
 - [How to add blog posts](./docs/howto/ADDING_BLOG_POSTS.md)
 - [XP Hills changelog](./docs/changelogs/2026-11-20-xp-hills.md)
+- [Landing v2 changelog](./docs/changelogs/2026-11-21-landing-v2.md)
 - [Archive](./docs/archive/) - older plans, implementation notes, and the XP Hills task handoffs
 
 ## Tech Stack

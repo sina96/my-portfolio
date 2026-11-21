@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { SITE_NAME } from "@/lib/site";
 import XpShell from "./(main)/XpShell";
 import { HillScene } from "./(main)/components/HillScene";
+import { XpNavLink } from "./(main)/components/XpNavLink";
 import { XpWindow } from "./(main)/components/XpWindow";
 
 export default function NotFound() {
@@ -10,7 +10,7 @@ export default function NotFound() {
       <title>{`Page not found | ${SITE_NAME}`}</title>
       <HillScene mode="header" />
       <main className="xp-content xp-error-content" id="main" tabIndex={-1}>
-        <XpWindow id="error-404" title={`${SITE_NAME} — Error 404`}>
+        <XpWindow id="error-404" icon="desktop" title={`${SITE_NAME} — Error 404`}>
           <div className="xp-error-body">
             <span aria-hidden="true" className="xp-error-icon">×</span>
             <div>
@@ -18,7 +18,7 @@ export default function NotFound() {
               <p>The page you requested could not be found.</p>
             </div>
           </div>
-          <div className="xp-actions"><Link href="/" className="xp-button-link">Home</Link></div>
+          <div className="xp-actions"><XpNavLink href="/" label="Home" icon="home" /></div>
         </XpWindow>
       </main>
     </XpShell>

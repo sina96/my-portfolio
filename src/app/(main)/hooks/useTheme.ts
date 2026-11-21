@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { getServerTheme, getTheme, setTheme, subscribeToTheme } from "@/lib/theme";
+import { getServerTheme, getTheme, getThemeTarget, setTheme, subscribeToTheme } from "@/lib/theme";
 
 export function useTheme() {
   const theme = useSyncExternalStore(subscribeToTheme, getTheme, getServerTheme);
@@ -9,6 +9,7 @@ export function useTheme() {
   return {
     theme,
     darkMode: theme === "dark",
-    toggleDarkMode: () => setTheme(getTheme() === "dark" ? "light" : "dark"),
+    toggleDarkMode: () => setTheme(getThemeTarget() === "dark" ? "light" : "dark",
+      window.location.pathname === "/" && Boolean(document.querySelector(".hill-header-intro [data-theme-ready]"))),
   };
 }

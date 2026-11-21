@@ -39,7 +39,7 @@ export function ContactWindows({ children, links }: Readonly<ContactWindowsProps
 
   return (
     <>
-      <XpWindow id="contact-details" title="Contact" className="xp-contact-window">
+      <XpWindow id="contact-details" icon="contact" title="klondike.exe" className="xp-contact-window">
         {children}
         <div className="xp-actions">
           <button ref={button} type="button" className="xp-button-link" aria-expanded={expanded}
@@ -49,7 +49,7 @@ export function ContactWindows({ children, links }: Readonly<ContactWindowsProps
         </div>
         <div className="xp-actions">{links}</div>
       </XpWindow>
-      <XpWindow id={AVAILABILITY_ID} title="Availability" disclosure={{ expanded, onClose: hide }}>
+      <XpWindow id={AVAILABILITY_ID} icon="cv" title="Availability" disclosure={{ expanded, onClose: hide }}>
         <h2 className="xp-sr-only" ref={heading} tabIndex={-1}>Availability</h2>
         {openedOnce && <AvailabilityWidget />}
       </XpWindow>

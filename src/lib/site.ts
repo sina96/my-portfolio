@@ -1,11 +1,18 @@
 export const SITE_URL = "https://sinabastani.dev";
 export const SITE_NAME = "Sina Bastani";
 export const SITE_DESCRIPTION = "Software developer focused on backend systems, cloud migration, and modern delivery.";
-export const SITE_TAGLINE = "Human. Developer. Can't properly work with printers.";
+export const SITE_TAGLINE = "printers are not the only bottlenecks we have at the office anymore.";
 export const SITE_STATUS: { state: "busy" | "available"; label: string } = {
   state: "busy",
   label: "in a project",
 };
+export const SITE_ROLE_LINE = "Developer (human) · Stockholm";
+export const SITE_NOW: ReadonlyArray<{ label: string; value: string }> = [
+  { label: "building", value: "cooking up with agents in Rex" },
+  { label: "reading", value: "Throne of Glass series" },
+  { label: "listening to", value: "lots of tech podcasts" },
+  { label: "based in", value: "Stockholm" },
+];
 export const SITE_EMAIL = "contact@sinabastani.dev";
 export const CONTACT_URL = `mailto:${SITE_EMAIL}?subject=Contact%20Request&body=Hello!`;
 

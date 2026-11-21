@@ -1,33 +1,46 @@
 .xp-desktop .xp-hero-window {
-  width: min(calc(100% - 32px), 320px);
+  width: min(calc(100% - 32px), 360px);
   background: transparent;
 }
 .xp-hero-window .window-body {
-  padding: 10px 12px 12px;
+  padding: 12px 6px 8px;
   border: 1px solid rgb(255 255 255 / .55);
-  background: rgb(255 255 255 / .16);
+  background: rgb(12 27 64 / .64);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   color: #fff;
   text-shadow: 0 1px 3px #080d20, 0 0 6px #080d20;
 }
-[data-theme="dark"] .xp-hero-window .window-body { background: rgb(10 16 48 / .28); }
+[data-theme="dark"] .xp-hero-window .window-body { background: rgb(10 16 48 / .55); }
 @supports not ((backdrop-filter: blur(6px)) or (-webkit-backdrop-filter: blur(6px))) {
-  .xp-hero-window .window-body { background: rgb(24 49 88 / .86); }
-  [data-theme="dark"] .xp-hero-window .window-body { background: rgb(10 16 48 / .9); }
+  .xp-hero-window .window-body { background: #183158; }
+  [data-theme="dark"] .xp-hero-window .window-body { background: #0a1030; }
 }
-.xp-hero-window img { display: block; width: 72px; height: 72px; margin: 0 auto; }
-.xp-hero-greeting {
-  margin: 0;
-  font: 400 21px/1.15 "Trebuchet MS", var(--font-pt-sans), "Segoe UI", sans-serif;
+.xp-hero-window img { display: block; width: 64px; height: 64px; margin: 0 auto; }
+.xp-desktop .xp-hero-window h1 { margin: .22em 0 .12em; font-size: clamp(1.45rem, 5vw, 1.75rem); }
+.xp-hero-role { margin: 0; font-size: .86rem; }
+.xp-hero-shortcuts { display: flex; justify-content: center; gap: 2px; margin: 6px auto 0; }
+.xp-desktop .xp-desktop-shortcut {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 72px;
+  min-height: 72px;
+  color: #fff;
+  text-shadow: 0 1px 3px #080d20, 0 0 6px #080d20;
+  text-decoration: none;
+  font: 13px/1.2 var(--chrome);
 }
-.xp-hero-note {
-  width: fit-content;
-  margin: .35em auto 0;
-  color: rgb(255 255 255 / .8);
-  font-size: 12px;
+.xp-desktop-shortcut > span { padding: 2px 4px; }
+.xp-desktop-shortcut:is(:hover, :focus-visible) > span { background: #316ac5; color: white; }
+.xp-desktop-shortcut:is(:hover, :focus-visible) svg { filter: sepia(1) hue-rotate(165deg) saturate(2); }
+.xp-desktop-shortcut:active { transform: translateY(1px); }
+@media (width < 760px) {
+  .xp-desktop .xp-desktop-shortcut { min-width: 88px; min-height: 88px; }
+  .xp-desktop-shortcut svg { width: 40px; height: 40px; }
 }
-[data-theme="dark"] .xp-hero-note { color: rgb(255 255 255 / .7); }
 .xp-desktop #xp-hero-icon {
   display: grid;
   justify-items: center;

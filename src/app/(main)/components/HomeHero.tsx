@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import memojiImage from "@/assets/images/sina-pc-memoji.png";
+import { SITE_NAME, SITE_ROLE_LINE } from "@/lib/site";
+import { DesktopIcon } from "./DesktopIcon";
 import { XpWindow } from "./XpWindow";
 import { useXpWindows } from "./XpWindowManager";
 import { HERO_ID } from "./heroConfig";
@@ -19,14 +21,19 @@ export function HomeHero() {
 
   return (
     <>
-      <XpWindow id={HERO_ID} title="hi.exe" className="xp-hero-window" desktopApp>
-        <Image src={memojiImage} alt="" width={72} height={72} loading="eager" />
-        <p className="xp-hero-greeting">hi! 👋</p>
-        <p className="xp-hero-note">(you can close me, the view is nicer)</p>
+      <XpWindow id={HERO_ID} title="sina.exe" className="xp-hero-window" icon="desktop" desktopApp>
+        <Image src={memojiImage} alt="" width={64} height={64} loading="eager" />
+        <h1>{SITE_NAME}</h1>
+        <p className="xp-hero-role">{SITE_ROLE_LINE}</p>
+        <div className="xp-hero-shortcuts">
+          <DesktopIcon href="/cv" label="CV" icon="cv" />
+          <DesktopIcon href="/contact" label="Contact" icon="contact" />
+          <DesktopIcon href="/blog" label="Blog" icon="blog" />
+        </div>
       </XpWindow>
       {closed && (
         <>
-          <button id="xp-hero-icon" type="button" aria-label="Open hi.exe" title="Open hi.exe"
+          <button id="xp-hero-icon" type="button" aria-label="Open sina.exe" title="Open sina.exe"
             onDoubleClick={reopen}
             onClick={(event) => {
               // Keyboard activation and touch/pen use a single press; a mouse uses double-click.
@@ -34,9 +41,8 @@ export function HomeHero() {
               if (event.detail === 0 || pointerType === "touch" || pointerType === "pen") reopen();
             }}>
             <Image src={memojiImage} alt="" width={48} height={48} />
-            <span>hi.exe</span>
+            <span>sina.exe</span>
           </button>
-          <p className="xp-scenery-caption">enjoy the scenery ☁</p>
         </>
       )}
     </>

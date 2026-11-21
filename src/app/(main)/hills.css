@@ -6,24 +6,18 @@
   min-height: var(--head);
 }
 .hill-scene {
-  position: absolute;
-  inset: 0 0 auto;
-  height: var(--head);
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  height: 100lvh;
+  overflow: clip;
   background: linear-gradient(#1747b8, #cfe4f8);
-  mask-image: linear-gradient(to bottom, #000 55%, transparent);
   pointer-events: none;
   z-index: 0;
 }
 [data-theme="dark"] .hill-scene { background: linear-gradient(#03061a, #2a4677); }
 .hill-scene svg { display: block; width: 100%; height: 100%; }
 .hill-scene image { image-rendering: pixelated; }
-.hill-scene .hill-scenery-moon {
-  position: absolute;
-  top: 7%;
-  right: 12%;
-  width: clamp(64px, 19vmin, 180px);
-  height: auto;
-}
 .hill-hero {
   position: absolute;
   inset: 0;
@@ -33,45 +27,73 @@
   text-align: center;
   pointer-events: none;
 }
+@media (orientation: portrait) and (min-height: 650px) {
+  .hill-header-intro .hill-hero { padding-bottom: 30svh; }
+}
+@media (orientation: landscape) and (max-height: 480px) {
+  .hill-header-intro .hill-hero { padding-bottom: 80px; }
+}
 .hill-hero :is(.xp-window, #xp-hero-icon) { pointer-events: auto; }
-.hill-hint { display: none; }
-.hill-drift { animation: hill-drift var(--duration) steps(var(--steps)) var(--delay) infinite; }
+.hill-drift { transform: translateX(var(--start, 0px)); animation: hill-drift var(--duration) steps(var(--steps)) var(--delay) infinite; }
 .hill-blink { opacity: 0; animation: hill-blink var(--duration) steps(1) var(--delay) infinite; }
 .hill-twinkle { animation: hill-twinkle var(--duration) steps(1) var(--delay) infinite; }
+.hill-sun-rays { opacity: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .hill-sun image { animation: hill-sun-rays 2.4s steps(1) infinite; }
+  .hill-sun image:first-child { animation-direction: reverse; }
+}
+@keyframes hill-sun-rays { 0% { opacity: 0; } 50%, 100% { opacity: 1; } }
 @keyframes hill-drift { from { transform: translateX(var(--from)); } to { transform: translateX(var(--to)); } }
 @keyframes hill-blink { 0%, 88%, 97%, 100% { opacity: 0; } 90% { opacity: 1; } 94% { opacity: .5; } }
 @keyframes hill-twinkle { 0%, 70%, 80%, 100% { opacity: 1; } 75% { opacity: .35; } 90% { opacity: .6; } }
-@keyframes hill-hint { 50% { translate: 0 6px; } }
-@media (min-width: 760px) and (prefers-reduced-motion: no-preference) {
-  .hill-header-intro { min-height: 100vh; }
-  .hill-header-intro .hill-scene {
-    position: fixed;
-    height: var(--hill-height, 100vh);
-    transform: translateY(var(--hill-shift, 0px));
-    mask-image: linear-gradient(to bottom, #000 calc(100% - var(--hill-fade, 0%)), transparent);
-  }
-  .hill-header-intro .hill-hero {
-    opacity: var(--hero-opacity, 1);
-    transform: translateY(var(--hero-shift, 0px));
-  }
-  .hill-header-intro .hill-hero:has(:focus-visible) { opacity: 1; transform: none; }
-  .xp-desktop .hill-hint {
-    display: block;
-    z-index: 2;
-    position: absolute;
-    bottom: calc(var(--taskbar-height, 36px) + 16px);
-    color: white;
-    background: #14204a;
-    padding: 4px 8px;
-    border: 1px solid #88a9ec;
-    min-width: 0;
-    min-height: 25px;
-    opacity: var(--hero-opacity, 1);
-    animation: hill-hint 1.6s steps(2) infinite;
-    font: 700 12px var(--mono);
-    letter-spacing: .18em;
-  }
+.hill-header-intro { min-height: 100vh; }
+@media (width < 760px) {
+  .hill-header-intro { min-height: 100svh; }
 }
+.hill-scene .hill-wallpaper-grid { height: auto; overflow: visible; }
+.hill-dim {
+  position: absolute;
+  inset: 0;
+  background: var(--wallpaper-dim);
+  opacity: var(--veil-opacity, 0);
+}
+.hill-header-header .hill-dim { opacity: .30; }
+.hill-wallpaper-grid .hill-land-depth { transform: translateY(var(--land-shift, 0px)); }
+.hill-wallpaper-grid .hill-cloud-depth { transform: translateY(var(--cloud-shift, 0px)); }
+.hill-wallpaper-grid .hill-twilight-lights { transform: translateY(calc(var(--sky-shift, 0px) - var(--land-shift, 0px))); }
+.hill-header-intro .hill-hero {
+  opacity: var(--hero-opacity, 1);
+  transform: translateY(var(--hero-shift, 0px));
+}
+.hill-header-intro .hill-hero:has(:focus-visible) { opacity: 1; transform: none; }
+.hill-header-intro[data-hero-faded] .hill-hero:not(:focus-within) :is(.xp-window, #xp-hero-icon) { pointer-events: none; }
+[data-wallpaper="moving"] :is(.hill-land-depth, .hill-cloud-depth, .hill-twilight-lights) { will-change: transform; }
+[data-wallpaper="moving"] .hill-dim { will-change: opacity; }
+.hill-header:has([data-wallpaper="moving"]) .hill-hero { will-change: transform, opacity; }
+[data-wallpaper="rest"] :is(.hill-drift, .hill-blink, .hill-twinkle, .hill-sun image) { animation-play-state: paused; }
+.xp-desktop .hill-hint {
+  position: absolute;
+  z-index: 2;
+  bottom: calc(var(--taskbar-space) + 16px);
+  min-width: 0;
+  min-height: 25px;
+  padding: 4px 8px;
+  color: white;
+  background: #14204a;
+  border: 1px solid #88a9ec;
+  opacity: var(--hero-opacity, 1);
+  font: 700 12px var(--mono);
+  letter-spacing: .18em;
+}
+.hill-header-intro[data-hero-faded] .hill-hint { visibility: hidden; }
+.xp-desktop .hill-hint:focus-visible { opacity: 1; }
+@media (width < 760px) {
+  .xp-desktop .hill-hint { min-height: 44px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hill-hint:not(:focus-visible) { animation: hill-hint 1.6s steps(2) infinite; }
+}
+@keyframes hill-hint { 50% { translate: 0 -6px; } }
 @media (prefers-reduced-motion: reduce) {
   .hill-drift, .hill-blink, .hill-twinkle { animation: none; }
 }

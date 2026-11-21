@@ -1,13 +1,6 @@
 html:has([data-scenery="true"]), body:has([data-scenery="true"]) { overflow: hidden; overscroll-behavior: none; }
-[data-scenery="true"] > main, [data-scenery="true"] .hill-hint,
+[data-scenery="true"] > main,
 [data-scenery="true"] .hill-hero, .xp-desktop:has([data-scenery="true"]) .xp-skip-link { visibility: hidden; }
-[data-scenery="true"] > .hill-header .hill-scene {
-  position: fixed;
-  inset: 0 0 auto;
-  height: 100dvh;
-  transform: none;
-  mask-image: none;
-}
 [data-scenery="true"] > .hill-header .hill-scene[data-entering] {
   animation: xp-grow-hill 600ms steps(12);
 }
@@ -17,7 +10,11 @@ html:has([data-scenery="true"]), body:has([data-scenery="true"]) { overflow: hid
 }
 .xp-scenery-controls { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
 .xp-scenery-controls .xp-scenery-caption { bottom: calc(54px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); text-align: center; }
-.xp-workspace .xp-scenery-controls .xp-scenery-caption { bottom: calc(var(--taskbar-space) + 54px); }
+.xp-desktop .xp-scenery-controls .xp-scenery-caption { bottom: calc(var(--taskbar-space) + 54px); }
+[data-scenery="true"] > .xp-taskbar .xp-tray-balloon { bottom: calc(100% + 50px); }
+[data-scenery="true"]:has(> .xp-taskbar .xp-tray-balloon) .xp-scenery-caption {
+  bottom: calc(var(--taskbar-space) + 136px);
+}
 .xp-desktop .xp-scenery-restore,
 .xp-desktop .xp-closed-card .window-body .xp-quiet-action {
   min-height: 32px;
@@ -41,9 +38,9 @@ html:has([data-scenery="true"]), body:has([data-scenery="true"]) { overflow: hid
   text-shadow: 0 1px 4px #080d20, 0 0 6px #080d20;
   text-decoration: none;
 }
+.xp-desktop .xp-scenery-controls .xp-scenery-restore { bottom: calc(var(--taskbar-space) + 8px); }
 .xp-desktop .xp-scenery-restore:is(:hover, :focus-visible) { text-decoration: underline; }
 .xp-desktop .xp-scenery-restore:focus-visible { outline: 2px solid white; box-shadow: 0 0 0 4px #14204a; }
-.xp-workspace .xp-scenery-restore { bottom: calc(var(--taskbar-space) + 8px); }
 .xp-subpage { display: grid; grid-template-columns: minmax(0, 1fr); }
 .xp-subpage > .hill-header { grid-area: 1 / 1; }
 .xp-subpage > :is(.xp-content, .xp-closed-card) { grid-area: 2 / 1; }

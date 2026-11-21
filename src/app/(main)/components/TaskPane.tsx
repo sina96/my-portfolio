@@ -38,22 +38,18 @@ function TaskGroup({ title, children }: Readonly<GroupProps>) {
 
 interface TaskPaneProps {
   year: number;
-  onNavigate?: () => void;
 }
 
-export function TaskPane({ year, onNavigate }: Readonly<TaskPaneProps>) {
+export function TaskPane({ year }: Readonly<TaskPaneProps>) {
   const pathname = usePathname();
   const { darkMode, toggleDarkMode } = useTheme();
-  const { windows, setState, goHome } = useXpWindows();
-
-  const restorable = windows.filter(({ state, desktopApp }) => !desktopApp && state !== "open");
+  const { goHome } = useXpWindows();
 
   return (
-    <nav className="xp-pane" aria-label="Primary">
+    <nav className="xp-pane" aria-label="Places">
       <TaskGroup title="Places">
         {XP_PLACES.map(({ href, label }) => (
           <Link key={href} href={href} aria-current={isCurrentPlace(pathname, href) ? "page" : undefined} onNavigate={(event) => {
-            onNavigate?.();
             if (pathname === "/" && href === "/") {
               event.preventDefault();
               goHome();
@@ -71,21 +67,6 @@ export function TaskPane({ year, onNavigate }: Readonly<TaskPaneProps>) {
           <span className="xp-luna-track" aria-hidden="true"><span>☀</span><span>☾</span></span>
         </button>
       </TaskGroup>
-      {restorable.length > 0 && (
-        <TaskGroup title="Closed windows">
-          {restorable.map(({ id, title }) => (
-            <button key={id} type="button" onClick={() => {
-              setState(id, "open");
-              onNavigate?.();
-              requestAnimationFrame(() => {
-                const window = document.getElementById(id);
-                window?.querySelector<HTMLElement>(".title-bar-controls button")?.focus({ preventScroll: true });
-                window?.scrollIntoView({ block: "nearest", behavior: "instant" });
-              });
-            }}>Restore {title}</button>
-          ))}
-        </TaskGroup>
-      )}
       <small className="xp-pane-credit">© {year} {SITE_NAME}</small>
     </nav>
   );

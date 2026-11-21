@@ -2,6 +2,22 @@
 
 export type Theme = "light" | "dark";
 
+export const THEME_TRANSITION_MS = 1500;
+const FRAME_MS = THEME_TRANSITION_MS / 10;
+interface ThemeTransition { target: Theme; started: number; from: number; to: number }
+
+/** Resolve the currently displayed discrete dusk frame. */
+export function themeFrameAt({ started, from, to }: ThemeTransition, now: number): number {
+  const distance = Math.min(Math.abs(to - from), Math.max(0, Math.floor((now - started) / FRAME_MS)));
+  return from + Math.sign(to - from) * distance;
+}
+let transition: ThemeTransition | null = null;
+let midpoint: number | undefined;
+let end: number | undefined;
+
+export const getThemeTransition = () => transition;
+export const getThemeTarget = () => transition?.target ?? getTheme();
+
 const KEY = "theme";
 const QUERY = "(prefers-color-scheme: dark)";
 const listeners = new Set<() => void>();
@@ -36,7 +52,17 @@ function applyTheme(theme: Theme): void {
   listeners.forEach((listener) => listener());
 }
 
-export function setTheme(theme: Theme): void {
+export function finishThemeTransition(theme: Theme | null = transition?.target ?? null): void {
+  if (transition) {
+    window.clearTimeout(midpoint);
+    window.clearTimeout(end);
+    transition = null;
+    if (theme) document.documentElement.dataset.theme = theme;
+    listeners.forEach((listener) => listener());
+  } else if (theme) applyTheme(theme);
+}
+
+export function setTheme(theme: Theme, animate = false): void {
   try {
     window.localStorage.setItem(KEY, theme);
     unsavedTheme = null;
@@ -44,14 +70,35 @@ export function setTheme(theme: Theme): void {
     // The current page keeps the choice when storage is unavailable.
     unsavedTheme = theme;
   }
-  applyTheme(theme);
+  if (!animate || (!transition && getTheme() === theme) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    finishThemeTransition(theme);
+    return;
+  }
+  const started = performance.now();
+  const from = transition ? themeFrameAt(transition, started) : getTheme() === "dark" ? 9 : 0;
+  const to = theme === "dark" ? 9 : 0;
+  window.clearTimeout(midpoint);
+  window.clearTimeout(end);
+  if (from === to) {
+    finishThemeTransition(theme);
+    return;
+  }
+  transition = { target: theme, started, from, to };
+  if (getTheme() !== theme) {
+    const stepsToCross = theme === "dark" ? 5 - from : from - 4;
+    midpoint = window.setTimeout(() => applyTheme(theme), Math.max(0, stepsToCross) * FRAME_MS);
+  }
+  end = window.setTimeout(() => finishThemeTransition(), (Math.abs(to - from) + 1) * FRAME_MS);
+  listeners.forEach((listener) => listener());
 }
 
 export function subscribeToTheme(listener: () => void): () => void {
   listeners.add(listener);
   if (!stopListening) {
     const media = window.matchMedia(QUERY);
-    const syncTheme = () => applyTheme(savedTheme() ?? (media.matches ? "dark" : "light"));
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const syncTheme = () => finishThemeTransition(savedTheme() ?? (media.matches ? "dark" : "light"));
+    const onMotion = () => { if (motion.matches) finishThemeTransition(); };
     const onStorage = (event: StorageEvent) => {
       if (event.key === KEY || event.key === null) {
         unsavedTheme = null;
@@ -59,10 +106,12 @@ export function subscribeToTheme(listener: () => void): () => void {
       }
     };
     media.addEventListener("change", syncTheme);
+    motion.addEventListener("change", onMotion);
     window.addEventListener("storage", onStorage);
     syncTheme();
     stopListening = () => {
       media.removeEventListener("change", syncTheme);
+      motion.removeEventListener("change", onMotion);
       window.removeEventListener("storage", onStorage);
     };
   }

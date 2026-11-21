@@ -4,7 +4,7 @@ import Link from "next/link";
 import memojiImage from "@/assets/images/sina-pc-memoji.png";
 import { JsonLd } from "@/lib/jsonLd";
 import { SHARE_IMAGE_SIZE } from "@/lib/shareImage";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_STATUS, SITE_TAGLINE, SITE_URL, SOCIAL_LINKS, siteAlternates } from "@/lib/site";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_NOW, SITE_STATUS, SITE_TAGLINE, SITE_URL, SOCIAL_LINKS, siteAlternates } from "@/lib/site";
 import { BlogList } from "./components/BlogList";
 import { HomeHero } from "./components/HomeHero";
 import { HillScene } from "./components/HillScene";
@@ -28,6 +28,7 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
+  const now = SITE_NOW.filter(({ value }) => value.trim());
   return (
     <>
       <JsonLd value={{
@@ -38,20 +39,25 @@ export default function Home() {
         <HomeHero />
       </HillScene>
       <main id="main" className="xp-content xp-home-content" tabIndex={-1}>
-        <XpWindow id="home-intro" title="About me">
-          <div className="xp-intro">
-            <Image src={memojiImage} alt="Sina memoji" width={100} height={100} />
-            <div>
-              <h1>{SITE_NAME}</h1>
-              <p>{SITE_TAGLINE}</p>
-            </div>
-          </div>
-          <p className="xp-status" data-status={SITE_STATUS.state}><span aria-hidden="true" />Current Status: {SITE_STATUS.label}</p>
-          <div className="xp-actions"><Link href="/cv" className="xp-button-link">View CV</Link></div>
-        </XpWindow>
-        <XpWindow id="home-posts" title="Latest posts">
-          <BlogList posts={getAllBlogPosts().slice(0, 3)} />
+        <XpWindow id="home-posts" title="Latest posts" icon="blog">
+          <h2 className="xp-sr-only">Latest posts</h2>
+          <BlogList posts={getAllBlogPosts().slice(0, 5)} />
           <div className="xp-actions"><Link href="/blog" className="xp-button-link">All posts</Link></div>
+        </XpWindow>
+        <XpWindow id="home-intro" title="About me" icon="about">
+          <div className="xp-intro">
+            <Image src={memojiImage} alt="" width={56} height={56} />
+            <p>{SITE_TAGLINE}</p>
+          </div>
+          <p className="xp-status" data-status={SITE_STATUS.state}><span aria-hidden="true" />{SITE_STATUS.label}</p>
+          {now.length > 0 && <>
+            <h2>Now</h2>
+            <dl className="xp-now">
+              {now.map(({ label, value }) => (
+                <div key={label}><dt>{label}:</dt><dd>{value}</dd></div>
+              ))}
+            </dl>
+          </>}
         </XpWindow>
       </main>
     </>

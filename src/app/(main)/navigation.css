@@ -17,19 +17,54 @@
   min-height: calc(100vh - var(--landing-top-gap) - var(--taskbar-space));
   align-content: start;
 }
+@media (min-width: 1100px) {
+  .xp-workspace > .xp-home-content {
+    --landing-pair-width: 1024px;
+    width: min(var(--landing-pair-width), calc(100% - var(--pane-edge) - var(--workspace-gutter)));
+    margin-inline-start: max(var(--pane-edge), calc((100% - var(--landing-pair-width)) / 2));
+    grid-template-columns: minmax(0, 1fr) clamp(280px, 22vw, 320px);
+    align-items: start;
+  }
+}
 .xp-workspace > .xp-closed-card {
-  grid-column: 1;
-  grid-row: 2;
+  grid-area: 2 / 1;
   align-self: start;
   margin-top: calc(-1 * var(--hill-overlap));
+  scroll-margin-top: var(--landing-top-gap);
 }
-.hill-nav-sentinel { position: absolute; bottom: 0; width: 1px; height: 1px; pointer-events: none; }
+@media (min-width: 760px) {
+  .xp-workspace > .xp-closed-card {
+    width: min(390px, calc(100% - var(--pane-edge) - var(--workspace-gutter)));
+    margin-inline-start: max(var(--pane-edge), calc((100% - 390px) / 2));
+  }
+}
+.xp-workspace > .xp-partial-restore {
+  grid-area: 3 / 1;
+  justify-self: center;
+  margin: 4px 0 12px;
+  border-radius: 4px;
+  background: var(--window-body);
+}
+.xp-workspace:has(> .xp-partial-restore) > .xp-content { min-height: 0; }
+.xp-workspace:has(> .xp-partial-restore) { align-content: start; min-height: calc(200vh - var(--hill-overlap)); }
+.xp-minimize-ghost {
+  position: fixed;
+  z-index: 19;
+  pointer-events: none;
+  transform-origin: top left;
+  border: 2px solid #e3efff;
+  box-shadow: 0 0 0 1px #19376d, inset 0 0 0 1px #19376d;
+}
+
+.xp-home-content > .xp-window { scroll-margin-top: var(--landing-top-gap); }
+.hill-nav-sentinel { position: absolute; bottom: calc(var(--landing-top-gap) + 1px); width: 1px; height: 1px; pointer-events: none; }
 @media (min-width: 760px) and (prefers-reduced-motion: no-preference) {
   .hill-header-intro .hill-nav-sentinel { bottom: calc(var(--hill-overlap) + var(--landing-top-gap) + 1px); }
-  .xp-workspace > :is(.xp-content, .xp-closed-card) { opacity: var(--landing-content-opacity, 0); }
-  .xp-workspace[data-past-hill="false"] > :is(.xp-content, .xp-closed-card) { pointer-events: none; }
-  .xp-workspace[data-past-hill="true"] .hill-hero,
-  .xp-workspace[data-past-hill="true"] .hill-hint { visibility: hidden; }
+  .xp-workspace > .xp-content { opacity: var(--landing-content-opacity, 0); }
+  .xp-workspace[data-past-hill="false"] > .xp-content { pointer-events: none; }
+}
+@media (width < 760px) and (prefers-reduced-motion: no-preference) {
+  .xp-workspace > .xp-content { opacity: var(--landing-content-opacity, 1); }
 }
 .xp-pane-sidebar {
   position: sticky;
@@ -42,7 +77,7 @@
   align-self: start;
   top: var(--landing-top-gap);
   margin-top: var(--landing-top-gap);
-  max-height: calc(100vh - 24px);
+  max-height: calc(100vh - var(--taskbar-space) - 24px);
   overflow: auto;
   opacity: 0;
   visibility: hidden;
@@ -54,15 +89,6 @@
   visibility: visible;
   transform: none;
   transition-delay: 0s;
-}
-.xp-workspace > .xp-taskbar {
-  transition: opacity 150ms steps(4), transform 150ms steps(4), visibility 0s;
-}
-.xp-workspace[data-past-hill="true"] > .xp-taskbar {
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(8px);
-  transition-delay: 0s, 0s, 150ms;
 }
 .xp-workspace { --pane-background: linear-gradient(135deg, #798ee1, #405fb5); }
 [data-theme="dark"] .xp-workspace { --pane-background: linear-gradient(135deg, #314571, #182b62); }
@@ -149,8 +175,6 @@
   color: #fff;
 }
 [data-theme="dark"] .xp-luna-track::after { left: auto; right: 2px; }
-.xp-menu-hint, .xp-pane-launcher, .xp-pane-drawer:not([open]) { display: none; }
-
 @media (width < 760px) {
   .xp-workspace > .xp-content {
     width: min(calc(100% - 32px), 760px);
@@ -159,78 +183,10 @@
     min-height: calc(100vh - var(--taskbar-space));
   }
   .xp-workspace > .xp-closed-card { margin-top: 0; }
+  .xp-workspace:has(> .xp-partial-restore) { min-height: 200svh; }
   .xp-pane-sidebar { display: none; }
-  .xp-desktop .xp-pane-launcher {
-    display: block;
-    position: fixed;
-    z-index: 19;
-    bottom: max(8px, env(safe-area-inset-bottom, 0px));
-    left: 8px;
-    min-height: 36px;
-    padding-inline: 10px;
-    font: 700 .86rem var(--chrome);
-    border: 1px solid #153e8a;
-    background: #154ba4;
-    color: #fff;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 150ms steps(4), visibility 0s 150ms;
-  }
-  .xp-workspace[data-past-hill="true"] > .xp-pane-launcher { opacity: 1; visibility: visible; transition-delay: 0s; }
-  .xp-menu-hint {
-    display: block;
-    position: fixed;
-    z-index: 20;
-    bottom: calc(max(8px, env(safe-area-inset-bottom, 0px)) + 36px);
-    left: 8px;
-  }
-  .xp-menu-hint .xp-tray-balloon { right: auto; left: 0; width: max-content; max-width: calc(100vw - 24px); }
-  .xp-menu-hint .xp-tray-balloon::after { right: auto; left: 24px; }
-  .xp-pane-drawer {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    max-width: none;
-    max-height: none;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: inherit;
-  }
-  .xp-pane-drawer::backdrop { background: #080f27a0; }
-  .xp-drawer-sheet {
-    width: min(280px, 85vw);
-    height: 100%;
-    overflow: auto;
-    padding: 8px;
-    background: var(--pane-background);
-    border-inline-end: 2px solid #1853b6;
-    animation: xp-drawer-slide 160ms steps(5);
-  }
-  .xp-drawer-sheet .xp-pane { background: transparent; padding: 0 4px 4px; }
-  .xp-desktop .xp-drawer-close {
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    margin: 0 0 8px auto;
-    padding: 0;
-    border: 1px solid #861d10;
-    border-radius: 5px;
-    background: linear-gradient(#d45940, #ad2416);
-    box-shadow: inset 0 0 0 1px #ffffffaa;
-    color: #fff;
-    text-shadow: 0 1px #66150c;
-    font: 700 26px/1 var(--heading);
-  }
-  .xp-desktop .xp-drawer-close:hover { background: linear-gradient(#e2674f, #b82c1b); }
 }
-@keyframes xp-drawer-slide { from { transform: translateX(-100%); } }
 @media (prefers-reduced-motion: reduce) {
   .xp-workspace > :is(.xp-content, .xp-closed-card) { margin-top: 0; }
-  .xp-workspace > :is(.xp-pane-sidebar, .xp-taskbar, .xp-pane-launcher) { transition: none; }
-  .xp-drawer-sheet { animation: none; }
+  .xp-pane-sidebar { transition: none; }
 }

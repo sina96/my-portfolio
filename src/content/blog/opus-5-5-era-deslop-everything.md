@@ -17,9 +17,9 @@ Opus 5.5 made agents trustworthy enough to let it take the steering wheel, which
 
 **Your head:** This is where I'm with the Pi ppl (Mario & Armin), just a bit less grumpy. Mario: "the industry is running away from understanding." A green CI with a metric ton of agent-written tests proves nothing since the agent easily can fool you with them. So stop bragging about evals if you can't take agency of your code or your product. That's how CVEs gonna get ya!
 
-Thariq called it an industrial revolution **and** a Renaissance at the same time. We are putting the gears in place, but the soul of things needs a refresh as well. Be AGI pilled and human centered at the same time. Let agents fly but take more accountability and agency. Deslopping is a mindset now so both human and clankers are in our radar now
+Thariq called it an industrial revolution **and** a Renaissance at the same time. We are putting the gears in place, but the soul of things needs a refresh as well. Be AGI pilled and human centered at the same time. Let agents fly but take more accountability and agency. Deslopping is a mindset now so both human and clankers are in our radar now.
 
-But things won't be that linear since we are still working with humans and making things for them. Be patient, spend time with others too and  grab a good coffee now. You deserve that ☕
+Models are getting better and we need to keep up. Tricks you learned last year are not gonna help you now since the models don't need that much babysitting. But things won't be happening in a linear progression since we are still working with humans and making things for them. Be patient, spend time with others too and grab a good cup of coffee now. You deserve it ☕
 
 Things that inspired this post:
 

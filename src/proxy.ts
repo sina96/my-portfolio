@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { adminAuthFailure } from "./lib/basicAuth";
+import { adminAccessFailure } from "./lib/adminAccess";
 
-export function proxy(request: NextRequest): NextResponse {
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   if (request.nextUrl.pathname !== "/") {
-    return adminAuthFailure(request.headers.get("authorization")) ?? NextResponse.next();
+    return (await adminAccessFailure(request)) ?? NextResponse.next();
   }
 
   // Config redirects forward the original query and would loop for /?tab=home.

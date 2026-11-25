@@ -115,12 +115,16 @@ console.log(greeting);
 
 Open `/admin/`, edit or create a post, and use the **Body** field.
 
-- `/admin/` is protected by Basic Auth. Set `ADMIN_USERNAME` and
-  `ADMIN_PASSWORD` locally or in Vercel before using Sveltia. Generate a unique
-  password with `openssl rand -base64 24`. Admin fails closed for the example
-  placeholder or passwords shorter than 16 characters. Restart the dev server
-  after changing env files.
-- After Basic Auth, Sveltia still requires GitHub PAT login to publish commits.
+- **Production:** `https://admin.sinabastani.dev/admin` (`sinabastani.dev/admin` redirects there).
+  Cloudflare Access asks for a GitHub login; only the allowed account gets in. No password. This mode is
+  on when `ADMIN_HOST`, `CF_ACCESS_TEAM_DOMAIN` and `CF_ACCESS_AUD` are set in Vercel.
+- **Local dev / break-glass:** with `ADMIN_HOST` unset, `/admin/` uses Basic Auth. Set
+  `ADMIN_USERNAME` and `ADMIN_PASSWORD` in `.env.local` (or in Vercel, for break-glass). Generate a
+  unique password with `openssl rand -base64 24`. Admin fails closed for the example placeholder or
+  passwords shorter than 16 characters. Restart the dev server after changing env files.
+- Locked out of Cloudflare Access in production: in Vercel set the Basic Auth vars, unset
+  `ADMIN_HOST`, redeploy, use `sinabastani.dev/admin`; revert afterwards.
+- After that, Sveltia still requires GitHub PAT login to publish commits.
 - Use the rich text toolbar for common formatting.
 - Use raw Markdown mode when you need precise table/divider syntax.
 - Use the **Table** editor component to insert a starter table template.

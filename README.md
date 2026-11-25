@@ -17,7 +17,7 @@ bun run dev
 Open [http://localhost:3000](http://localhost:3000) to view the site.
 
 Edit `.env.local` with private calendar ICS URLs or local `.ics` file paths if you want live availability data.
-Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` to access the `/admin` CMS password gate. Restart the dev server after changing env files.
+Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` to access the `/admin` CMS password gate locally (used when `ADMIN_HOST` is unset). Restart the dev server after changing env files.
 
 ## Routes
 
@@ -46,6 +46,7 @@ Project docs are organized by purpose:
 - [How to add blog posts](./docs/howto/ADDING_BLOG_POSTS.md)
 - [XP Hills changelog](./docs/changelogs/2026-11-20-xp-hills.md)
 - [Landing v2 changelog](./docs/changelogs/2026-11-21-landing-v2.md)
+- [CMS access changelog](./docs/changelogs/2026-11-25-cms-access.md)
 - [Archive](./docs/archive/) - older plans, implementation notes, and the XP Hills task handoffs
 
 ## Tech Stack
@@ -62,4 +63,4 @@ Project docs are organized by purpose:
 Deploy on [Vercel](https://vercel.com) or your preferred platform. Vercel automatically detects Bun via the `bun.lock` file and uses it for builds. The site builds as a standard Next.js application with Turbopack.
 
 For availability in production, add `AVAILABILITY_ICS_URLS_JSON` and any optional availability env vars in the deployment platform as server-side environment variables.
-For Sveltia CMS in production, add `ADMIN_USERNAME` and `ADMIN_PASSWORD` in Vercel before visiting `/admin`.
+For Sveltia CMS in production, set `ADMIN_HOST`, `CF_ACCESS_TEAM_DOMAIN` and `CF_ACCESS_AUD` in Vercel: `/admin` then lives on the admin host behind Cloudflare Access (GitHub login, no password). See [`docs/howto/ADDING_BLOG_POSTS.md`](docs/howto/ADDING_BLOG_POSTS.md).

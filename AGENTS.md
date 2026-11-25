@@ -26,10 +26,12 @@ Run all four before calling a task done. Renovate opens dependency PRs on Monday
 
 ```
 src/
-  proxy.ts                    # Next 16 "middleware": /admin Basic Auth + 308s for legacy /?tab=
+  proxy.ts                    # Next 16 "middleware": /admin access check + 308s for legacy /?tab=
   lib/
     site.ts                   # SITE_URL, social links, CONTACT_URL, SITE_STATUS, SITE_ROLE_LINE, SITE_NOW
     theme.ts                  # theme store (useSyncExternalStore) used by useTheme()
+    adminAccess.ts            # /admin gate: Cloudflare Access JWT on ADMIN_HOST, Basic Auth fallback
+    cfAccess.ts               # Cloudflare Access JWT verification (Web Crypto, cached team keys)
     basicAuth.ts              # constant-time admin credential check
     jsonLd.tsx, shareImage.tsx, xml.ts
   app/
@@ -37,7 +39,7 @@ src/
     not-found.tsx             # XP error window (inside XpShell)
     sitemap.ts, robots.ts, opengraph-image.tsx, feed.xml/route.ts, cv.pdf/route.ts
     api/availability/         # route.ts + ics.ts (server-only calendar parsing)
-    admin/[[...path]]/route.ts# Sveltia CMS (HTML, config, editor components) behind Basic Auth
+    admin/[[...path]]/route.ts# Sveltia CMS (HTML, config, editor components) behind adminAccessFailure
     anita/                    # private page, Tailwind, must stay visually unchanged
     (main)/                   # the XP desktop
       XpShell.tsx, layout.tsx # shell + window manager for all public pages
@@ -150,8 +152,13 @@ These cost time during the redesign. Don't regress them.
 - HTML from Markdown/CMS goes through `sanitizeHtml()` before `dangerouslySetInnerHTML`. No exceptions.
 - Validate slugs (`/^[a-zA-Z0-9_-]+$/`) and verify resolved paths stay inside their directory (blog
   loader, ICS files).
-- `/admin` is protected twice: by `proxy.ts` and inside the route handler (`adminAuthFailure`). It
-  fails closed when credentials are unset, the password is a placeholder, or it is under 16 characters.
+- `/admin` is protected twice: by `proxy.ts` and inside the route handler, both via
+  `adminAccessFailure` (`lib/adminAccess.ts`). Two modes:
+  - **Cloudflare Access** (production, `ADMIN_HOST` set): other hosts 308 to `ADMIN_HOST`; there a valid
+    `Cf-Access-Jwt-Assertion` (RS256, team keys, `iss`, `aud` = `CF_ACCESS_AUD`, `exp`/`nbf`) is required.
+    No Basic Auth in this mode. Missing `CF_ACCESS_TEAM_DOMAIN`/`CF_ACCESS_AUD` → 503 (fail closed).
+  - **Basic Auth** (`ADMIN_HOST` unset: local dev, break-glass): `adminAuthFailure`, which fails closed
+    when credentials are unset, the password is a placeholder, or it is under 16 characters.
   CMS config and editor components are
   served from the route, not `public/`, so they can't bypass auth. The Sveltia script is pinned with SRI.
   When bumping it, update the `integrity` hash.

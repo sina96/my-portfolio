@@ -28,6 +28,7 @@ const ADMIN_CONFIG_YML = `backend:
   name: github
   repo: sina96/my-portfolio
   branch: main
+  base_url: https://sveltia-cms-auth.s-bastani96.workers.dev
 
 media_folder: "public/images/blog"
 public_folder: "/images/blog"

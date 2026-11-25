@@ -124,7 +124,11 @@ Open `/admin/`, edit or create a post, and use the **Body** field.
   passwords shorter than 16 characters. Restart the dev server after changing env files.
 - Locked out of Cloudflare Access in production: in Vercel set the Basic Auth vars, unset
   `ADMIN_HOST`, redeploy, use `sinabastani.dev/admin`; revert afterwards.
-- After that, Sveltia still requires GitHub PAT login to publish commits.
+- Then sign in to Sveltia with **Sign in with GitHub**. The OAuth step runs through our own
+  Cloudflare Worker (`sveltia-cms-auth`, set as `base_url` in the admin route's config) and a GitHub
+  App installed only on this repo. The Worker only serves pages on `admin.sinabastani.dev` and
+  `localhost` (`ALLOWED_DOMAINS`). Fallback: **Sign in using access token** with a fine-grained PAT
+  (this repo only, Contents read/write).
 - Use the rich text toolbar for common formatting.
 - Use raw Markdown mode when you need precise table/divider syntax.
 - Use the **Table** editor component to insert a starter table template.

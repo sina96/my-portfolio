@@ -160,7 +160,9 @@ These cost time during the redesign. Don't regress them.
   - **Basic Auth** (`ADMIN_HOST` unset: local dev, break-glass): `adminAuthFailure`, which fails closed
     when credentials are unset, the password is a placeholder, or it is under 16 characters.
   CMS config and editor components are
-  served from the route, not `public/`, so they can't bypass auth. The Sveltia script is pinned with SRI.
+  served from the route, not `public/`, so they can't bypass auth. Sveltia's GitHub sign-in uses our
+  own Cloudflare Worker (`sveltia-cms-auth`, `base_url` in the route's `ADMIN_CONFIG_YML`; its
+  `ALLOWED_DOMAINS` must list the admin host). The Sveltia script is pinned with SRI.
   When bumping it, update the `integrity` hash.
 - Security headers live in `next.config.mjs` (HSTS, `X-Frame-Options: DENY`, nosniff, Referrer- and
   Permissions-Policy, no `X-Powered-By`). Public CSP is enforced in production and report-only in dev;

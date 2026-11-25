@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { afterEach, beforeAll, expect, test, vi } from "vitest";
 import { adminAccessFailure } from "@/lib/adminAccess";
-import { verifyAccessJwt } from "@/lib/cfAccess";
+import { fetchAccessKeys, verifyAccessJwt } from "@/lib/cfAccess";
 import type { AccessJwk } from "@/lib/cfAccess";
 
 const TEAM = "test-team.cloudflareaccess.com";
@@ -75,6 +75,27 @@ test.each([
   ["malformed token", async () => "not-a-jwt"],
 ])("rejects %s", async (reason, makeToken) => {
   expect(await verify(await makeToken())).toEqual({ valid: false, reason });
+});
+
+test("key loading shares in-flight requests and limits forced refreshes", async () => {
+  const fetchMock = vi.fn(async () => Response.json({ keys: [publicJwk] }));
+  vi.stubGlobal("fetch", fetchMock);
+  const team = "dedupe-team.cloudflareaccess.com";
+  const clock = vi.spyOn(Date, "now").mockReturnValue(NOW * 1000);
+
+  await Promise.all([fetchAccessKeys(team, false), fetchAccessKeys(team, false)]);
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+
+  await fetchAccessKeys(team, true); // within a minute of the last fetch: served from cache
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+
+  clock.mockReturnValue((NOW + 120) * 1000);
+  await Promise.all([fetchAccessKeys(team, true), fetchAccessKeys(team, true), fetchAccessKeys(team, true)]);
+  expect(fetchMock).toHaveBeenCalledTimes(2);
+
+  await fetchAccessKeys(team, true); // forced refresh just reserved: cooldown applies
+  expect(fetchMock).toHaveBeenCalledTimes(2);
+  vi.unstubAllGlobals();
 });
 
 function adminRequest(host: string, headers: Record<string, string> = {}, path = "/admin/config.yml?x=1"): NextRequest {

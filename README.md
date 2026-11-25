@@ -63,4 +63,10 @@ Project docs are organized by purpose:
 Deploy on [Vercel](https://vercel.com) or your preferred platform. Vercel automatically detects Bun via the `bun.lock` file and uses it for builds. The site builds as a standard Next.js application with Turbopack.
 
 For availability in production, add `AVAILABILITY_ICS_URLS_JSON` and any optional availability env vars in the deployment platform as server-side environment variables.
-For Sveltia CMS in production, set `ADMIN_HOST`, `CF_ACCESS_TEAM_DOMAIN` and `CF_ACCESS_AUD` in Vercel: `/admin` then lives on the admin host behind Cloudflare Access (GitHub login, no password). See [`docs/howto/ADDING_BLOG_POSTS.md`](docs/howto/ADDING_BLOG_POSTS.md).
+For Sveltia CMS in production, set `ADMIN_HOST`, `CF_ACCESS_TEAM_DOMAIN` and `CF_ACCESS_AUD` in Vercel: `/admin` then lives on the admin host behind Cloudflare Access (GitHub login, no password). Prerequisites:
+
+- A Cloudflare Access self-hosted application for the admin hostname (its AUD tag is `CF_ACCESS_AUD`), plus a Bypass application for `/.well-known/acme-challenge/` so Vercel can renew the certificate.
+- A GitHub identity provider in Cloudflare Zero Trust, and an Allow policy that admits only the permitted account.
+- DNS for the admin hostname in Cloudflare pointing at Vercel and **proxied**, SSL/TLS mode Full (strict), and the hostname added to the Vercel project.
+
+Step-by-step setup docs are pending. If Access locks you out, use the Basic Auth break-glass steps in [`docs/howto/ADDING_BLOG_POSTS.md`](docs/howto/ADDING_BLOG_POSTS.md#writing-in-sveltia-cms).

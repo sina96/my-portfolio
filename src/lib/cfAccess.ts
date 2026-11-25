@@ -34,6 +34,8 @@ const KEY_CACHE_MS = 60 * 60 * 1000;
 const FORCED_REFRESH_MIN_MS = 60 * 1000;
 
 const keyCache = new Map<string, { keys: AccessJwk[]; fetchedAt: number }>();
+const keyRequests = new Map<string, Promise<AccessJwk[]>>();
+const lastForcedRefresh = new Map<string, number>();
 
 function base64UrlToBytes(value: string): Uint8Array<ArrayBuffer> {
   const base64 = value.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(value.length / 4) * 4, "=");
@@ -53,12 +55,7 @@ function isAccessJwk(value: unknown): value is AccessJwk {
   return Boolean(value) && typeof value === "object" && typeof (value as AccessJwk).kid === "string";
 }
 
-/** Fetches the team's signing keys, cached for an hour; forced refreshes are rate limited. */
-async function fetchAccessKeys(teamDomain: string, force: boolean): Promise<AccessJwk[]> {
-  const cached = keyCache.get(teamDomain);
-  const age = cached ? Date.now() - cached.fetchedAt : Infinity;
-  if (cached && (force ? age < FORCED_REFRESH_MIN_MS : age < KEY_CACHE_MS)) return cached.keys;
-
+async function requestAccessKeys(teamDomain: string): Promise<AccessJwk[]> {
   const response = await fetch(`https://${teamDomain}/cdn-cgi/access/certs`, { cache: "no-store" });
   if (!response.ok) throw new Error(`Access certs returned ${response.status}`);
   const body: unknown = await response.json();
@@ -69,12 +66,35 @@ async function fetchAccessKeys(teamDomain: string, force: boolean): Promise<Acce
 }
 
 /**
+ * Fetches the team's signing keys, cached for an hour. Forced refreshes are limited to one per minute,
+ * and concurrent callers share one in-flight request.
+ */
+export async function fetchAccessKeys(teamDomain: string, force: boolean): Promise<AccessJwk[]> {
+  const nowMs = Date.now();
+  const cached = keyCache.get(teamDomain);
+  if (cached) {
+    const lastRefresh = Math.max(cached.fetchedAt, lastForcedRefresh.get(teamDomain) ?? 0);
+    if (force ? nowMs - lastRefresh < FORCED_REFRESH_MIN_MS : nowMs - cached.fetchedAt < KEY_CACHE_MS) {
+      return cached.keys;
+    }
+  }
+
+  const pending = keyRequests.get(teamDomain);
+  if (pending) return pending;
+
+  // Reserve the forced refresh before the await so overlapping callers can't start their own.
+  if (force) lastForcedRefresh.set(teamDomain, nowMs);
+  const request = requestAccessKeys(teamDomain).finally(() => keyRequests.delete(teamDomain));
+  keyRequests.set(teamDomain, request);
+  return request;
+}
+
+/**
  * Verifies a Cloudflare Access JWT (`Cf-Access-Jwt-Assertion`): RS256 signature against the team's
  * published keys, issuer, audience, expiry and not-before.
  */
 export async function verifyAccessJwt(token: string, options: AccessVerifyOptions): Promise<AccessVerifyResult> {
   const { teamDomain, audience, loadKeys = fetchAccessKeys } = options;
-  const now = options.now ?? Math.floor(Date.now() / 1000);
 
   const parts = token.split(".");
   if (parts.length !== 3) return { valid: false, reason: "malformed token" };
@@ -119,6 +139,9 @@ export async function verifyAccessJwt(token: string, options: AccessVerifyOption
   if (payload.iss !== `https://${teamDomain}`) return { valid: false, reason: "wrong issuer" };
   const audiences = Array.isArray(payload.aud) ? payload.aud : [payload.aud];
   if (!audiences.includes(audience)) return { valid: false, reason: "wrong audience" };
+
+  // Read the clock after the async key loading and signature check.
+  const now = options.now ?? Math.floor(Date.now() / 1000);
   if (typeof payload.exp !== "number" || payload.exp + CLOCK_SKEW_SECONDS < now) {
     return { valid: false, reason: "expired" };
   }

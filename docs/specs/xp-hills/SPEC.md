@@ -82,9 +82,9 @@ keep native scroll restoration.
 
 ## 3. Navigation
 
-**XP pages** (landing, blog, posts, CV, Contact, Availability and 404):
+**XP pages** (landing, blog, posts, CV, Contact, System, Availability and 404):
 - **Primary taskbar** is pinned at the bottom on desktop and mobile. Start lists Home, Blog, CV,
-  Contact, RSS, LinkedIn, GitHub, Restore all windows (when needed), and ©. The tray has the theme
+  Contact, System, RSS, LinkedIn, GitHub, Restore all windows (when needed), and ©. The tray has the theme
   toggle and clock; the taskbar and the content padding account for the safe area.
 - **Window buttons** show an icon and title on desktop, icon only on mobile. Open is pressed,
   minimized is normal, and closed windows have no task button. Clicking opens and scrolls to that
@@ -134,6 +134,7 @@ tray hint points to Start → Restore all windows; Home also restores all window
 | `/contact` | `klondike.exe` card table and contact shortcuts; availability behind a toggle |
 | `/cv` | WordPad document |
 | `/availability` | Availability calendar window; ← Contact · Home |
+| `/system` | System Properties dialog: General, Network, Security, Automatic Updates tabs; OK · Cancel · Apply |
 | 404 | XP error window over the wallpaper |
 
 **`sina.exe`** (desktop app): up to 360px wide with 16px mobile gutters, a
@@ -179,14 +180,23 @@ education and certifications, additional experience); single column on mobile. S
 bar with last-updated date; Home also at the bottom. Print emits only the paper on A4. Phone numbers
 never appear in HTML or copied Markdown (PDF unchanged).
 
+**System Properties**: four keyboard-operable tabs with hash deep links. The infrastructure, scan
+grades and build details are a static snapshot as of deploy, not live monitoring. The settings
+sync test (`tests/system.test.ts`) checks the snapshot against the repo's infrastructure and security config.
+Panels are short: icon tiles (General), aligned step tiles coloured by provider, two columns on mobile, with a stepped highlight (Network),
+grade tiles that re-run each scan plus a two-column checklist (Security), and one-line automation rows.
+OK, Cancel and the title-bar Close return to the previous XP page in this tab (sessionStorage,
+`components/returnPath.ts`), or the desktop when unknown; Close skips the closed-desktop dialog. Apply is disabled.
+
 ## 7. Responsive, accessibility, quality
 
 - Breakpoint 760px. Mobile: fixed wallpaper, stacked full-width windows with 16px gutters, no page-wide
   horizontal scroll, taskbar navigation.
 - Landmarks (`header`, `main`, `nav`), skip link, visible focus everywhere, AA contrast, reduced motion
   respected (scene, glide, hint, ping, balloons, reveal), no hydration warnings or theme flash.
-- Security: security headers and an enforced CSP on public pages (`next.config.mjs`), `/admin` behind
-  Basic Auth that refuses placeholder or short passwords, cached availability API, sanitized Markdown.
+- Security: security headers and an enforced CSP on public pages (`next.config.mjs`), `/admin` on
+  `admin.sinabastani.dev` behind Cloudflare Access with an app-side JWT check (Basic Auth only locally /
+  break-glass), cached availability API, sanitized Markdown.
 - `bun run lint && bun run typecheck && bun run test && bun run build` pass; `/anita` unchanged.
 
 ## 8. Open items and follow-ups

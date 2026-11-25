@@ -122,6 +122,20 @@ test("supports Core Skills, a standalone Languages list and meta lines under h3 
   expect(JSON.stringify(cv)).not.toMatch(/701234567|tel:/);
 });
 
+test("keeps parenthetical skill details together in one tag", () => {
+  const cv = parseCV(NEW_FORMAT.replace("AWS S3, SQS", "AWS S3, Cloudflare (DNS, Zero Trust, Workers, R2); OpenTofu"));
+  expect(cv.skills.find(({ label }) => label === "Cloud")?.items).toEqual([
+    "AWS S3", "Cloudflare (DNS, Zero Trust, Workers, R2)", "OpenTofu",
+  ]);
+});
+
+test("splits skills only outside nested parentheses", () => {
+  const cv = parseCV(NEW_FORMAT.replace("AWS S3, SQS", "AWS (regions, services (S3, SQS)); Docker"));
+  expect(cv.skills.find(({ label }) => label === "Cloud")?.items).toEqual([
+    "AWS (regions, services (S3, SQS))", "Docker",
+  ]);
+});
+
 test("keeps a Languages section with more than a plain list in the main column", () => {
   const cv = parseCV(NEW_FORMAT.replace("Swedish (fluent), English (fluent)", "- Swedish\n- English"));
   expect(cv.languages).toBeUndefined();

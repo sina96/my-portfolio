@@ -15,6 +15,7 @@ import "./(main)/hero.css";
 import "./(main)/scenery.css";
 import "./(main)/pixelDesk.css";
 import "./(main)/cv/wordpad.css";
+import "./(main)/system.css";
 
 const firaSans = Fira_Sans({ weight: "700", subsets: ["latin"], variable: "--font-fira-sans", display: "swap", preload: false });
 const ptSans = PT_Sans({ weight: ["400", "700"], subsets: ["latin"], variable: "--font-pt-sans", display: "swap", preload: false });

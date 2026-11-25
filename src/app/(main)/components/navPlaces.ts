@@ -3,6 +3,7 @@ export const XP_PLACES = [
   { href: "/blog", label: "Blog" },
   { href: "/cv", label: "CV" },
   { href: "/contact", label: "Contact" },
+  { href: "/system", label: "System" },
   { href: "/feed.xml", label: "RSS" },
 ] as const;
 

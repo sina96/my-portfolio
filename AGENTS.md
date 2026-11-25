@@ -46,21 +46,24 @@ src/
       XpShell.tsx, layout.tsx # shell + window manager for all public pages
       page.tsx                # landing: sina.exe over the hill, Latest posts, About me
       blog/, cv/, contact/ (CardTable mascot and slots), availability/
+      system/                 # page, SystemDialog, SystemTabs, NetworkDiagram, SystemGlyph, SystemMark
       components/             # HillScene, XpWindow(+Manager), Taskbar, TaskPane, DesktopNavigation,
-                              # HomeHero, DesktopIcon, XpNavLink, TrayBalloon, PixelDesk (parked), BlogList, AvailabilityWidget, navPlaces
+                              # HomeHero, DesktopIcon, XpNavLink, TrayBalloon, PixelDesk (parked), BlogList, AvailabilityWidget, navPlaces, returnPath
       hooks/                  # useLandingGlide, useLandingVisit, useWallpaperScroll, useReadingTaskbar, useTheme
       utils/                  # hillScene.ts, pixelDesk.ts (pure, seeded generators), sanitizeHtml.ts
-      data/                   # blogPosts.ts, cv.ts, availability.ts (server-side loaders)
-      *.css                   # site (tokens), hills, scenery, hero, navigation, panels, blog, pixelDesk
+      data/                   # blogPosts.ts, cv.ts, availability.ts, system.ts (server-side data)
+      *.css                   # site (tokens), hills, scenery, hero, navigation, panels, blog, pixelDesk, system.css
   content/blog/*.md           # posts (CMS writes here)
   content/cv/                 # sina-cv.md (source) + sina-cv-pdf.pdf
-tests/                        # content, cv, hillScene, pixelDesk, blogMail, basicAuth, availabilityCache
+tests/                        # content, cv, hillScene, pixelDesk, blogMail, basicAuth, availabilityCache, system
 docs/specs/xp-hills/          # SPEC.md (current design) + sketch.html (scene technique reference)
 docs/howto/, docs/changelogs/, docs/archive/   # how-tos, dated change notes, history
 infra/                        # OpenTofu: Cloudflare DNS, email, TLS, Access (state in R2; CI: .github/workflows/infra.yml)
 ```
 
 ## Invariants and gotchas
+
+`data/system.ts` mirrors `infra/` and `next.config.mjs`; `tests/system.test.ts` fails when they differ: update both in the same PR.
 
 These cost time during the redesign. Don't regress them.
 

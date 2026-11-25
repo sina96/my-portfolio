@@ -14,9 +14,11 @@ interface XpWindowProps {
   desktopApp?: boolean;
   icon?: DesktopIconName;
   disclosure?: { expanded: boolean; onClose: () => void };
+  /** Replaces the default close (hide window, closed-desktop dialog), e.g. for dialogs that navigate away. */
+  onClose?: () => void;
 }
 
-export function XpWindow({ id, title, children, className = "", statusBar, desktopApp = false, icon, disclosure }: Readonly<XpWindowProps>) {
+export function XpWindow({ id, title, children, className = "", statusBar, desktopApp = false, icon, disclosure, onClose }: Readonly<XpWindowProps>) {
   const { windows, register, setState, minimize } = useXpWindows();
   const state = windows.find((window) => window.id === id)?.state ?? "open";
   const available = disclosure?.expanded ?? true;
@@ -47,6 +49,7 @@ export function XpWindow({ id, title, children, className = "", statusBar, deskt
           <button type="button" aria-label="Maximize" aria-hidden="true" tabIndex={-1} inert />
           <button type="button" aria-label="Close" title={`Close ${title}`}
             onClick={() => {
+              if (onClose) return onClose();
               if (disclosure) return disclosure.onClose();
               setState(id, "closed");
               focusNavigation();

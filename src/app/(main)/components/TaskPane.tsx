@@ -14,6 +14,7 @@ const ICONS = {
   Blog: "M3 2h7l3 3v9H3zM9 2v4h4M5 8h6m-6 3h6",
   CV: "M2 4h12v9H2zM5 7h2m-2 3h2m2-3h3m-3 3h3",
   Contact: "M2 4h12v9H2zM2 4l6 5 6-5",
+  System: "M2 3h12v8H2zM8 11v3m-3 0h6M5 6h3",
   RSS: "M3 3c6 0 10 4 10 10M3 7c4 0 6 2 6 6M3 12h1v1H3z",
 };
 

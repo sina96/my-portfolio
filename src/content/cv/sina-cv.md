@@ -89,7 +89,7 @@ I’m curious by nature and like turning “could we do this better?” into som
 
 *Tech:* React, TypeScript, SASS, Figma
 
-## Selected Project
+## Selected Projects
 
 ### yTunes — Go / Bubble Tea
 [GitHub](https://github.com/sina96/yTunes)
@@ -98,11 +98,18 @@ I’m curious by nature and like turning “could we do this better?” into som
 - Integrated mpv through its JSON IPC socket for playback control and state synchronization.
 - Implemented command-line workflows, source handling and built-in terminal themes.
 
+### sinabastani.dev — Cloudflare, OpenTofu, GitHub Actions
+[Infrastructure](https://github.com/sina96/my-portfolio/tree/main/infra)
+
+- Moved DNS to Cloudflare with DNSSEC, email routing and SPF/DKIM/DMARC; SSL Labs A+.
+- Put the CMS behind Cloudflare Zero Trust (GitHub login) with JWT verification in the app; no passwords.
+- Managed all of it with OpenTofu (R2 state): plan on PR, approved apply, weekly drift detection.
+
 ## Core Skills
 
 **Backend & Integration:** Java, Spring, REST APIs, OAuth2, SQL, SAP Commerce, asynchronous messaging, mTLS
 
-**Cloud & Delivery:** AWS S3, SQS, Secrets Manager, Docker, Bitbucket Pipelines, Jenkins, GitHub Actions, Git, SonarQube, Renovate, OWASP Dependency Check
+**Cloud & Delivery:** AWS S3, SQS, Secrets Manager, Cloudflare (DNS, Zero Trust, Workers, R2), OpenTofu, Docker, Bitbucket Pipelines, Jenkins, GitHub Actions, Git, SonarQube, Renovate, OWASP Dependency Check
 
 **Testing & Operations:** JUnit, Mockito, Grafana k6, Dynatrace, integration testing, performance testing, production troubleshooting
 

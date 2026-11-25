@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import type { DesktopIconName } from "./DesktopIcon";
 import { DesktopNavigation } from "./DesktopNavigation";
+import { recordXpPath } from "./returnPath";
 import { Taskbar } from "./Taskbar";
 
 export type WindowState = "open" | "minimized" | "closed";
@@ -48,6 +49,8 @@ interface XpWindowManagerProps {
 export function XpWindowManager({ children, year }: Readonly<XpWindowManagerProps>) {
   const pathname = usePathname();
   const [visit, setVisit] = useState(0);
+
+  useEffect(() => recordXpPath(pathname), [pathname]);
 
   useEffect(() => {
     if (pathname !== "/") return;

@@ -66,6 +66,13 @@ const PIXEL_ART = {
     <path fill="#387ad4" d="M3 3h10v7H3z" />
     <path fill="#94c946" d="M3 8h3V7h4v1h3v2H3z" />
   </>,
+  system: <>
+    <path fill="#18305b" d="M1 1h14v1h1v9h-1v1h-5v1h3v2H3v-2h3v-1H1v-1H0V2h1z" />
+    <path fill="#d7e0ec" d="M1 2h14v9H1zm3 12h8v1H4z" />
+    <path fill="#376dad" d="M2 3h12v6H2z" />
+    <path fill="#99cef8" d="M4 5h4v1H4zm0 2h6v1H4z" />
+    <path fill="#7fa240" d="M12 10h2v1h-2z" />
+  </>,
   about: <>
     <path fill="#19376d" d="M0 2h16v12H0z" />
     <path fill="#ece9d8" d="M1 3h14v10H1z" />

@@ -37,6 +37,7 @@ Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` to access the `/admin` CMS password ga
 - `/blog`, `/blog/[slug]`, `/feed.xml` — archive, articles, and RSS.
 - `/cv`, `/cv.pdf` — rendered CV and PDF.
 - `/contact`, `/availability` — social links and availability.
+- `/system` — System Properties: stack, request paths, security grades and deploy automation (snapshot at build time).
 - `/admin` — protected Sveltia CMS.
 
 Old `/?tab=home|blogs|contact` URLs redirect to their equivalent pages. On the landing page, use the Start menu on the hill and the Explorer task pane below it to navigate and switch themes. On mobile, the Places button opens the task pane as a drawer. Other pages use links inside their windows.
@@ -61,6 +62,7 @@ Project docs are organized by purpose:
 - [Landing v2 changelog](./docs/changelogs/2026-11-21-landing-v2.md)
 - [CMS access changelog](./docs/changelogs/2026-11-25-cms-access.md)
 - [Cloudflare as code changelog](./docs/changelogs/2026-11-25-infra-as-code.md)
+- [System Properties changelog](./docs/changelogs/2026-11-25-system-properties.md)
 - [Archive](./docs/archive/) - older plans, implementation notes, and the XP Hills task handoffs
 
 ## Tech Stack

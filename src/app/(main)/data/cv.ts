@@ -84,14 +84,14 @@ function renderSection(body: string): string {
     .replace(/<p>\s*~\s*([^<]*(?:<em>[^<]*<\/em>[^<]*)?)<\/p>/g, '<p class="cv-entry-meta">$1</p>');
 }
 
-/** Parses `**Label:** a, b, c` lines; returns undefined when any line has another shape. */
+/** Parses `**Label:** a, b, c` lines, preserving separators inside parenthetical details. */
 function parseSkillGroups(content: string): CVData["skills"] | undefined {
   const lines = content.split("\n").filter((line) => line.trim());
   const groups = lines.map((line) => /^\*\*(.+?):\*\*\s*(.+)$/.exec(line.trim()));
   if (!groups.length || groups.some((group) => group === null)) return undefined;
   return groups.map((group) => ({
     label: cleanText(group![1]),
-    items: group![2].replace(/\.$/, "").split(/[,;]/).map(cleanText).filter(Boolean),
+    items: group![2].replace(/\.$/, "").split(/[,;](?![^()]*\))/).map(cleanText).filter(Boolean),
   }));
 }
 

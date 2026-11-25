@@ -17,6 +17,7 @@ bun run start        # serve the build (use PORT=xxxx to avoid clashing with a r
 bun run lint         # ESLint flat config (eslint.config.mjs); 2 known <img> warnings in /anita
 bun run typecheck    # tsc --noEmit
 bun run test         # Vitest (tests/*.test.ts); bun run test -t "name" for one test
+tofu -chdir=infra plan   # Cloudflare (needs ~/.config/sinabastani/tofu.env sourced); see docs/howto/INFRA.md
 ```
 
 CI (`.github/workflows/ci.yml`) runs `bun install --frozen-lockfile`, lint, typecheck, test, build.
@@ -56,6 +57,7 @@ src/
 tests/                        # content, cv, hillScene, pixelDesk, blogMail, basicAuth, availabilityCache
 docs/specs/xp-hills/          # SPEC.md (current design) + sketch.html (scene technique reference)
 docs/howto/, docs/changelogs/, docs/archive/   # how-tos, dated change notes, history
+infra/                        # OpenTofu: Cloudflare DNS, email, TLS, Access (state in R2; CI: .github/workflows/infra.yml)
 ```
 
 ## Invariants and gotchas
@@ -168,6 +170,8 @@ These cost time during the redesign. Don't regress them.
   Permissions-Policy, no `X-Powered-By`). Public CSP is enforced in production and report-only in dev;
   it uses Next's nonce-free static rendering policy. `/admin` is excluded from the public CSP.
 - External links: `target="_blank" rel="noopener noreferrer"`.
+- Cloudflare changes go through `infra/` PRs, not the dashboard (weekly drift check). Never commit
+  state, `*.tfvars` or tokens; private emails are `sensitive` variables.
 - Never commit `.env*` (only `.env.example`), private ICS URLs or files, or personal data such as the
   phone number. Don't log secrets or calendar contents.
 - Keep `next` patched: run `bun audit` when touching dependencies.

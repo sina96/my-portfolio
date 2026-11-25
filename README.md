@@ -1,6 +1,18 @@
 # Portfolio Website
 
 [![Build](https://github.com/sina96/my-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/sina96/my-portfolio/actions/workflows/ci.yml)
+[![Infra](https://github.com/sina96/my-portfolio/actions/workflows/infra.yml/badge.svg)](https://github.com/sina96/my-portfolio/actions/workflows/infra.yml)
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fsinabastani.dev&label=sinabastani.dev)](https://sinabastani.dev)
+[![SSL Labs](https://img.shields.io/badge/SSL%20Labs-A%2B-brightgreen)](https://www.ssllabs.com/ssltest/analyze.html?d=sinabastani.dev)
+[![Renovate](https://img.shields.io/badge/Renovate-enabled-1A1F6C?logo=renovate&logoColor=white)](./renovate.json)
+
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Bun](https://img.shields.io/badge/Bun-1.3-000000?logo=bun&logoColor=white)](https://bun.sh)
+[![Vercel](https://img.shields.io/badge/hosted%20on-Vercel-000000?logo=vercel&logoColor=white)](https://vercel.com)
+[![Cloudflare](https://img.shields.io/badge/DNS%20%26%20Zero%20Trust-Cloudflare-F38020?logo=cloudflare&logoColor=white)](./docs/howto/INFRA.md)
+[![OpenTofu](https://img.shields.io/badge/IaC-OpenTofu-FFDA18?logo=opentofu&logoColor=black)](./infra)
 
 A Next.js portfolio styled as a Windows XP desktop over procedural day and night pixel-art hills.
 
@@ -44,9 +56,11 @@ Project docs are organized by purpose:
 
 - [XP Hills design spec](./docs/specs/xp-hills/SPEC.md) - how the site looks and behaves
 - [How to add blog posts](./docs/howto/ADDING_BLOG_POSTS.md)
+- [Infrastructure (Cloudflare via OpenTofu)](./docs/howto/INFRA.md)
 - [XP Hills changelog](./docs/changelogs/2026-11-20-xp-hills.md)
 - [Landing v2 changelog](./docs/changelogs/2026-11-21-landing-v2.md)
 - [CMS access changelog](./docs/changelogs/2026-11-25-cms-access.md)
+- [Cloudflare as code changelog](./docs/changelogs/2026-11-25-infra-as-code.md)
 - [Archive](./docs/archive/) - older plans, implementation notes, and the XP Hills task handoffs
 
 ## Tech Stack
@@ -69,4 +83,4 @@ For Sveltia CMS in production, set `ADMIN_HOST`, `CF_ACCESS_TEAM_DOMAIN` and `CF
 - A GitHub identity provider in Cloudflare Zero Trust, and an Allow policy that admits only the permitted account.
 - DNS for the admin hostname in Cloudflare pointing at Vercel and **proxied**, SSL/TLS mode Full (strict), and the hostname added to the Vercel project.
 
-Step-by-step setup docs are pending. If Access locks you out, use the Basic Auth break-glass steps in [`docs/howto/ADDING_BLOG_POSTS.md`](docs/howto/ADDING_BLOG_POSTS.md#writing-in-sveltia-cms).
+These Cloudflare pieces are managed as code in `infra/` (see [`docs/howto/INFRA.md`](docs/howto/INFRA.md)). If Access locks you out, use the Basic Auth break-glass steps in [`docs/howto/ADDING_BLOG_POSTS.md`](docs/howto/ADDING_BLOG_POSTS.md#writing-in-sveltia-cms).

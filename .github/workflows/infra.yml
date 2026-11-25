@@ -1,0 +1,155 @@
+name: Infra
+
+# Cloudflare is managed by OpenTofu in infra/. PRs get a plan comment, main applies after approval
+# (GitHub Environment "production-infra"), and a weekly run reports drift from dashboard edits.
+
+on:
+  pull_request:
+    paths: ["infra/**", ".github/workflows/infra.yml"]
+  push:
+    branches: [main]
+    paths: ["infra/**", ".github/workflows/infra.yml"]
+  schedule:
+    - cron: "0 7 * * 1" # Mondays 07:00 UTC, after Renovate
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One OpenTofu run at a time; never cancel an apply halfway. queue: max lets pending runs wait in
+# order instead of a newer one cancelling the one already waiting.
+concurrency:
+  group: infra
+  cancel-in-progress: false
+  queue: max
+
+env:
+  TOFU_VERSION: 1.13.10
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+  TF_VAR_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+  TF_VAR_zone_id: ${{ vars.CLOUDFLARE_ZONE_ID }}
+  TF_VAR_inboxes: ${{ secrets.TF_VAR_INBOXES }}
+  TF_VAR_admin_emails: ${{ secrets.TF_VAR_ADMIN_EMAILS }}
+
+defaults:
+  run:
+    working-directory: infra
+
+jobs:
+  plan:
+    name: Plan
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: opentofu/setup-opentofu@a1320f892987e89d278cc92dc5adc984fb93aca4 # v2.0.2
+        with:
+          tofu_version: ${{ env.TOFU_VERSION }}
+          tofu_wrapper: false
+
+      - run: tofu fmt -check -recursive
+      - run: tofu init -lockfile=readonly
+      - run: tofu validate
+
+      - name: Plan
+        id: plan
+        run: |
+          set +e
+          tofu plan -lock-timeout=5m -detailed-exitcode -out=plan.tfplan
+          code=$?
+          set -e
+          if [ "$code" -eq 1 ]; then exit 1; fi
+          tofu show -no-color plan.tfplan > plan.txt
+          echo "changes=$([ "$code" -eq 2 ] && echo yes || echo no)" >> "$GITHUB_OUTPUT"
+
+      - name: Comment plan on the PR
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          HAS_CHANGES: ${{ steps.plan.outputs.changes }}
+        with:
+          script: |
+            const fs = require("fs");
+            const marker = "<!-- tofu-plan -->";
+            let plan = fs.readFileSync("infra/plan.txt", "utf8");
+            if (plan.length > 60000) plan = plan.slice(0, 60000) + "\n… (truncated, see the run log)";
+            const summary = process.env.HAS_CHANGES === "yes" ? "Changes on merge" : "No changes";
+            const run = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = `${marker}\n### OpenTofu plan: ${summary}\n\nCommit ${context.payload.pull_request.head.sha.slice(0, 7)} · [run](${run})\n\n<details><summary>Plan</summary>\n\n\`\`\`\n${plan}\n\`\`\`\n</details>`;
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number });
+            const existing = comments.find((c) => c.user.type === "Bot" && c.body.includes(marker));
+            if (existing) await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            else await github.rest.issues.createComment({ owner, repo, issue_number, body });
+
+  apply:
+    name: Apply
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production-infra # required reviewer approves before this job starts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: opentofu/setup-opentofu@a1320f892987e89d278cc92dc5adc984fb93aca4 # v2.0.2
+        with:
+          tofu_version: ${{ env.TOFU_VERSION }}
+          tofu_wrapper: false
+
+      - run: tofu init -lockfile=readonly
+      - run: tofu plan -lock-timeout=5m -out=plan.tfplan
+      - run: tofu apply -lock-timeout=5m plan.tfplan
+
+  drift:
+    name: Drift check
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: opentofu/setup-opentofu@a1320f892987e89d278cc92dc5adc984fb93aca4 # v2.0.2
+        with:
+          tofu_version: ${{ env.TOFU_VERSION }}
+          tofu_wrapper: false
+
+      - run: tofu init -lockfile=readonly
+
+      - name: Plan (detect drift)
+        id: drift
+        run: |
+          set +e
+          tofu plan -lock-timeout=5m -detailed-exitcode -no-color > plan.txt
+          code=$?
+          set -e
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          cat plan.txt # always in the run log, even if the issue step below fails
+          if [ "$code" -eq 1 ]; then exit 1; fi
+
+      - name: Open or update the drift issue
+        if: steps.drift.outputs.code == '2'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          title="Infra drift: Cloudflare differs from infra/"
+          body="The weekly \`tofu plan\` found changes made outside OpenTofu. See the [run]($RUN_URL) for the plan. Either revert the dashboard edit or update \`infra/\` in a PR."
+          number=$(gh issue list --state open --search "$title in:title" --json number -q '.[0].number')
+          grep -E '^\s+# |^Plan:' plan.txt || true
+          if [ -n "$number" ]; then gh issue comment "$number" --body "$body"; else gh issue create --title "$title" --body "$body"; fi
+          exit 1

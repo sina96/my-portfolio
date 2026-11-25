@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars (gitignored). In CI these come from TF_VAR_* secrets.
+account_id       = "0123456789abcdef0123456789abcdef"
+zone_id          = "0123456789abcdef0123456789abcdef"
+inboxes          = { primary = "you@example.com" }
+forward_to       = "primary"
+admin_emails     = ["you@example.com"]

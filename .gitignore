@@ -56,3 +56,11 @@ next-env.d.ts
 /docs/specs/*
 !/docs/specs/README.md
 !/docs/specs/xp-hills/
+
+# OpenTofu (infra/): providers, state and real variable values stay local
+/infra/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+*.tfplan

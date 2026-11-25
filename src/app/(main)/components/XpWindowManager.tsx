@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import type { DesktopIconName } from "./DesktopIcon";
 import { DesktopNavigation } from "./DesktopNavigation";
-import { recordXpPath } from "./returnPath";
+import { recordXpPath, restoreXpPath } from "./returnPath";
 import { Taskbar } from "./Taskbar";
 
 export type WindowState = "open" | "minimized" | "closed";
@@ -51,6 +51,12 @@ export function XpWindowManager({ children, year }: Readonly<XpWindowManagerProp
   const [visit, setVisit] = useState(0);
 
   useEffect(() => recordXpPath(pathname), [pathname]);
+
+  useEffect(() => {
+    const onPageShow = (event: PageTransitionEvent) => { if (event.persisted) restoreXpPath(); };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
 
   useEffect(() => {
     if (pathname !== "/") return;

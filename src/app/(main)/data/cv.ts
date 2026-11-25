@@ -84,6 +84,24 @@ function renderSection(body: string): string {
     .replace(/<p>\s*~\s*([^<]*(?:<em>[^<]*<\/em>[^<]*)?)<\/p>/g, '<p class="cv-entry-meta">$1</p>');
 }
 
+/** Splits on `,` / `;` only outside parentheses, so `a (b, c (d))` stays one item. */
+function splitTopLevel(value: string): string[] {
+  const items: string[] = [];
+  let depth = 0;
+  let start = 0;
+  for (let i = 0; i < value.length; i++) {
+    const char = value[i];
+    if (char === "(") depth++;
+    else if (char === ")") depth = Math.max(0, depth - 1);
+    else if ((char === "," || char === ";") && depth === 0) {
+      items.push(value.slice(start, i));
+      start = i + 1;
+    }
+  }
+  items.push(value.slice(start));
+  return items;
+}
+
 /** Parses `**Label:** a, b, c` lines, preserving separators inside parenthetical details. */
 function parseSkillGroups(content: string): CVData["skills"] | undefined {
   const lines = content.split("\n").filter((line) => line.trim());
@@ -91,7 +109,7 @@ function parseSkillGroups(content: string): CVData["skills"] | undefined {
   if (!groups.length || groups.some((group) => group === null)) return undefined;
   return groups.map((group) => ({
     label: cleanText(group![1]),
-    items: group![2].replace(/\.$/, "").split(/[,;](?![^()]*\))/).map(cleanText).filter(Boolean),
+    items: splitTopLevel(group![2].replace(/\.$/, "")).map(cleanText).filter(Boolean),
   }));
 }
 

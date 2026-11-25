@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { previousXpPath, recordXpPath } from "@/app/(main)/components/returnPath";
+import { previousXpPath, recordXpPath, restoreXpPath } from "@/app/(main)/components/returnPath";
 import { getBuildInfo, INFRA_SETTINGS, SECURITY_CHECKS } from "@/app/(main)/data/system";
 import type { SecurityCheckId } from "@/app/(main)/data/system";
 
@@ -112,6 +112,18 @@ describe("System Properties return path", () => {
     recordXpPath("/system");
     recordXpPath("/system");
     expect(previousXpPath("/system")).toBe("/cv");
+  });
+
+  it("restores the return path a back/forward-cached page had when shown", () => {
+    fakeStorage();
+    recordXpPath("/blog");
+    recordXpPath("/system");
+    // A new document (typed URL) for /cv overwrites storage; this document's snapshot is untouched.
+    window.sessionStorage.setItem("xp:path:previous", "/system");
+    window.sessionStorage.setItem("xp:path:current", "/cv");
+    restoreXpPath();
+    expect(previousXpPath("/system")).toBe("/blog");
+    expect(window.sessionStorage.getItem("xp:path:current")).toBe("/system");
   });
 
   it("falls back to the desktop for a first visit, foreign values or blocked storage", () => {

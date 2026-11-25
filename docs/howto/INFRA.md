@@ -46,7 +46,8 @@ Apply from CI, not locally, except in an emergency.
 ## GitHub settings the workflow needs
 
 - **Secrets** (Settings → Secrets and variables → Actions): `CLOUDFLARE_API_TOKEN`, `R2_ACCESS_KEY_ID`,
-  `R2_SECRET_ACCESS_KEY`, `TF_VAR_FORWARD_TO_EMAIL`, `TF_VAR_ADMIN_EMAILS` (JSON list, e.g. `["a@x.dev"]`).
+  `R2_SECRET_ACCESS_KEY`, `TF_VAR_INBOXES` (JSON map, e.g. `{"primary":"a@x.dev"}`),
+  `TF_VAR_ADMIN_EMAILS` (JSON list, e.g. `["a@x.dev"]`).
 - **Variables**: `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_ZONE_ID`.
 - **Environment** `production-infra`: required reviewer = repo owner, deployment branch `main` only.
 
@@ -55,8 +56,28 @@ Private values are `sensitive` variables, so plans print `(sensitive value)` ins
 ## Adding a record
 
 Add a `cloudflare_dns_record` to the matching file (`ttl = 1` means automatic). For a record that already
-exists in the dashboard, add a temporary `import { to = ..., id = "<zone_id>/<record_id>" }` block,
-check the plan shows only the import, merge, then delete the block.
+exists in the dashboard, add a temporary import block next to it:
+
+```hcl
+import {
+  to = cloudflare_dns_record.example
+  id = "<zone_id>/<record_id>"
+}
+```
+
+Check the plan shows only the import, merge, then delete the block.
+
+## Changing the forwarding inbox
+
+Inboxes are a map (`TF_VAR_INBOXES` secret, e.g. `{"primary":"me@example.com"}`) and `forward_to` names the
+one in use. Change it in three applies so mail never goes to an unverified address:
+
+1. Add the new inbox under a new key → apply → click Cloudflare's verification email.
+2. Set `forward_to` to the new key → apply. A precondition stops this until the inbox is verified.
+3. Remove the old key → apply.
+
+Removing the key that's in use fails the plan; replacing its address creates the new one first and stops
+at the verification check before the old one is deleted.
 
 ## Rotating tokens
 
@@ -67,11 +88,29 @@ check the plan shows only the import, merge, then delete the block.
 ## Break-glass
 
 If CI is down and something must change now: edit in the dashboard, then make `infra/` match it in a PR
-so the drift check goes quiet again. To stop managing a resource without deleting it, use a
-`removed {}` block or `tofu state rm`. Never `tofu destroy`.
+so the drift check goes quiet again.
+
+To stop managing a resource without deleting it in Cloudflare, prefer a reviewed `removed` block in a PR,
+in place of the resource block:
+
+```hcl
+removed {
+  from = cloudflare_dns_record.example
+  lifecycle {
+    destroy = false
+  }
+}
+```
+
+`tofu state rm` also works, but only together with deleting the resource block in the same change:
+if the block stays, the next plan sees it missing from state and creates it again. Never `tofu destroy`.
 
 State is a single object in R2 (`cloudflare/terraform.tfstate`); deleting `infra/` changes nothing in
-Cloudflare. A lost state can be rebuilt with import blocks (`cf-terraforming import` prints them).
+Cloudflare. A lost state can be rebuilt by importing again. `cf-terraforming import` prints
+`tofu import` CLI commands by default; add `--modern-import-block` to get `import {}` blocks instead
+(with `--terraform-binary-path "$(which tofu)"`). Its addresses are generated names
+(`terraform_managed_resource_…`), so rename each `to` to the matching address in `infra/` before
+planning, and only apply once the plan shows imports and no creates or deletes.
 
 ## Background: OpenTofu in two minutes
 

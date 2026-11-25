@@ -8,10 +8,16 @@ variable "zone_id" {
   type        = string
 }
 
-variable "forward_to_email" {
-  description = "Private inbox that Email Routing forwards to. Kept out of this public repo."
-  type        = string
+variable "inboxes" {
+  description = "Destination inboxes for Email Routing, by name (e.g. { primary = \"me@example.com\" }). Kept out of this public repo."
+  type        = map(string)
   sensitive   = true
+}
+
+variable "forward_to" {
+  description = "Name (key in inboxes) of the inbox the forwarding rules use. Switch only to a verified inbox."
+  type        = string
+  default     = "primary"
 }
 
 variable "admin_emails" {

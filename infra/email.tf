@@ -4,9 +4,28 @@ resource "cloudflare_email_routing_settings" "this" {
   zone_id = var.zone_id
 }
 
+# Changing inboxes is staged so mail never goes to an unverified address:
+#   1. add the new inbox under a new key → apply → click the verification email
+#   2. set forward_to to the new key → apply (the precondition blocks it, at plan or at apply, until the
+#      new inbox is verified, so the rules never point at an unverified address)
+#   3. remove the old key → apply
+# The inbox in use can't be removed or replaced by accident: the rules reference it (removing its key
+# fails the plan), and a replacement is created first and stops at the verification check below
+# before the old one is deleted.
 resource "cloudflare_email_routing_address" "inbox" {
+  for_each = toset(nonsensitive(keys(var.inboxes)))
+
   account_id = var.account_id
-  email      = var.forward_to_email
+  email      = var.inboxes[each.key]
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+moved {
+  from = cloudflare_email_routing_address.inbox
+  to   = cloudflare_email_routing_address.inbox["primary"]
 }
 
 resource "cloudflare_email_routing_rule" "forward" {
@@ -17,7 +36,14 @@ resource "cloudflare_email_routing_rule" "forward" {
   enabled  = true
   priority = 0
   matchers = [{ field = "to", type = "literal", value = "${each.key}@sinabastani.dev" }]
-  actions  = [{ type = "forward", value = [var.forward_to_email] }]
+  actions  = [{ type = "forward", value = [cloudflare_email_routing_address.inbox[var.forward_to].email] }]
+
+  lifecycle {
+    precondition {
+      condition     = try(cloudflare_email_routing_address.inbox[var.forward_to].verified, null) != null
+      error_message = "forward_to must name an inbox in var.inboxes that has been verified (click the link in Cloudflare's email first)."
+    }
+  }
 }
 
 # Everything else is dropped (catch-all disabled).

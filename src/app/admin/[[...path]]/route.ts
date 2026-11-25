@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { adminAuthFailure } from "@/lib/basicAuth";
+import { adminAccessFailure } from "@/lib/adminAccess";
 
 const ADMIN_INDEX_HTML = `<!DOCTYPE html>
 <html lang="en">
@@ -159,7 +159,7 @@ function getAdminAsset(path: string): { body: string; contentType: string } | un
 }
 
 export async function GET(request: NextRequest, context: AdminRouteContext): Promise<NextResponse> {
-  const authFailure = adminAuthFailure(request.headers.get("authorization"));
+  const authFailure = await adminAccessFailure(request);
   if (authFailure) return authFailure;
 
   const params = await context.params;

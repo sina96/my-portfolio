@@ -51,3 +51,8 @@ next-env.d.ts
 
 # claude
 .claude
+
+# local working specs/plans (README and the published xp-hills spec stay tracked)
+/docs/specs/*
+!/docs/specs/README.md
+!/docs/specs/xp-hills/

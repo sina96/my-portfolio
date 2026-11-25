@@ -8,8 +8,8 @@ resource "cloudflare_zone_dnssec" "this" {
 locals {
   zone_settings = {
     ssl                      = "strict" # Full (strict): origin certificates are validated
-    always_use_https         = "off"
-    min_tls_version          = "1.0"
+    always_use_https         = "on"     # proxied hosts (www, admin) only; the apex is served by Vercel
+    min_tls_version          = "1.2"
     tls_1_3                  = "on"
     automatic_https_rewrites = "on"
   }
@@ -56,7 +56,7 @@ resource "cloudflare_ruleset" "redirects" {
       from_value = {
         status_code           = 301
         preserve_query_string = true
-        target_url            = { expression = " concat(\"https://sinabastani.dev\", http.request.uri.path)" }
+        target_url            = { expression = "concat(\"https://sinabastani.dev\", http.request.uri.path)" }
       }
     }
   }]

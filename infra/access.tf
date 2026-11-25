@@ -56,7 +56,7 @@ resource "cloudflare_zero_trust_access_application" "cms" {
   session_duration           = "24h"
   policies                   = [{ id = cloudflare_zero_trust_access_policy.only_me.id, precedence = 1 }]
   enable_binding_cookie      = false
-  http_only_cookie_attribute = false # TODO: turn on in a reviewed PR (spec 04 step 5)
+  http_only_cookie_attribute = true # Access cookie unreadable by page scripts
   options_preflight_bypass   = false
 }
 
@@ -71,6 +71,6 @@ resource "cloudflare_zero_trust_access_application" "acme_bypass" {
   policies                   = [{ id = cloudflare_zero_trust_access_policy.bypass.id, precedence = 1 }]
   auto_redirect_to_identity  = false
   enable_binding_cookie      = false
-  http_only_cookie_attribute = false # TODO: turn on in a reviewed PR (spec 04 step 5)
+  http_only_cookie_attribute = true # Access cookie unreadable by page scripts
   options_preflight_bypass   = false
 }
